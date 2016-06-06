@@ -86,6 +86,47 @@ describe('Simple Component instance', function() {
       });
     });
   });
+
+  context('when using shadow DOM', function() {
+    beforeEach(function(done) {
+      el = document.createElement('shadow-dom-app');
+      document.body.appendChild(el);
+      window.requestAnimationFrame(function() {
+        done();
+      });
+    });
+
+    it('creates and uses a shadow root', function() {
+      expect(el.el).not.to.equal(el);
+      expect(el.shadowRoot).to.be.ok;
+    });
+
+    it('renders its template', function() {
+      expect(document.getElementsByClassName('foo')).to.have.lengthOf(0);
+      expect(el.children).to.have.lengthOf(0);
+      expect(el.shadowRoot.children[1].className).to.equal('foo');
+    });
+
+    it('applies the styles', function() {
+      expect(el.shadowRoot.children[0].innerHTML).to.equal('color: blue;');
+    });
+
+    context('when applying override styles', function() {
+      it('appends the overriding styles to the default styles', function(done) {
+        el.setAttribute('style-override', 'background: red;');
+        window.requestAnimationFrame(function() {
+          expect(el.shadowRoot.children[0].innerHTML).to.equal('color: blue;background: red;');
+          done();
+        });
+      });
+
+      it("it applies the styles even if the component isn't attached to the DOM", function() {
+         el = document.createElement('shadow-dom-app');
+         el.setAttribute('style-override', 'background: red;');
+         expect(el.shadowRoot.children[0].innerHTML).to.equal('color: blue;background: red;');
+      });
+    });
+  });
 });
 
 describe('Nested Component instance', function() {
