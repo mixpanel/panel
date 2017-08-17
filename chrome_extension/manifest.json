@@ -1,0 +1,7 @@
+{
+  "name": "Panel State",
+  "version": "1.0",
+  "description": "Shows Mixpanel's Panel component state",
+  "devtools_page": "devtools.html",
+  "manifest_version": 2
+}

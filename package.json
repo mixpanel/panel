@@ -3,6 +3,7 @@
   "version": "0.10.0",
   "description": "Web Components with Virtual DOM: lightweight composable web apps",
   "main": "build/index.js",
+  "files": ["build"],
   "scripts": {
     "build": "babel lib -d build && cp -r build/isorender .",
     "build-test": "webpack --config test/fixtures/webpack.config.js",
