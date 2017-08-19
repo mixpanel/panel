@@ -4,5 +4,5 @@
 * Click on "Load unpacked extension..." and choose the 'devtools' folder in repo
 
 # Publishing to Chrome store
- 1. Zip devtools folder as devtools.zip
- 2. Follow instructions at https://chrome.google.com/webstore/developer/update
+ 1. Zip contents of devtools folder as devtools.zip. `zip -r devtools devtools`
+ 2. Follow instructions at https://chrome.google.com/webstore/developer/update to publish

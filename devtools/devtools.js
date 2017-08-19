@@ -4,7 +4,9 @@ var panel_getState = function() {
     $0.update(); // Force a refresh so we can set state and see an update after a re-select
     return $0.state;
   }
-  return {error: "No state found"};
+
+  // TODO: Add window.document.body.addEventListener("mouseenter", update) hook
+  return {error: "component state not found"};
 }
 
 chrome.devtools.panels.elements.createSidebarPane("Panel State", function(sidebar) {
