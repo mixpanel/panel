@@ -1,20 +1,30 @@
 // The function below is executed in the context of the inspected page.
-var panel_getState = function() {
-  if ($0 && $0.update && $0.state) {
-    $0.update(); // Force a refresh so we can set state and see an update after a re-select
-    return $0.state;
+function panel_getState() {
+  if (!window['__$panelDevToolsReady'] && window.document.body) {
+    // Chrome extension api doesn't let us know when expression has been edited
+    // Work around is to refresh the UI with latest state on mouseenter
+    window.document.body.addEventListener('mouseenter', panel_getState);
+    window['__$panelDevToolsReady'] = true;
   }
 
-  // TODO: Add window.document.body.addEventListener("mouseenter", update) hook
-  return {error: "component state not found"};
+  // $0 is not available if called via event listeners
+  const selectedElem = window['$0'] || window['__$panelDevToolsLastSelectedElem'];
+
+  if (selectedElem && selectedElem.update && selectedElem.state) {
+    window['__$panelDevToolsLastSelectedElem'] = selectedElem;
+    selectedElem.update(); // Force a refresh so UI reflects latest state
+    return selectedElem.state;
+  }
+
+  return {error: 'component state not found'};
 }
 
-chrome.devtools.panels.elements.createSidebarPane("Panel State", function(sidebar) {
+chrome.devtools.panels.elements.createSidebarPane('Panel State', function(sidebar) {
   function updateElementProperties() {
     // setExpression just shows result of a nested expression that is editable
     // Chrome doesn't expose an API to detect when the result is changed by manual editing
     // The work around is to unselect the element and re-select it so $0.update() is called
-    sidebar.setExpression("(" + panel_getState.toString() + ")()");
+    sidebar.setExpression('(' + panel_getState.toString() + ')()');
   }
 
   chrome.devtools.panels.elements.onSelectionChanged.addListener(updateElementProperties);
