@@ -1,3 +1,7 @@
 {
-  "extends": "mixpanel"
+  "extends": "mixpanel",
+  "globals": {
+    "require": true,
+    "__dirname": true
+  }
 }
