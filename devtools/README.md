@@ -4,5 +4,6 @@
 * Click on "Load unpacked extension..." and choose the 'devtools' folder in repo
 
 # Publishing to Chrome store
- 1. Zip contents of devtools folder as devtools.zip. `zip -r devtools devtools`
- 2. Follow instructions at https://chrome.google.com/webstore/developer/update to publish
+ 1. Someone from mixpanel-chrome-extensions@googlegroups.com can publish this. (@iron-council members are part of thr group)
+ 2. Run `node run publish-devtools`
+ 3. Sanity check webstore dashboard at https://chrome.google.com/webstore/developer/dashboard

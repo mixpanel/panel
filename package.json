@@ -9,6 +9,7 @@
     "build-test": "webpack --config test/fixtures/webpack.config.js",
     "docs": "rm -rf docs && jsdoc lib lib/isorender -t node_modules/minami -R README-API.md -d docs",
     "prepublish": "npm run build",
+    "publish-devtools": "node scripts/publish-devtools.js",
     "test": "npm run build-test && npm run test-server && npm run test-browser-local",
     "test-browser-local": "wct --plugin local test/browser/index.html",
     "test-browser-p": "wct --plugin local --persistent test/browser/index.html",

@@ -14,10 +14,10 @@ function panel_getState() {
     window['__$panelDevToolsLastSelectedElem'] = selectedElem;
     selectedElem.update(); // Force a refresh so UI reflects latest state
     return selectedElem.state;
-  } else {
-    window['__$panelDevToolsLastSelectedElem'] = null;
   }
 
+  // No panel component selected, remove references
+  window['__$panelDevToolsLastSelectedElem'] = null;
   return {error: 'component state not found'};
 }
 
