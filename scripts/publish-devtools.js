@@ -6,7 +6,7 @@ const promisify = require(`promisify-node`)
 const fs = promisify(`fs`);
 const fsPath = require(`path`);
 const readlineSync = require(`readline-sync`);
-const zipFolder = promisify(require("zip-folder"))
+const zipFolder = promisify(require(`zip-folder`));
 const WebstoreApi = require(`chrome-store-api`).Webstore;
 const TokenManager = require(`chrome-store-api`).TokenManager;
 
@@ -26,7 +26,7 @@ const manifestPath = `${devtoolsDir}/manifest.json`;
     const manifest = JSON.parse(await fs.readFile(manifestPath, `utf-8`));
     console.log(`Current manifest:\n`, manifest)
 
-    const newVersion = "1.3" //readlineSync.question(`Enter new version: `);
+    const newVersion = readlineSync.question(`Enter new version: `);
     manifest.version = newVersion;
     console.log(`New manifest:\n`, manifest);
     await fs.writeFile(manifestPath, JSON.stringify(manifest, null, `  `), `utf-8`);
@@ -38,21 +38,21 @@ const manifestPath = `${devtoolsDir}/manifest.json`;
     await fs.unlink(devtoolsZipPath); // Delete generated zip
 
     // Authenticate with webstore
-    console.log(`NOTE: Only users of mixpanel-chrome-extensions@googlegroups.com can publish this item.`)
-    console.log(`Paste following url in browser, authenticate and paste generate code\n`)
-    console.log(`${googleOauthUrl}/auth?response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&client_id=${webstoreClientId}&redirect_uri=${redirectUri}`)
+    console.log(`NOTE: Only users of mixpanel-chrome-extensions@googlegroups.com can publish this item.`);
+    console.log(`Paste following url in browser, authenticate and paste generate code\n`);
+    console.log(`${googleOauthUrl}/auth?response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&client_id=${webstoreClientId}&redirect_uri=${redirectUri}`);
     const oauthCode = readlineSync.question(`\ncode: `)
     const api = new WebstoreApi(new TokenManager(oauthCode, webstoreClientId, webstoreClientSecret));
 
     // Upload new item and publish
-    console.log(`\nUploading and publishing ...`)
+    console.log(`\nUploading and publishing ...`);
     await api.update(webstoreExtensionId, zipContents);
     await api.publish(webstoreExtensionId);
     console.log(`Published. Item should be available in a few minutes`);
-    console.log(`Check status at https://chrome.google.com/webstore/developer/dashboard`)
+    console.log(`Check status at https://chrome.google.com/webstore/developer/dashboard`);
 
   } catch (err) {
-    console.error(err)
+    console.error(err);
   }
 })()
 
