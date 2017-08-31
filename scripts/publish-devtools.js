@@ -2,7 +2,7 @@
  * Usage: node scripts/publish-devtools.js
  */
 
-const promisify = require(`promisify-node`)
+const promisify = require(`promisify-node`);
 const fs = promisify(`fs`);
 const fsPath = require(`path`);
 const readlineSync = require(`readline-sync`);
@@ -24,7 +24,7 @@ const manifestPath = `${devtoolsDir}/manifest.json`;
   try{
     // Write new version to manifest
     const manifest = JSON.parse(await fs.readFile(manifestPath, `utf-8`));
-    console.log(`Current manifest:\n`, manifest)
+    console.log(`Current manifest:\n`, manifest);
 
     const newVersion = readlineSync.question(`Enter new version: `);
     manifest.version = newVersion;
@@ -41,7 +41,7 @@ const manifestPath = `${devtoolsDir}/manifest.json`;
     console.log(`NOTE: Only users of mixpanel-chrome-extensions@googlegroups.com can publish this item.`);
     console.log(`Paste following url in browser, authenticate and paste generate code\n`);
     console.log(`${googleOauthUrl}/auth?response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&client_id=${webstoreClientId}&redirect_uri=${redirectUri}`);
-    const oauthCode = readlineSync.question(`\ncode: `)
+    const oauthCode = readlineSync.question(`\ncode: `);
     const api = new WebstoreApi(new TokenManager(oauthCode, webstoreClientId, webstoreClientSecret));
 
     // Upload new item and publish
@@ -54,5 +54,5 @@ const manifestPath = `${devtoolsDir}/manifest.json`;
   } catch (err) {
     console.error(err);
   }
-})()
+})();
 
