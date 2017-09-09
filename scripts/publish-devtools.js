@@ -1,9 +1,10 @@
 /**
  * Usage: node scripts/publish-devtools.js
  */
-
+/* global require, __dirname */
+/*eslint no-console: off */
 const promisify = require(`promisify-node`);
-const fs = promisify(`fs`);
+const fs = require(`fs`);
 const fsPath = require(`path`);
 const readlineSync = require(`readline-sync`);
 const zipFolder = promisify(require(`zip-folder`));
@@ -23,19 +24,19 @@ const manifestPath = `${devtoolsDir}/manifest.json`;
 (async function() {
   try{
     // Write new version to manifest
-    const manifest = JSON.parse(await fs.readFile(manifestPath, `utf-8`));
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, `utf-8`));
     console.log(`Current manifest:\n`, manifest);
 
     const newVersion = readlineSync.question(`Enter new version: `);
     manifest.version = newVersion;
     console.log(`New manifest:\n`, manifest);
-    await fs.writeFile(manifestPath, JSON.stringify(manifest, null, `  `), `utf-8`);
+    fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, `  `), `utf-8`);
 
     // Zip file
     await zipFolder(devtoolsDir, devtoolsZipPath);
     console.log(`\nBundling to a zip file`);
-    const zipContents = await fs.readFile(devtoolsZipPath);
-    await fs.unlink(devtoolsZipPath); // Delete generated zip
+    const zipContents = fs.readFileSync(devtoolsZipPath);
+    fs.unlinkSync(devtoolsZipPath); // Delete generated zip
 
     // Authenticate with webstore
     console.log(`NOTE: Only users of mixpanel-chrome-extensions@googlegroups.com can publish this item.`);
