@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "babel lib -d build && cp -r build/isorender .",
-    "build-test": "webpack --config test/fixtures/webpack.config.js",
+    "build-test": "webpack --config test/browser/webpack.config.js",
     "docs": "rm -rf docs && jsdoc lib lib/isorender -t node_modules/minami -R README-API.md -d docs",
     "prepublish": "npm run build",
     "publish-devtools": "node scripts/publish-devtools.js",
