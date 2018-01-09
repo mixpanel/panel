@@ -20,11 +20,10 @@ module.exports.pitch = function(remainingReq) {
   return `
     const updateStyle = require('panel/hot/update-style');
     const style = require(${moduleId});
-    updateStyle(style.toString(), ${styleId});
     module.hot.accept(${moduleId}, function() {
       const newStyle = require(${moduleId});
       updateStyle(newStyle.toString(), ${styleId});
     });
-    if (style.locals) module.exports = style.locals;
+    module.exports = style;
     `.trim().replace(/^ {4}/gm, ``);
 };
