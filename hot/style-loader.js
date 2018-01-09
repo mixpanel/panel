@@ -23,7 +23,7 @@ module.exports.pitch = function(remainingReq) {
   }
 
   return `
-    const updateStyle = require('${updateModule}}');
+    const updateStyle = require('${updateModule}');
     module.exports = require(${moduleId});
     module.hot.accept(${moduleId}, function() {
       const newStyle = module.exports = require(${moduleId});
