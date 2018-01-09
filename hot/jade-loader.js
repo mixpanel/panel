@@ -26,6 +26,7 @@ module.exports.pitch = function(remainingReq) {
   const options = loaderUtils.getOptions(this) || {};
 
   // Don't pitch if not in HMR mode
+  // this calls default export which does a no-op
   if (!options.hmr) {
     return;
   }
