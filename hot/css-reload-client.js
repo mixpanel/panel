@@ -28,10 +28,6 @@ export default function enableCssReload(cssPaths) {
 }
 
 if (module.hot) {
-  if (typeof module.id !== `string`) {
-    throw new Error(`[HMR Panel] Ensure NamedModulesPlugin is loaded. module.id is not a string`);
-  }
-
   // Use resourceQuery to get list of enabled css paths
   if (__resourceQuery && typeof __resourceQuery === `string`) {
     const cssPaths = __resourceQuery.substr(1).split(`,`);
