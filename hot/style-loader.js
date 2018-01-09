@@ -14,16 +14,17 @@ module.exports.pitch = function(remainingReq) {
     return;
   }
 
+  // const isShadow = !!options.shadow;
+
   const moduleId = loaderUtils.stringifyRequest(this, `!!` + remainingReq);
   const styleId = JSON.stringify(this.resourcePath);
 
   return `
     const updateStyle = require('panel/hot/update-style');
-    const style = require(${moduleId});
+    module.exports = require(${moduleId});
     module.hot.accept(${moduleId}, function() {
-      const newStyle = require(${moduleId});
+      const newStyle = module.exports = require(${moduleId});
       updateStyle(newStyle.toString(), ${styleId});
     });
-    module.exports = style;
     `.trim().replace(/^ {4}/gm, ``);
 };

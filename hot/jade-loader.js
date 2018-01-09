@@ -29,10 +29,10 @@ module.exports.pitch = function(remainingReq) {
 
   return `
     const updateTemplate = require('panel/hot/update-template');
+    module.exports = require(${moduleId});
     module.hot.accept(${moduleId}, function() {
       const newTemplate = module.exports = require(${moduleId});
       updateTemplate(newTemplate, '${elemName}');
     });
-    module.exports = require(${moduleId});
     `.trim().replace(/^ {4}/gm, ``);
 };
