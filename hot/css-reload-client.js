@@ -1,4 +1,4 @@
-/* global __resourceQuery, __webpack_require__ */
+/* global module, __resourceQuery, __webpack_require__ */
 
 // ExtractTextPlugin doesn't go through HMR system as css text is extracted into separate file
 // The trick is to refresh the css when there is a webpackHotUpdate
@@ -28,12 +28,12 @@ export default function enableCssReload(cssPaths) {
 }
 
 if (module.hot) {
-  if (typeof module.id !== 'string') {
+  if (typeof module.id !== `string`) {
     throw new Error(`[HMR Panel] Ensure NamedModulesPlugin is loaded. module.id is not a string`);
   }
 
   // Use resourceQuery to get list of enabled css paths
-  if (__resourceQuery && typeof __resourceQuery === 'string') {
+  if (__resourceQuery && typeof __resourceQuery === `string`) {
     const cssPaths = __resourceQuery.substr(1).split(`,`);
     for (const cssPath of cssPaths) {
       if (cssPath.match(/\.css$/)) {
@@ -45,6 +45,6 @@ if (module.hot) {
 
     enableCssReload(cssPaths);
   } else {
-    throw new Error(`[HMR Panel] Need cssPaths in resourceQuery e.g 'css-reload-client?styleA.css,styleB.css'`)
+    throw new Error(`[HMR Panel] Need cssPaths in resourceQuery e.g 'css-reload-client?styleA.css,styleB.css'`);
   }
 }
