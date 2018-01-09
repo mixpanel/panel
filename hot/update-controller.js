@@ -1,5 +1,3 @@
-/* global module */
-
 module.exports = function updateController(newController, elemName) {
   const elems = document.getElementsByTagName(`${elemName}`);
   const elemsToUpdate = [];

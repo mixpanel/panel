@@ -1,11 +1,8 @@
-/* global module, require */
 const loaderUtils = require(`loader-utils`);
-const path = require(`path`);
+const helpers = require(`./helpers`);
 
-// loader is a no-op which passes source through. Used in non-HMR mode
-module.exports = function(source) {
-  return source;
-};
+// Used in non-HMR mode, do nothing
+module.exports = helpers.noopLoader;
 
 module.exports.pitch = function(remainingReq) {
   const options = loaderUtils.getOptions(this) || {};
@@ -16,16 +13,7 @@ module.exports.pitch = function(remainingReq) {
   }
 
   const moduleId = loaderUtils.stringifyRequest(this, `!!` + remainingReq);
-
-  // elem name patterns look like this
-  //    ./src/.../${elemName}/index.jade
-  // OR ./src/.../${elemName}.jade
-
-  let elemName = path.parse(this.resourcePath).name;
-  if (elemName === `index`) {
-    const pathParts = this.resourcePath.split(`/`);
-    elemName = pathParts[pathParts.length - 2];
-  }
+  const elemName = helpers.getElemName(this.resourcePath);
 
   return `
     const updateTemplate = require('panel/hot/update-template');

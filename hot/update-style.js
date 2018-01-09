@@ -1,4 +1,3 @@
-/* global module */
 module.exports = function updateStyle(newCss, styleId) {
   let elem = document.getElementById(styleId);
   if (elem) {

@@ -1,10 +1,8 @@
-/* global module, require */
 const loaderUtils = require(`loader-utils`);
+const helpers = require(`./helpers`);
 
-// loader is a no-op which passes source through. Used in non-HMR mode
-module.exports = function(source) {
-  return source;
-};
+// Used in non-HMR mode, do nothing
+module.exports = helpers.noopLoader;
 
 module.exports.pitch = function(remainingReq) {
   const options = loaderUtils.getOptions(this) || {};
@@ -14,13 +12,18 @@ module.exports.pitch = function(remainingReq) {
     return;
   }
 
-  // const isShadow = !!options.shadow;
-
   const moduleId = loaderUtils.stringifyRequest(this, `!!` + remainingReq);
-  const styleId = JSON.stringify(this.resourcePath);
+  let styleId = JSON.stringify(this.resourcePath);
+  let updateModule = `panel/hot/update-style`;
+
+  let isShadowCss = options.shadow || /\b(inline|shadow)\b/.test(this.resourceQuery);
+  if (isShadowCss) {
+    styleId = helpers.getElemName(this.resourcePath);
+    updateModule = `panel/hot/update-shadow-style`;
+  }
 
   return `
-    const updateStyle = require('panel/hot/update-style');
+    const updateStyle = require('${updateModule}}');
     module.exports = require(${moduleId});
     module.hot.accept(${moduleId}, function() {
       const newStyle = module.exports = require(${moduleId});
