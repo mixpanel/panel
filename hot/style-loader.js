@@ -1,6 +1,5 @@
 /* global module, require */
 const loaderUtils = require(`loader-utils`);
-const path = require(`path`);
 
 // loader is a no-op which passes source through. Used in non-HMR mode
 module.exports = function(source) {
@@ -16,23 +15,16 @@ module.exports.pitch = function(remainingReq) {
   }
 
   const moduleId = loaderUtils.stringifyRequest(this, `!!` + remainingReq);
-
-  // elem name patterns look like this
-  //    ./src/.../${elemName}/index.jade
-  // OR ./src/.../${elemName}.jade
-
-  let elemName = path.parse(this.resourcePath).name;
-  if (elemName === `index`) {
-    const pathParts = this.resourcePath.split(`/`);
-    elemName = pathParts[pathParts.length - 2];
-  }
+  const styleId = JSON.stringify(this.resourcePath);
 
   return `
-    const updateTemplate = require('panel/hot/update-template');
+    const updateStyle = require('panel/hot/update-style');
+    const style = require(${moduleId});
+    updateStyle(style.toString(), ${styleId});
     module.hot.accept(${moduleId}, function() {
-      const newTemplate = require(${moduleId});
-      updateTemplate(newTemplate, '${elemName}');
+      const newStyle = require(${moduleId});
+      updateStyle(newStyle.toString(), ${styleId});
     });
-    module.exports = require(${moduleId});
+    if (style.locals) module.exports = style.locals;
     `.trim().replace(/^ {4}/gm, ``);
 };
