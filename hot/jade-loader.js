@@ -30,7 +30,7 @@ module.exports.pitch = function(remainingReq) {
   return `
     const updateTemplate = require('panel/hot/update-template');
     module.hot.accept(${moduleId}, function() {
-      const newTemplate = require(${moduleId});
+      const newTemplate = module.exports = require(${moduleId});
       updateTemplate(newTemplate, '${elemName}');
     });
     module.exports = require(${moduleId});
