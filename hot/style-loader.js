@@ -2,7 +2,7 @@ const loaderUtils = require(`loader-utils`);
 const helpers = require(`./helpers`);
 
 // Used in non-HMR mode, do nothing
-module.exports = helpers.noopLoader;
+module.exports = source => source;
 
 module.exports.pitch = function(remainingReq) {
   const options = loaderUtils.getOptions(this) || {};
