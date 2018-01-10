@@ -1,5 +1,5 @@
 module.exports = function updateTemplate(newTemplate, elemName) {
-  const elems = document.getElementsByTagName(`${elemName}`);
+  const elems = document.querySelectorAll(`body /deep/ ${elemName}`);
   let numUpdated = 0;
   for (const elem of elems) {
     if (elem._config && elem.update) {
