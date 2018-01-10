@@ -13,7 +13,7 @@ module.exports.pitch = function(remainingReq) {
   }
 
   const moduleId = loaderUtils.stringifyRequest(this, `!!` + remainingReq);
-  let styleId = JSON.stringify(this.resourcePath);
+  let styleId = this.resourcePath;
   let updateModule = `panel/hot/update-style`;
 
   let isShadowCss = options.shadow || /\b(inline|shadow)\b/.test(this.resourceQuery);
@@ -27,7 +27,7 @@ module.exports.pitch = function(remainingReq) {
     module.exports = require(${moduleId});
     module.hot.accept(${moduleId}, function() {
       const newStyle = module.exports = require(${moduleId});
-      updateStyle(newStyle.toString(), ${styleId});
+      updateStyle(newStyle.toString(), ${JSON.stringify(styleId)});
     });
     `.trim().replace(/^ {4}/gm, ``);
 };

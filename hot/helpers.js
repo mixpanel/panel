@@ -13,7 +13,7 @@ module.exports.noopLoader = function(source) {
 module.exports.getElemName = function(resourcePath) {
   let elemName = path.parse(resourcePath).name;
   if (elemName === `index`) {
-    const pathParts = this.resourcePath.split(`/`);
+    const pathParts = resourcePath.split(`/`);
     elemName = pathParts[pathParts.length - 2];
   }
 
