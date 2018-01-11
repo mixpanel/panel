@@ -1,3 +1,4 @@
+/* eslint-env commonjs */
 module.exports = function updateStyle(newCss, styleId) {
   let elem = document.getElementById(styleId);
   if (elem) {

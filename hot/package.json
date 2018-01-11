@@ -1,0 +1,17 @@
+{
+  "name": "panel-hot",
+  "version": "0.1.0-rc.1",
+  "description": "Webpack hot loaders for panel component's templates, styles and controllers",
+  "main": "build/index.js",
+  "scripts": {
+  },
+  "repository": {"type": "git", "url": "git@github.com:mixpanel/panel.git"},
+  "keywords": ["panel", "hot", "webpack", "loaders"],
+  "author": "dev@mixpanel.com",
+  "license": "MIT",
+  "bugs": {"url": "https://github.com/mixpanel/panel/issues"},
+  "homepage": "https://github.com/mixpanel/panel",
+  "dependencies": {
+    "loader-utils": "1.1.0"
+  }
+}

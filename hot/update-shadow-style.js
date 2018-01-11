@@ -1,3 +1,4 @@
+/* eslint-env commonjs */
 module.exports = function updateStyle(newStyle, elemName) {
   const elems = document.querySelectorAll(`body /deep/ ${elemName}`);
   let numUpdated = 0;

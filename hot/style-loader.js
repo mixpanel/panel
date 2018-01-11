@@ -1,3 +1,4 @@
+/* eslint-env commonjs */
 const loaderUtils = require(`loader-utils`);
 const helpers = require(`./helpers`);
 
@@ -14,12 +15,12 @@ module.exports.pitch = function(remainingReq) {
 
   const moduleId = loaderUtils.stringifyRequest(this, `!!` + remainingReq);
   let styleId = this.resourcePath;
-  let updateModule = `panel/hot/update-style`;
+  let updateModule = `panel-hot/update-style`;
 
   let isShadowCss = options.shadow || /\b(inline|shadow)\b/.test(this.resourceQuery);
   if (isShadowCss) {
     styleId = helpers.getElemName(this.resourcePath);
-    updateModule = `panel/hot/update-shadow-style`;
+    updateModule = `panel-hot/update-shadow-style`;
   }
 
   return `

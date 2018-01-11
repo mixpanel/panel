@@ -1,3 +1,4 @@
+/* eslint-env commonjs */
 const loaderUtils = require(`loader-utils`);
 const helpers = require(`./helpers`);
 
@@ -16,7 +17,7 @@ module.exports.pitch = function(remainingReq) {
   const elemName = helpers.getElemName(this.resourcePath);
 
   return `
-    const updateTemplate = require('panel/hot/update-template');
+    const updateTemplate = require('panel-hot/update-template');
     module.exports = require(${moduleId});
     module.hot.accept(${moduleId}, function() {
       const newTemplate = module.exports = require(${moduleId});

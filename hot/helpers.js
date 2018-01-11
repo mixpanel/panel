@@ -1,3 +1,4 @@
+/* eslint-env commonjs */
 const path = require(`path`);
 
 // Retreive elemName for hot injection from path convention
