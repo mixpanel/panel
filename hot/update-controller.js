@@ -12,7 +12,7 @@ module.exports = function updateController(newController, elemName) {
       newController.subscribeUpdates(elem._updateListener);
       elemsToUpdate.push(elem);
     } else {
-      console.error(`${elemName} is not a panel ControlledComponent`);
+      console.error(`[HMR Panel] ${elemName} is not a panel ControlledComponent`);
     }
   }
 

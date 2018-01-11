@@ -6,7 +6,7 @@ module.exports = function updateStyle(newStyle, elemName) {
       elem.el.querySelector(`style`).textContent = newStyle;
       numUpdated++;
     } else {
-      console.warn(`${elemName} is not a panel component`);
+      console.warn(`[HMR Panel] ${elemName} is not a panel component`);
     }
   }
   if (numUpdated > 0) {
