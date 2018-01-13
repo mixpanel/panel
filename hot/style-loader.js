@@ -1,6 +1,6 @@
 /* eslint-env commonjs */
 const loaderUtils = require(`loader-utils`);
-const helpers = require(`./helpers`);
+const helpers = require(`./loader-helpers`);
 
 // Used in non-HMR mode, do nothing
 module.exports = source => source;
@@ -14,21 +14,32 @@ module.exports.pitch = function(remainingReq) {
   }
 
   const moduleId = loaderUtils.stringifyRequest(this, `!!` + remainingReq);
-  let styleId = this.resourcePath;
-  let updateModule = `panel-hot/update-style`;
-
+  let moduleSource = ``;
   let isShadowCss = options.shadow || /\b(inline|shadow)\b/.test(this.resourceQuery);
+
   if (isShadowCss) {
-    styleId = helpers.getElemName(this.resourcePath);
-    updateModule = `panel-hot/update-shadow-style`;
+    const elemName = helpers.getElemName(this.resourcePath);
+    moduleSource = `
+      const updatePanelElems = require('panel-hot/update-panel-elems');
+      module.exports = require(${moduleId});
+      module.hot.accept(${moduleId}, function() {
+        const newStyle = module.exports = require(${moduleId});
+        updatePanelElems('${elemName}', function (elem) {
+          elem.el.querySelector('style').textContent = newStyle;
+        })
+      });
+    `;
+  } else {
+    let styleId = this.resourcePath;
+    moduleSource = `
+      const updateStyle = require('panel-hot/update-style');
+      module.exports = require(${moduleId});
+      module.hot.accept(${moduleId}, function () {
+        const newStyle = module.exports = require(${moduleId});
+        updateStyle(newStyle.toString(), ${JSON.stringify(styleId)});
+      });
+    `;
   }
 
-  return `
-    const updateStyle = require('${updateModule}');
-    module.exports = require(${moduleId});
-    module.hot.accept(${moduleId}, function() {
-      const newStyle = module.exports = require(${moduleId});
-      updateStyle(newStyle.toString(), ${JSON.stringify(styleId)});
-    });
-    `.trim().replace(/^ {4}/gm, ``);
+  return moduleSource.trim().replace(/^ {6}/gm, ``);
 };

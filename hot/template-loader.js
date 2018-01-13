@@ -1,6 +1,6 @@
 /* eslint-env commonjs */
 const loaderUtils = require(`loader-utils`);
-const helpers = require(`./helpers`);
+const helpers = require(`./loader-helpers`);
 
 // Used in non-HMR mode, do nothing
 module.exports = source => source;
@@ -17,11 +17,13 @@ module.exports.pitch = function(remainingReq) {
   const elemName = helpers.getElemName(this.resourcePath);
 
   return `
-    const updateTemplate = require('panel-hot/update-template');
+    const updatePanelElems = require('panel-hot/update-panel-elems');
     module.exports = require(${moduleId});
     module.hot.accept(${moduleId}, function() {
       const newTemplate = module.exports = require(${moduleId});
-      updateTemplate(newTemplate, '${elemName}');
+      updatePanelElems('${elemName}', function (elem) {
+        elem._config.template = newTemplate;
+      })
     });
     `.trim().replace(/^ {4}/gm, ``);
 };

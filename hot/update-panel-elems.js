@@ -1,10 +1,11 @@
-/* eslint-env commonjs */
-module.exports = function updateTemplate(newTemplate, elemName) {
+module.exports = function updatePanelElems(elemName, updateFn) {
   const elems = document.querySelectorAll(`body /deep/ ${elemName}`);
   let numUpdated = 0;
   for (const elem of elems) {
     if (elem._config && elem.update) {
-      elem._config.template = newTemplate;
+      if (updateFn) {
+        updateFn.call(null, elem);
+      }
       const update = elem._update || elem.update;
       update.call(elem);
       numUpdated++;
@@ -15,7 +16,7 @@ module.exports = function updateTemplate(newTemplate, elemName) {
   if (numUpdated > 0) {
     console.info(`[HMR Panel] Updated ${elems.length} ${elemName} elems`);
   } else {
-    console.error(`[HMR Panel] custom element: ${elemName} not found`);
-    console.error(`[HMR Panel] Exepect '.../<elemName>/index.jade' or '.../<elemName>.jade'`);
+    console.warn(`[HMR Panel] No ${elemName} elems updated`);
+    console.warn(`[HMR Panel] Exepect file path to be '.../<elemName>/index.js' or '.../<elemName>.js'`);
   }
 };
