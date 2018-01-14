@@ -10,15 +10,17 @@ module.exports.pitch = function(remainingReq) {
     return;
   }
 
-  const moduleId = loaderUtils.stringifyRequest(this, `!!` + remainingReq);
+  const moduleId = loaderUtils.stringifyRequest(this, `!!${remainingReq}`);
   const elemName = helpers.getElemName(this.resourcePath);
 
   return `
     module.hot.accept(${moduleId}, function() {
       const updatePanelElems = require('panel-hot/update-panel-elems');
-      const newTemplate = module.exports = require(${moduleId});
+      const oldExport = module.exports;
+      const newExport = module.exports = require(${moduleId});
+      oldExport.default = newExport.default;
       updatePanelElems('${elemName}', function(elem) {
-        elem._config.template = newTemplate;
+        Object.setPrototypeOf(elem.controller, newExport.default.prototype);
       })
     });
     module.exports = require(${moduleId});

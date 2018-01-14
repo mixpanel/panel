@@ -7,11 +7,16 @@ const path = require(`path`);
 //    ./src/.../${elemName}/index.jade
 // OR ./src/.../${elemName}.jade
 module.exports.getElemName = function(resourcePath) {
-  let elemName = path.parse(resourcePath).name;
-  if (elemName === `index`) {
+  const pathInfo = path.parse(resourcePath);
+  let elemName = pathInfo.name;
+  if (elemName === `index` || (pathInfo.base === `controller.js`)) {
     const pathParts = resourcePath.split(`/`);
     elemName = pathParts[pathParts.length - 2];
   }
 
   return elemName;
+};
+
+module.exports.isDevServerHot = function(webpackOpts) {
+  return webpackOpts.devServer && webpackOpts.devServer.hot;
 };

@@ -6,38 +6,36 @@ const helpers = require(`./loader-helpers`);
 module.exports = source => source;
 
 module.exports.pitch = function(remainingReq) {
-  const options = loaderUtils.getOptions(this) || {};
-
-  // Don't pitch if not in HMR mode
-  if (!options.hmr) {
+  if (!helpers.isDevServerHot(this.options)) {
     return;
   }
 
-  const moduleId = loaderUtils.stringifyRequest(this, `!!` + remainingReq);
+  const moduleId = loaderUtils.stringifyRequest(this, `!!${remainingReq}`);
+  const loaderOpts = loaderUtils.getOptions(this) || {};
   let moduleSource = ``;
-  let isShadowCss = options.shadow || /\b(inline|shadow)\b/.test(this.resourceQuery);
+  let isShadowCss = loaderOpts.shadow || /\b(inline|shadow)\b/.test(this.resourceQuery);
 
   if (isShadowCss) {
     const elemName = helpers.getElemName(this.resourcePath);
     moduleSource = `
-      const updatePanelElems = require('panel-hot/update-panel-elems');
-      module.exports = require(${moduleId});
       module.hot.accept(${moduleId}, function() {
+        const updatePanelElems = require('panel-hot/update-panel-elems');
         const newStyle = module.exports = require(${moduleId});
-        updatePanelElems('${elemName}', function (elem) {
+        updatePanelElems('${elemName}', function(elem) {
           elem.el.querySelector('style').textContent = newStyle;
         })
       });
+      module.exports = require(${moduleId});
     `;
   } else {
     let styleId = this.resourcePath;
     moduleSource = `
-      const updateStyle = require('panel-hot/update-style');
-      module.exports = require(${moduleId});
-      module.hot.accept(${moduleId}, function () {
+      module.hot.accept(${moduleId}, function() {
+        const updateStyle = require('panel-hot/update-style');
         const newStyle = module.exports = require(${moduleId});
         updateStyle(newStyle.toString(), ${JSON.stringify(styleId)});
       });
+      module.exports = require(${moduleId});
     `;
   }
 
