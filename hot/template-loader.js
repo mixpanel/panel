@@ -14,13 +14,12 @@ module.exports.pitch = function(remainingReq) {
   const elemName = helpers.getElemName(this.resourcePath);
 
   return `
+    let template = require(${moduleId});
     module.hot.accept(${moduleId}, function() {
       const updatePanelElems = require('panel-hot/update-panel-elems');
-      const newTemplate = module.exports = require(${moduleId});
-      updatePanelElems('${elemName}', function(elem) {
-        elem._config.template = newTemplate;
-      })
+      template = require(${moduleId});
+      updatePanelElems('${elemName}');
     });
-    module.exports = require(${moduleId});
+    module.exports = function() {return template.apply(this, arguments)};
     `.trim().replace(/^ {4}/gm, ``);
 };
