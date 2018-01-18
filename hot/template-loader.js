@@ -15,10 +15,10 @@ module.exports.pitch = function(remainingReq) {
 
   return `
     let template = require(${moduleId});
-    module.hot.accept(${moduleId}, function() {
-      const updatePanelElems = require('panel-hot/update-panel-elems');
+    module.hot.accept(${moduleId}, () => {
       template = require(${moduleId});
-      updatePanelElems('${elemName}');
+      const updatePanelElems = require('panel/hot/update-panel-elems');
+      updatePanelElems('${elemName}', elem => true);
     });
     module.exports = function() {return template.apply(this, arguments)};
     `.trim().replace(/^ {4}/gm, ``);

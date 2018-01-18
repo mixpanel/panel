@@ -14,15 +14,15 @@ module.exports.pitch = function(remainingReq) {
   const elemName = helpers.getElemName(this.resourcePath);
 
   return `
-    module.hot.accept(${moduleId}, function() {
-      const updatePanelElems = require('panel-hot/update-panel-elems');
-      const oldExport = module.exports;
-      const newExport = module.exports = require(${moduleId});
-      oldExport.default = newExport.default;
-      updatePanelElems('${elemName}', function(elem) {
-        Object.setPrototypeOf(elem.controller, newExport.default.prototype);
-      })
+    module.hot.accept(${moduleId}, () => {
+      const newExports = module.exports = require(${moduleId});
+      Object.assign(oldExports, newExports);
+      const updatePanelElems = require('panel/hot/update-panel-elems');
+      updatePanelElems('${elemName}', (elem) => {
+        Object.setPrototypeOf(elem.controller, newExports.default.prototype);
+        return true;
+      });
     });
-    module.exports = require(${moduleId});
+    const oldExports = module.exports = require(${moduleId});
     `.trim().replace(/^ {4}/gm, ``);
 };
