@@ -11,33 +11,22 @@ module.exports.pitch = function(remainingReq) {
   }
 
   const moduleId = loaderUtils.stringifyRequest(this, `!!${remainingReq}`);
-  const loaderOpts = loaderUtils.getOptions(this) || {};
-  let moduleSource = ``;
-  let isShadowCss = loaderOpts.shadow || /\b(inline|shadow)\b/.test(this.resourceQuery);
+  const resourcePath = this.resourcePath;
+  const elemName = helpers.getElemName(resourcePath);
 
-  if (isShadowCss) {
-    const elemName = helpers.getElemName(this.resourcePath);
-    moduleSource = `
-      module.hot.accept(${moduleId}, function() {
-        const updatePanelElems = require('panel-hot/update-panel-elems');
-        const newStyle = module.exports = require(${moduleId});
-        updatePanelElems('${elemName}', function(elem) {
-          elem.el.querySelector('style').textContent = newStyle;
-        })
-      });
-      module.exports = require(${moduleId});
-    `;
-  } else {
-    let styleId = this.resourcePath;
-    moduleSource = `
-      module.hot.accept(${moduleId}, function() {
-        const updateStyle = require('panel-hot/update-style');
-        const newStyle = module.exports = require(${moduleId});
-        updateStyle(newStyle.toString(), ${JSON.stringify(styleId)});
-      });
-      module.exports = require(${moduleId});
-    `;
-  }
-
-  return moduleSource.trim().replace(/^ {6}/gm, ``);
+  return `
+    module.hot.accept(${moduleId}, function() {
+      const updateStyle = require('panel-hot/update-style');
+      const updatePanelElems = require('panel-hot/update-panel-elems');
+      const newStyle = module.exports = require(${moduleId});
+      updatePanelElems('${elemName}', function(elem) {
+        if (elem.getConfig('useShadowDom')) {
+          elem.el.querySelector('style').textContent = newStyle.toString();
+        } else {
+          updateStyle(newStyle.toString(), ${JSON.stringify(resourcePath)});
+        }
+      })
+    });
+    module.exports = require(${moduleId});
+  `.trim().replace(/^ {4}/gm, ``);
 };

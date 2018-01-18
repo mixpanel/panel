@@ -1,8 +1,9 @@
+/* eslint-env commonjs */
 module.exports = function updatePanelElems(elemName, updateFn) {
   const elems = document.querySelectorAll(`body /deep/ ${elemName}`);
   let numUpdated = 0;
   for (const elem of elems) {
-    if (elem._config && elem.update) {
+    if (elem.panelID) {
       if (updateFn) {
         updateFn.call(null, elem);
       }
