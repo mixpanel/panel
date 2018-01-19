@@ -2,7 +2,7 @@
 
 // 'That's not enough, we need to go deeper'
 // NOTE: document.querySelectorAll(`body /deep/ ${elemName}`) is deprecated, so we use recursion
-function findPanelElemsByName(rootElem, elemName) {
+function findPanelElemsByTagName(rootElem, elemName) {
   const results = [];
 
   for (const elem of rootElem.querySelectorAll(`*`)) {
@@ -10,7 +10,7 @@ function findPanelElemsByName(rootElem, elemName) {
       results.push(elem);
     }
     if (elem.shadowRoot) {
-      for (const shadowElem of findPanelElemsByName(elem.shadowRoot, elemName)) {
+      for (const shadowElem of findPanelElemsByTagName(elem.shadowRoot, elemName)) {
         results.push(shadowElem);
       }
     }
@@ -21,7 +21,7 @@ function findPanelElemsByName(rootElem, elemName) {
 
 module.exports = function updatePanelElems(elemName, updateFn) {
   let numUpdated = 0;
-  const elems = findPanelElemsByName(document.body, elemName);
+  const elems = findPanelElemsByTagName(document.body, elemName);
 
   for (const elem of elems) {
     if (updateFn.call(null, elem)) {
