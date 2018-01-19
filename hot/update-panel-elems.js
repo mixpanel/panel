@@ -1,21 +1,32 @@
 /* eslint-env commonjs */
-function getAllElementsByTagName(elemName) {
-  // TODO: /deep/ is deprecated, move to recursive strategy
-  return document.querySelectorAll(`body /deep/ ${elemName}`);
+
+// 'That's not enough, we need to go deeper'
+// NOTE: document.querySelectorAll(`body /deep/ ${elemName}`) is deprecated, so we use recursion
+function findPanelElemsByName(rootElem, elemName) {
+  const results = [];
+
+  for (const elem of rootElem.querySelectorAll(`*`)) {
+    if (elem.panelID && elem.tagName.toLowerCase() === elemName) {
+      results.push(elem);
+    }
+    if (elem.shadowRoot) {
+      for (const shadowElem of findPanelElemsByName(elem.shadowRoot, elemName)) {
+        results.push(shadowElem);
+      }
+    }
+  }
+
+  return results;
 }
 
 module.exports = function updatePanelElems(elemName, updateFn) {
-  const elems = getAllElementsByTagName(elemName);
   let numUpdated = 0;
+  const elems = findPanelElemsByName(document.body, elemName);
 
   for (const elem of elems) {
-    if (elem.panelID) {
-      if (updateFn.call(null, elem)) {
-        const update = elem._update || elem.update;
-        numUpdated += update.apply(elem) ? 1 : 0;
-      }
-    } else {
-      console.warn(`[HMR Panel] ${elemName} is not a panel component`);
+    if (updateFn.call(null, elem)) {
+      const update = elem._update || elem.update;
+      numUpdated += update.apply(elem) ? 1 : 0;
     }
   }
 
