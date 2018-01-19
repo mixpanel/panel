@@ -66,7 +66,7 @@ import SampleController from 'panel-controller!./controller';
 import template from './index.jade';
 import './index.styl';
 
-customElement.define('sample-component', class SampleComponent extends Component {
+customElements.define('sample-component', class SampleComponent extends Component {
   get config() {
     return {
       template,
@@ -88,7 +88,7 @@ import SampleController from 'panel-controller!./controller';
 import template from './index.jade';
 import './index.styl';
 
-customElement.define('sample-component', class SampleComponent extends ControlledComponent {
+customElements.define('sample-component', class SampleComponent extends ControlledComponent {
   get config() {
     return {
       template,
@@ -98,5 +98,3 @@ customElement.define('sample-component', class SampleComponent extends Controlle
   }
 }
 ```
-
-
