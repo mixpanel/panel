@@ -11,8 +11,22 @@ module.exports.pitch = function(remainingReq) {
   }
 
   const moduleId = loaderUtils.stringifyRequest(this, `!!${remainingReq}`);
+  const options = loaderUtils.getOptions(this);
   const resourcePath = this.resourcePath;
   const elemName = helpers.getElemName(resourcePath);
+
+  let updateSnippet = ``;
+  if (typeof options.cssHref === `string`) {
+    updateSnippet = `
+        const updateCssHref = require('panel/hot/update-css-href');
+        updateCssHref('${options.cssHref}');
+    `;
+  } else {
+    updateSnippet = `
+        const updateStyle = require('panel/hot/update-style');
+        updateStyle(newStyle.toString(), ${JSON.stringify(resourcePath)});
+    `;
+  }
 
   return `
     module.hot.accept(${moduleId}, () => {
@@ -25,8 +39,7 @@ module.exports.pitch = function(remainingReq) {
         }
       });
       if (!updateCount) {
-        const updateStyle = require('panel/hot/update-style');
-        updateStyle(newStyle.toString(), ${JSON.stringify(resourcePath)});
+        ${updateSnippet.trim()}
       }
     });
     module.exports = require(${moduleId});
