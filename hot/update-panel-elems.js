@@ -34,7 +34,7 @@ module.exports = function updatePanelElems(elemName, updateFn) {
     console.info(`[HMR Panel] Updated ${elems.length} ${elemName} elems`);
   } else if (!elems.length) {
     console.warn(`[HMR Panel] No ${elemName} elems found`);
-    console.warn(`[HMR Panel] Exepect file path to be '.../<elemName>/index.js' or '.../<elemName>.js'`);
+    console.warn(`[HMR Panel] Exepect file path to be '.../<elemName>/index.<ext>' or '.../<elemName>.<ext>'`);
   }
 
   return numUpdated;
