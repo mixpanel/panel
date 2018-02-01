@@ -1,7 +1,7 @@
 /**
  * Shows a thin bar at the top of the page that changes colors
  * when webpack status changes from idle -> compiling -> error / warning
- * Useful visual indicator in HMR mode to know when compilation finished/failed
+ * A nice unobtrusive webpack status notification system
  */
 
 const webpackEventColors = {
