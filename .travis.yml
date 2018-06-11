@@ -5,6 +5,7 @@ node_js:
 before_script:
   - npm run build
   - npm run build-test
+  - npm run lint
 script:
   - npm run test-server
   - npm run test-browser-sauce

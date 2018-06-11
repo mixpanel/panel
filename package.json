@@ -12,6 +12,7 @@
     "build": "babel lib -d build && cp -r build/isorender .",
     "build-test": "webpack --config test/browser/webpack.config.js",
     "docs": "rm -rf docs && jsdoc lib lib/component-utils lib/isorender -t node_modules/minami -R README-API.md -d docs",
+    "lint": "eslint devtools hot lib scripts test --ignore-pattern 'test/browser/build/'",
     "prepublishOnly": "npm run build",
     "publish-devtools": "node scripts/publish-devtools.js",
     "test": "npm run build-test && npm run test-server && npm run test-browser-local",
