@@ -1,3 +1,5 @@
+/* eslint-env mocha */
+/* eslint-disable no-unused-expressions */
 import '../../lib/isorender/dom-shims';
 
 import {expect} from 'chai';
