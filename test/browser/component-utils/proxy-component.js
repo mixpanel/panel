@@ -19,7 +19,7 @@ describe(`ProxyComponent`, function() {
   });
 
   it(`re-dispatches events from child that are not composed`, function(done) {
-    el.addEventListener(`nonComposedEvent`, () => done())
+    el.addEventListener(`nonComposedEvent`, () => done());
     el.setAttribute(`send-non-composed`, ``);
   });
 

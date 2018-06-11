@@ -10,7 +10,7 @@ export class ProxyApp extends ProxyComponent {
 
   getTargetElementTag() {
     // This element will change its behavior if passed an href.
-    return !!this.getAttribute(`href`) ? `a` : `event-producer`;
+    return this.getAttribute(`href`) ? `a` : `event-producer`;
   }
 
   get observedEvents() {
@@ -25,16 +25,16 @@ export class ProxyApp extends ProxyComponent {
 export class EventProducer extends Component {
   get config() {
     return {
-      template:() => h(`div`, `I make things happen!`),
+      template: () => h(`div`, `I make things happen!`),
       useShadowDom: true,
     };
   }
 
   attributeChangedCallback(name) {
     if (name === `send-non-composed`) {
-      this.dispatchEvent(new CustomEvent(`nonComposedEvent`, { bubbles: true, composed: false }));
+      this.dispatchEvent(new CustomEvent(`nonComposedEvent`, {bubbles: true, composed: false}));
     } else if (name === `send-composed`) {
-      this.dispatchEvent(new CustomEvent(`composedEvent`, { bubbles: true, composed: true }));
+      this.dispatchEvent(new CustomEvent(`composedEvent`, {bubbles: true, composed: true}));
     }
   }
 

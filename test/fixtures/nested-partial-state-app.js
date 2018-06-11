@@ -1,4 +1,4 @@
-import { Component, h } from '../../lib';
+import {Component, h} from '../../lib';
 
 export class NestedPartialStateParent extends Component {
   get config() {

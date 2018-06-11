@@ -22,7 +22,7 @@ const manifestPath = `${devtoolsDir}/manifest.json`;
 
 // Main wrapped in async since top-level await is not supported
 (async function() {
-  try{
+  try {
     // Write new version to manifest
     const manifest = JSON.parse(fs.readFileSync(manifestPath, `utf-8`));
     console.log(`Current manifest:\n`, manifest);
