@@ -2,8 +2,9 @@
 /* global sinon, expect */
 /* eslint no-unused-expressions:0 */
 
-const nextAnimationFrame = () => new Promise(requestAnimationFrame);
+import requestAnimationFrameCB from 'raf';
 
+const raf = () => new Promise(requestAnimationFrameCB);
 
 describe(`Simple Component instance`, function() {
   let el;
@@ -41,52 +42,42 @@ describe(`Simple Component instance`, function() {
   });
 
   context(`before attached to DOM`, function() {
-    it(`does not affect the DOM`, function(done) {
+    it(`does not affect the DOM`, async function() {
       expect(document.querySelector(`.foo`)).to.be.null;
-      window.requestAnimationFrame(() => {
-        expect(document.querySelector(`.foo`)).to.be.null;
-        done();
-      });
+      await raf();
+      expect(document.querySelector(`.foo`)).to.be.null;
     });
 
-    it(`allows state setting`, function(done) {
+    it(`allows state setting`, async function() {
       el.state = {foo: `not bar`};
       document.body.appendChild(el);
       expect(el.state.foo).to.equal(`not bar`);
-      window.requestAnimationFrame(() => {
-        expect(el.state.foo).to.equal(`not bar`);
-        done();
-      });
+      await raf();
+      expect(el.state.foo).to.equal(`not bar`);
     });
 
-    it(`allows updates and applies them when attached`, function(done) {
+    it(`allows updates and applies them when attached`, async function() {
       el.update({foo: `not bar`});
       document.body.appendChild(el);
       expect(el.state.foo).to.equal(`not bar`);
-      window.requestAnimationFrame(() => {
-        expect(el.state.foo).to.equal(`not bar`);
-        expect(el.textContent).to.contain(`Value of foo: not bar`);
-        expect(el.textContent).to.contain(`Foo capitalized: Not bar`);
-        done();
-      });
+      await raf();
+      expect(el.state.foo).to.equal(`not bar`);
+      expect(el.textContent).to.contain(`Value of foo: not bar`);
+      expect(el.textContent).to.contain(`Foo capitalized: Not bar`);
     });
 
-    it(`caches the last template once rendered`, function(done) {
+    it(`caches the last template once rendered`, async function() {
       expect(el._rendered).to.be.undefined;
       document.body.appendChild(el);
-      window.requestAnimationFrame(() => {
-        expect(el._rendered).to.be.an(`object`);
-        done();
-      });
+      await raf();
+      expect(el._rendered).to.be.an(`object`);
     });
   });
 
   context(`when attached to DOM`, function() {
-    beforeEach(function(done) {
+    beforeEach(async function() {
       document.body.appendChild(el);
-      window.requestAnimationFrame(() => {
-        done();
-      });
+      await raf();
     });
 
     it(`renders its template`, function() {
@@ -103,37 +94,29 @@ describe(`Simple Component instance`, function() {
       expect(el.textContent).to.contain(`Foo capitalized: Bar`);
     });
 
-    it(`re-renders when state is updated`, function(done) {
+    it(`re-renders when state is updated`, async function() {
       expect(el.textContent).to.contain(`Value of foo: bar`);
       expect(el.textContent).to.contain(`Foo capitalized: Bar`);
       el.update({foo: `new value`});
-      window.requestAnimationFrame(() => {
-        expect(el.textContent).to.contain(`Value of foo: new value`);
-        expect(el.textContent).to.contain(`Foo capitalized: New value`);
-        done();
-      });
+      await raf();
+      expect(el.textContent).to.contain(`Value of foo: new value`);
+      expect(el.textContent).to.contain(`Foo capitalized: New value`);
     });
 
     it(`does not re-render if shouldUpdate() returns false`, async function() {
       expect(el.textContent).to.contain(`Value of foo: bar`);
       el.update({foo: `meow`});
-
-      await nextAnimationFrame();
-
+      await raf();
       expect(el.textContent).to.contain(`Value of foo: bar`); // no change
       el.update({foo: `something else`});
-
-      await nextAnimationFrame();
-
+      await raf();
       expect(el.textContent).to.contain(`Value of foo: something else`);
     });
 
     it(`passes full state context to shouldUpdate()`, async function() {
       expect(el.textContent).to.contain(`Value of baz: qux`);
       el.update({baz: `llamas`});
-
-      await nextAnimationFrame();
-
+      await raf();
       expect(el.textContent).to.contain(`Value of baz: llamas`);
     });
 
@@ -147,12 +130,10 @@ describe(`Simple Component instance`, function() {
   });
 
   context(`when using shadow DOM`, function() {
-    beforeEach(function(done) {
+    beforeEach(async function() {
       el = document.createElement(`shadow-dom-app`);
       document.body.appendChild(el);
-      window.requestAnimationFrame(() => {
-        done();
-      });
+      await raf();
     });
 
     it(`creates and uses a shadow root`, function() {
@@ -160,37 +141,30 @@ describe(`Simple Component instance`, function() {
       expect(el.shadowRoot).to.be.ok;
     });
 
-    it(`successfully finds the panel root when top level uses shadow dom`, function(done) {
+    it(`successfully finds the panel root when top level uses shadow dom`, async function() {
       const childEl = document.createElement(`nested-child`);
-      window.requestAnimationFrame(() => {
-        childEl.$panelParentID = el.panelID;
-        el.shadowRoot.appendChild(childEl);
-        window.requestAnimationFrame(() => {
-          childEl.connectedCallback();
-          expect(childEl.$panelRoot).to.equal(el);
-          done();
-        });
-      });
+      await raf();
+      childEl.$panelParentID = el.panelID;
+      el.shadowRoot.appendChild(childEl);
+      await raf();
+      childEl.connectedCallback();
+      expect(childEl.$panelRoot).to.equal(el);
     });
 
-    it(`successfully finds the panel root when a nested child uses shadow dom`, function(done) {
+    it(`successfully finds the panel root when a nested child uses shadow dom`, async function() {
       const rootEl = document.createElement(`nested-app`);
       document.body.appendChild(rootEl);
-      window.requestAnimationFrame(() => {
-        const level1El = document.createElement(`shadow-dom-app`);
-        level1El.$panelParentID = rootEl.panelID;
-        rootEl.appendChild(level1El);
-        window.requestAnimationFrame(() => {
-          const level2El = document.createElement(`nested-child`);
-          level2El.$panelParentID = level1El.panelID;
-          level1El.shadowRoot.appendChild(level2El);
-          window.requestAnimationFrame(() => {
-            expect(level2El.$panelParent).to.equal(level1El);
-            expect(level2El.$panelRoot).to.equal(rootEl);
-            done();
-          });
-        });
-      });
+      await raf();
+      const level1El = document.createElement(`shadow-dom-app`);
+      level1El.$panelParentID = rootEl.panelID;
+      rootEl.appendChild(level1El);
+      await raf();
+      const level2El = document.createElement(`nested-child`);
+      level2El.$panelParentID = level1El.panelID;
+      level1El.shadowRoot.appendChild(level2El);
+      await raf();
+      expect(level2El.$panelParent).to.equal(level1El);
+      expect(level2El.$panelRoot).to.equal(rootEl);
     });
 
     it(`renders its template`, function() {
@@ -203,12 +177,10 @@ describe(`Simple Component instance`, function() {
     });
 
     context(`when applying override styles`, function() {
-      it(`appends the overriding styles to the default styles`, function(done) {
+      it(`appends the overriding styles to the default styles`, async function() {
         el.setAttribute(`style-override`, `background: red;`);
-        window.requestAnimationFrame(() => {
-          expect(el.shadowRoot.children[0].innerHTML).to.equal(`color: blue;background: red;`);
-          done();
-        });
+        await raf();
+        expect(el.shadowRoot.children[0].innerHTML).to.equal(`color: blue;background: red;`);
       });
 
       it(`it applies the styles even if the component isn't attached to the DOM`, function() {
@@ -231,30 +203,24 @@ describe(`Nested Component instance`, function() {
       el = document.createElement(`nested-app`);
     });
 
-    it(`successfully finds the panel root`, function(done) {
+    it(`successfully finds the panel root`, async function() {
       document.body.appendChild(el);
-      window.requestAnimationFrame(() => {
-        childEl = document.createElement(`nested-child`);
-        childEl.$panelParentID = el.panelID;
-        el.appendChild(childEl);
-        window.requestAnimationFrame(() => {
-          expect(childEl.$panelRoot).to.equal(el);
-          done();
-        });
-      });
+      await raf();
+      childEl = document.createElement(`nested-child`);
+      childEl.$panelParentID = el.panelID;
+      el.appendChild(childEl);
+      await raf();
+      expect(childEl.$panelRoot).to.equal(el);
     });
 
-    it(`successfully finds a panel parent node by a given tag name`, function(done) {
+    it(`successfully finds a panel parent node by a given tag name`, async function() {
       document.body.appendChild(el);
-      window.requestAnimationFrame(() => {
-        childEl = document.createElement(`nested-child`);
-        childEl.$panelParentID = el.panelID;
-        el.appendChild(childEl);
-        window.requestAnimationFrame(() => {
-          expect(childEl.findPanelParentByTagName(`nested-app`)).to.equal(el);
-          done();
-        });
-      });
+      await raf();
+      childEl = document.createElement(`nested-child`);
+      childEl.$panelParentID = el.panelID;
+      el.appendChild(childEl);
+      await raf();
+      expect(childEl.findPanelParentByTagName(`nested-app`)).to.equal(el);
     });
 
     it(`passes state updates from child to parent`, function() {
@@ -269,14 +235,12 @@ describe(`Nested Component instance`, function() {
   });
 
   context(`when attached to DOM`, function() {
-    beforeEach(function(done) {
+    beforeEach(async function() {
       document.body.innerHTML = ``;
       el = document.createElement(`nested-app`);
       document.body.appendChild(el);
-      window.requestAnimationFrame(() => {
-        childEl = el.getElementsByTagName(`nested-child`)[0];
-        done();
-      });
+      await raf();
+      childEl = el.getElementsByTagName(`nested-child`)[0];
     });
 
     it(`renders the parent component`, function() {
@@ -298,24 +262,20 @@ describe(`Nested Component instance`, function() {
       expect(childEl.textContent).to.include(`animal: llama`);
     });
 
-    it(`passes state updates from parent to child`, function(done) {
+    it(`passes state updates from parent to child`, async function() {
       expect(childEl.textContent).to.include(`animal: llama`);
       el.update({animal: `capybara`});
-      window.requestAnimationFrame(() => {
-        expect(childEl.textContent).to.include(`animal: capybara`);
-        done();
-      });
+      await raf();
+      expect(childEl.textContent).to.include(`animal: capybara`);
     });
 
-    it(`passes state updates from child to parent`, function(done) {
+    it(`passes state updates from child to parent`, async function() {
       expect(el.textContent).to.include(`Nested app: test`);
       expect(childEl.textContent).to.include(`parent title: test`);
       childEl.update({title: `new title`});
-      window.requestAnimationFrame(() => {
-        expect(el.textContent).to.include(`Nested app: new title`);
-        expect(childEl.textContent).to.include(`parent title: new title`);
-        done();
-      });
+      await raf();
+      expect(el.textContent).to.include(`Nested app: new title`);
+      expect(childEl.textContent).to.include(`parent title: new title`);
     });
 
     it(`fires parent update hooks when child updates`, function() {
@@ -351,14 +311,12 @@ describe(`Nested Component instance with partially shared state`, function() {
   });
 
   context(`when attached to DOM`, function() {
-    beforeEach(function(done) {
+    beforeEach(async function() {
       document.body.innerHTML = ``;
       parentEl = document.createElement(`nested-partial-state-parent`);
       document.body.appendChild(parentEl);
-      window.requestAnimationFrame(() => {
-        childEl = parentEl.getElementsByTagName(`nested-partial-state-child`)[0];
-        done();
-      });
+      await raf();
+      childEl = parentEl.getElementsByTagName(`nested-partial-state-child`)[0];
     });
 
     it(`passes only shared app state to the child component`, function() {
@@ -370,33 +328,30 @@ describe(`Nested Component instance with partially shared state`, function() {
       expect(childEl.textContent).to.include(`child: parentOnlyState: undefined`);
     });
 
-    it(`passes only shared app state updates from parent to child`, function(done) {
+    it(`passes only shared app state updates from parent to child`, async function() {
       expect(childEl.textContent).to.include(`shared title: test`);
       expect(parentEl.textContent).to.include(`parent: nonSharedStateExample: I am parent`);
       expect(childEl.textContent).to.include(`child: nonSharedStateExample: I am child`);
 
       parentEl.updateApp({title: `llamas!`});
       parentEl.update({parentOnlyState: `goodbye`, nonSharedStateExample: `updated parent`});
-      window.requestAnimationFrame(() => {
-        // shared app state changed
-        expect(parentEl.textContent).to.include(`Nested partial shared state app title: llamas!`);
-        expect(childEl.textContent).to.include(`shared title: llamas!`);
+      await raf();
+      // shared app state changed
+      expect(parentEl.textContent).to.include(`Nested partial shared state app title: llamas!`);
+      expect(childEl.textContent).to.include(`shared title: llamas!`);
 
-        // component-specific state entries didn't change
-        expect(parentEl.textContent).to.include(`component-specific title: parent-specific title`);
-        expect(childEl.textContent).to.include(`component-specific title: child-specific title`);
+      // component-specific state entries didn't change
+      expect(parentEl.textContent).to.include(`component-specific title: parent-specific title`);
+      expect(childEl.textContent).to.include(`component-specific title: child-specific title`);
 
-        expect(parentEl.textContent).to.include(`parent: parentOnlyState: goodbye`);
-        expect(childEl.textContent).to.include(`child: parentOnlyState: undefined`);
+      expect(parentEl.textContent).to.include(`parent: parentOnlyState: goodbye`);
+      expect(childEl.textContent).to.include(`child: parentOnlyState: undefined`);
 
-        expect(parentEl.textContent).to.include(`parent: nonSharedStateExample: updated parent`);
-        expect(childEl.textContent).to.include(`child: nonSharedStateExample: I am child`);
-
-        done();
-      });
+      expect(parentEl.textContent).to.include(`parent: nonSharedStateExample: updated parent`);
+      expect(childEl.textContent).to.include(`child: nonSharedStateExample: I am child`);
     });
 
-    it(`passes only shared app state updates from child to parent`, function(done) {
+    it(`passes only shared app state updates from child to parent`, async function() {
       expect(parentEl.textContent).to.include(`Nested partial shared state app title: test`);
       expect(childEl.textContent).to.include(`shared title: test`);
       expect(childEl.textContent).to.include(`childOnlyState: world`);
@@ -406,45 +361,38 @@ describe(`Nested Component instance with partially shared state`, function() {
 
       childEl.updateApp({title: `new title`});
       childEl.update({childOnlyState: `mooo`, nonSharedStateExample: `updated child`});
-      window.requestAnimationFrame(() => {
-        // shared app state changed
-        expect(parentEl.textContent).to.include(`Nested partial shared state app title: new title`);
-        expect(childEl.textContent).to.include(`shared title: new title`);
+      await raf();
+      // shared app state changed
+      expect(parentEl.textContent).to.include(`Nested partial shared state app title: new title`);
+      expect(childEl.textContent).to.include(`shared title: new title`);
 
-        // component-specific state entries didn't change
-        expect(parentEl.textContent).to.include(`component-specific title: parent-specific title`);
-        expect(childEl.textContent).to.include(`component-specific title: child-specific title`);
+      // component-specific state entries didn't change
+      expect(parentEl.textContent).to.include(`component-specific title: parent-specific title`);
+      expect(childEl.textContent).to.include(`component-specific title: child-specific title`);
 
-        expect(parentEl.textContent).to.include(`parent: parentOnlyState: hello`);
-        expect(childEl.textContent).to.include(`childOnlyState: mooo`);
+      expect(parentEl.textContent).to.include(`parent: parentOnlyState: hello`);
+      expect(childEl.textContent).to.include(`childOnlyState: mooo`);
 
-        expect(parentEl.textContent).to.include(`parent: nonSharedStateExample: I am parent`);
-        expect(childEl.textContent).to.include(`child: nonSharedStateExample: updated child`);
-
-        done();
-      });
+      expect(parentEl.textContent).to.include(`parent: nonSharedStateExample: I am parent`);
+      expect(childEl.textContent).to.include(`child: nonSharedStateExample: updated child`);
     });
 
-    it(`supports state in parent and child with the same keys as shared app state but independent values`, function(done) {
+    it(`supports state in parent and child with the same keys as shared app state but independent values`, async function() {
       expect(parentEl.textContent).to.include(`parent: nonSharedStateExample: I am parent`);
       expect(childEl.textContent).to.include(`child: nonSharedStateExample: I am child`);
 
       parentEl.update({nonSharedStateExample: `updated parent`});
-      window.requestAnimationFrame(() => {
-        expect(parentEl.textContent).to.include(`parent: nonSharedStateExample: updated parent`);
-        expect(childEl.textContent).to.include(`child: nonSharedStateExample: I am child`);
+      await raf();
+      expect(parentEl.textContent).to.include(`parent: nonSharedStateExample: updated parent`);
+      expect(childEl.textContent).to.include(`child: nonSharedStateExample: I am child`);
 
-        childEl.update({nonSharedStateExample: `updated child`});
-        window.requestAnimationFrame(() => {
-          expect(parentEl.textContent).to.include(`parent: nonSharedStateExample: updated parent`);
-          expect(childEl.textContent).to.include(`child: nonSharedStateExample: updated child`);
+      childEl.update({nonSharedStateExample: `updated child`});
+      await raf();
+      expect(parentEl.textContent).to.include(`parent: nonSharedStateExample: updated parent`);
+      expect(childEl.textContent).to.include(`child: nonSharedStateExample: updated child`);
 
-          expect(parentEl.state.nonSharedStateExample).to.eql(`updated parent`);
-          expect(childEl.state.nonSharedStateExample).to.eql(`updated child`);
-
-          done();
-        });
-      });
+      expect(parentEl.state.nonSharedStateExample).to.eql(`updated parent`);
+      expect(childEl.state.nonSharedStateExample).to.eql(`updated child`);
     });
   });
 });
@@ -453,14 +401,12 @@ describe(`Nested Component instance with partially shared state`, function() {
 describe(`Rendering exception`, function() {
   let el;
 
-  beforeEach(function(done) {
+  beforeEach(async function() {
     document.body.innerHTML = ``;
     el = document.createElement(`breakable-app`);
     el.logError = sinon.spy();
     document.body.appendChild(el);
-    window.requestAnimationFrame(() => {
-      done();
-    });
+    await raf();
   });
 
   it(`does not prevent component from initializing`, function() {
@@ -472,12 +418,10 @@ describe(`Rendering exception`, function() {
     expect(el.logError.getCall(0).args[0]).to.contain(`BREAKABLE-APP`);
   });
 
-  it(`does not prevent further updates from rendering`, function(done) {
+  it(`does not prevent further updates from rendering`, async function() {
     expect(el.textContent).not.to.contain(`Value of foo.bar`);
     el.update({foo: {bar: `later success`}});
-    window.requestAnimationFrame(() => {
-      expect(el.textContent).to.contain(`Value of foo.bar: later success`);
-      done();
-    });
+    await raf();
+    expect(el.textContent).to.contain(`Value of foo.bar: later success`);
   });
 });
