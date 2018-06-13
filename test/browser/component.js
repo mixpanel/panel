@@ -2,9 +2,7 @@
 /* global sinon, expect */
 /* eslint no-unused-expressions:0 */
 
-import requestAnimationFrameCB from 'raf';
-
-const raf = () => new Promise(requestAnimationFrameCB);
+import {nextAnimationFrame} from '../util';
 
 describe(`Simple Component instance`, function() {
   let el;
@@ -44,7 +42,7 @@ describe(`Simple Component instance`, function() {
   context(`before attached to DOM`, function() {
     it(`does not affect the DOM`, async function() {
       expect(document.querySelector(`.foo`)).to.be.null;
-      await raf();
+      await nextAnimationFrame();
       expect(document.querySelector(`.foo`)).to.be.null;
     });
 
@@ -52,7 +50,7 @@ describe(`Simple Component instance`, function() {
       el.state = {foo: `not bar`};
       document.body.appendChild(el);
       expect(el.state.foo).to.equal(`not bar`);
-      await raf();
+      await nextAnimationFrame();
       expect(el.state.foo).to.equal(`not bar`);
     });
 
@@ -60,7 +58,7 @@ describe(`Simple Component instance`, function() {
       el.update({foo: `not bar`});
       document.body.appendChild(el);
       expect(el.state.foo).to.equal(`not bar`);
-      await raf();
+      await nextAnimationFrame();
       expect(el.state.foo).to.equal(`not bar`);
       expect(el.textContent).to.contain(`Value of foo: not bar`);
       expect(el.textContent).to.contain(`Foo capitalized: Not bar`);
@@ -69,7 +67,7 @@ describe(`Simple Component instance`, function() {
     it(`caches the last template once rendered`, async function() {
       expect(el._rendered).to.be.undefined;
       document.body.appendChild(el);
-      await raf();
+      await nextAnimationFrame();
       expect(el._rendered).to.be.an(`object`);
     });
   });
@@ -77,7 +75,7 @@ describe(`Simple Component instance`, function() {
   context(`when attached to DOM`, function() {
     beforeEach(async function() {
       document.body.appendChild(el);
-      await raf();
+      await nextAnimationFrame();
     });
 
     it(`renders its template`, function() {
@@ -98,7 +96,7 @@ describe(`Simple Component instance`, function() {
       expect(el.textContent).to.contain(`Value of foo: bar`);
       expect(el.textContent).to.contain(`Foo capitalized: Bar`);
       el.update({foo: `new value`});
-      await raf();
+      await nextAnimationFrame();
       expect(el.textContent).to.contain(`Value of foo: new value`);
       expect(el.textContent).to.contain(`Foo capitalized: New value`);
     });
@@ -106,17 +104,17 @@ describe(`Simple Component instance`, function() {
     it(`does not re-render if shouldUpdate() returns false`, async function() {
       expect(el.textContent).to.contain(`Value of foo: bar`);
       el.update({foo: `meow`});
-      await raf();
+      await nextAnimationFrame();
       expect(el.textContent).to.contain(`Value of foo: bar`); // no change
       el.update({foo: `something else`});
-      await raf();
+      await nextAnimationFrame();
       expect(el.textContent).to.contain(`Value of foo: something else`);
     });
 
     it(`passes full state context to shouldUpdate()`, async function() {
       expect(el.textContent).to.contain(`Value of baz: qux`);
       el.update({baz: `llamas`});
-      await raf();
+      await nextAnimationFrame();
       expect(el.textContent).to.contain(`Value of baz: llamas`);
     });
 
@@ -133,7 +131,7 @@ describe(`Simple Component instance`, function() {
     beforeEach(async function() {
       el = document.createElement(`shadow-dom-app`);
       document.body.appendChild(el);
-      await raf();
+      await nextAnimationFrame();
     });
 
     it(`creates and uses a shadow root`, function() {
@@ -143,10 +141,10 @@ describe(`Simple Component instance`, function() {
 
     it(`successfully finds the panel root when top level uses shadow dom`, async function() {
       const childEl = document.createElement(`nested-child`);
-      await raf();
+      await nextAnimationFrame();
       childEl.$panelParentID = el.panelID;
       el.shadowRoot.appendChild(childEl);
-      await raf();
+      await nextAnimationFrame();
       childEl.connectedCallback();
       expect(childEl.$panelRoot).to.equal(el);
     });
@@ -154,15 +152,15 @@ describe(`Simple Component instance`, function() {
     it(`successfully finds the panel root when a nested child uses shadow dom`, async function() {
       const rootEl = document.createElement(`nested-app`);
       document.body.appendChild(rootEl);
-      await raf();
+      await nextAnimationFrame();
       const level1El = document.createElement(`shadow-dom-app`);
       level1El.$panelParentID = rootEl.panelID;
       rootEl.appendChild(level1El);
-      await raf();
+      await nextAnimationFrame();
       const level2El = document.createElement(`nested-child`);
       level2El.$panelParentID = level1El.panelID;
       level1El.shadowRoot.appendChild(level2El);
-      await raf();
+      await nextAnimationFrame();
       expect(level2El.$panelParent).to.equal(level1El);
       expect(level2El.$panelRoot).to.equal(rootEl);
     });
@@ -179,7 +177,7 @@ describe(`Simple Component instance`, function() {
     context(`when applying override styles`, function() {
       it(`appends the overriding styles to the default styles`, async function() {
         el.setAttribute(`style-override`, `background: red;`);
-        await raf();
+        await nextAnimationFrame();
         expect(el.shadowRoot.children[0].innerHTML).to.equal(`color: blue;background: red;`);
       });
 
@@ -205,21 +203,21 @@ describe(`Nested Component instance`, function() {
 
     it(`successfully finds the panel root`, async function() {
       document.body.appendChild(el);
-      await raf();
+      await nextAnimationFrame();
       childEl = document.createElement(`nested-child`);
       childEl.$panelParentID = el.panelID;
       el.appendChild(childEl);
-      await raf();
+      await nextAnimationFrame();
       expect(childEl.$panelRoot).to.equal(el);
     });
 
     it(`successfully finds a panel parent node by a given tag name`, async function() {
       document.body.appendChild(el);
-      await raf();
+      await nextAnimationFrame();
       childEl = document.createElement(`nested-child`);
       childEl.$panelParentID = el.panelID;
       el.appendChild(childEl);
-      await raf();
+      await nextAnimationFrame();
       expect(childEl.findPanelParentByTagName(`nested-app`)).to.equal(el);
     });
 
@@ -239,7 +237,7 @@ describe(`Nested Component instance`, function() {
       document.body.innerHTML = ``;
       el = document.createElement(`nested-app`);
       document.body.appendChild(el);
-      await raf();
+      await nextAnimationFrame();
       childEl = el.getElementsByTagName(`nested-child`)[0];
     });
 
@@ -265,7 +263,7 @@ describe(`Nested Component instance`, function() {
     it(`passes state updates from parent to child`, async function() {
       expect(childEl.textContent).to.include(`animal: llama`);
       el.update({animal: `capybara`});
-      await raf();
+      await nextAnimationFrame();
       expect(childEl.textContent).to.include(`animal: capybara`);
     });
 
@@ -273,7 +271,7 @@ describe(`Nested Component instance`, function() {
       expect(el.textContent).to.include(`Nested app: test`);
       expect(childEl.textContent).to.include(`parent title: test`);
       childEl.update({title: `new title`});
-      await raf();
+      await nextAnimationFrame();
       expect(el.textContent).to.include(`Nested app: new title`);
       expect(childEl.textContent).to.include(`parent title: new title`);
     });
@@ -315,7 +313,7 @@ describe(`Nested Component instance with partially shared state`, function() {
       document.body.innerHTML = ``;
       parentEl = document.createElement(`nested-partial-state-parent`);
       document.body.appendChild(parentEl);
-      await raf();
+      await nextAnimationFrame();
       childEl = parentEl.getElementsByTagName(`nested-partial-state-child`)[0];
     });
 
@@ -335,7 +333,7 @@ describe(`Nested Component instance with partially shared state`, function() {
 
       parentEl.updateApp({title: `llamas!`});
       parentEl.update({parentOnlyState: `goodbye`, nonSharedStateExample: `updated parent`});
-      await raf();
+      await nextAnimationFrame();
       // shared app state changed
       expect(parentEl.textContent).to.include(`Nested partial shared state app title: llamas!`);
       expect(childEl.textContent).to.include(`shared title: llamas!`);
@@ -361,7 +359,7 @@ describe(`Nested Component instance with partially shared state`, function() {
 
       childEl.updateApp({title: `new title`});
       childEl.update({childOnlyState: `mooo`, nonSharedStateExample: `updated child`});
-      await raf();
+      await nextAnimationFrame();
       // shared app state changed
       expect(parentEl.textContent).to.include(`Nested partial shared state app title: new title`);
       expect(childEl.textContent).to.include(`shared title: new title`);
@@ -382,12 +380,12 @@ describe(`Nested Component instance with partially shared state`, function() {
       expect(childEl.textContent).to.include(`child: nonSharedStateExample: I am child`);
 
       parentEl.update({nonSharedStateExample: `updated parent`});
-      await raf();
+      await nextAnimationFrame();
       expect(parentEl.textContent).to.include(`parent: nonSharedStateExample: updated parent`);
       expect(childEl.textContent).to.include(`child: nonSharedStateExample: I am child`);
 
       childEl.update({nonSharedStateExample: `updated child`});
-      await raf();
+      await nextAnimationFrame();
       expect(parentEl.textContent).to.include(`parent: nonSharedStateExample: updated parent`);
       expect(childEl.textContent).to.include(`child: nonSharedStateExample: updated child`);
 
@@ -406,7 +404,7 @@ describe(`Rendering exception`, function() {
     el = document.createElement(`breakable-app`);
     el.logError = sinon.spy();
     document.body.appendChild(el);
-    await raf();
+    await nextAnimationFrame();
   });
 
   it(`does not prevent component from initializing`, function() {
@@ -421,7 +419,7 @@ describe(`Rendering exception`, function() {
   it(`does not prevent further updates from rendering`, async function() {
     expect(el.textContent).not.to.contain(`Value of foo.bar`);
     el.update({foo: {bar: `later success`}});
-    await raf();
+    await nextAnimationFrame();
     expect(el.textContent).to.contain(`Value of foo.bar: later success`);
   });
 });

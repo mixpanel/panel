@@ -2,8 +2,8 @@
 import '../../lib/isorender/dom-shims';
 
 import {expect} from 'chai';
-import requestAnimationFrameCB from 'raf';
 
+import {nextAnimationFrame} from '../util';
 import {SimpleApp} from '../fixtures/simple-app';
 import {NestedApp, NestedChild} from '../fixtures/nested-app';
 import {AttrReflectionApp} from '../fixtures/attr-reflection-app';
@@ -11,8 +11,6 @@ customElements.define(`nested-app`, NestedApp);
 customElements.define(`nested-child`, NestedChild);
 customElements.define(`simple-app`, SimpleApp);
 customElements.define(`attr-reflection-app`, AttrReflectionApp);
-
-const raf = () => new Promise(requestAnimationFrameCB);
 
 describe(`Server-side component renderer`, function() {
   it(`can register and create components with document.createElement`, function() {
@@ -33,7 +31,7 @@ describe(`Server-side component renderer`, function() {
     const el = new SimpleApp();
     el.connectedCallback();
 
-    await raf();
+    await nextAnimationFrame();
 
     const html = el.innerHTML;
     expect(html.toLowerCase()).to.contain(`<div class="foo">`);
@@ -45,13 +43,13 @@ describe(`Server-side component renderer`, function() {
     const el = new SimpleApp();
     el.connectedCallback();
 
-    await raf();
+    await nextAnimationFrame();
 
     expect(el.textContent).to.contain(`Value of foo: bar`);
     expect(el.textContent).to.contain(`Foo capitalized: Bar`);
     el.update({foo: `new value`});
 
-    await raf();
+    await nextAnimationFrame();
 
     expect(el.textContent).to.contain(`Value of foo: new value`);
     expect(el.textContent).to.contain(`Foo capitalized: New value`);
@@ -61,7 +59,7 @@ describe(`Server-side component renderer`, function() {
     const el = new NestedApp();
     el.connectedCallback();
 
-    await raf();
+    await nextAnimationFrame();
 
     // check DOM structure
     expect(el.childNodes).to.have.lengthOf(1);
@@ -86,20 +84,20 @@ describe(`Server-side component renderer`, function() {
     const el = new NestedApp();
     el.connectedCallback();
 
-    await raf();
+    await nextAnimationFrame();
 
     const nestedChild = el.childNodes[0].childNodes[1];
     expect(nestedChild.state.title).to.equal(`test`);
     nestedChild.update({title: `meow`});
 
-    await raf();
+    await nextAnimationFrame();
 
     expect(el.state.title).to.equal(`meow`);
     expect(el.innerHTML).to.contain(`Nested app: meow`);
     expect(nestedChild.innerHTML).to.contain(`parent title: meow`);
     el.update({title: `something else`});
 
-    await raf();
+    await nextAnimationFrame();
 
     expect(nestedChild.innerHTML).to.contain(`parent title: something else`);
   });
@@ -109,7 +107,7 @@ describe(`Server-side component renderer`, function() {
     el.setAttribute(`wombats`, `15`);
     el.connectedCallback();
 
-    await raf();
+    await nextAnimationFrame();
 
     const html = el.innerHTML;
     expect(html.toLowerCase()).to.contain(`<div class="attr-app">`);
@@ -121,12 +119,12 @@ describe(`Server-side component renderer`, function() {
     el.setAttribute(`wombats`, `15`);
     el.connectedCallback();
 
-    await raf();
+    await nextAnimationFrame();
 
     expect(el.innerHTML).to.contain(`Value of attribute wombats: 15`);
     el.setAttribute(`wombats`, `32`);
 
-    await raf();
+    await nextAnimationFrame();
 
     expect(el.innerHTML).to.contain(`Value of attribute wombats: 32`);
     expect(el.innerHTML).not.to.contain(`15`);

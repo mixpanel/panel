@@ -1,9 +1,7 @@
 /* eslint-env mocha */
 /* global expect */
 
-import requestAnimationFrameCB from 'raf';
-
-const raf = () => new Promise(requestAnimationFrameCB);
+import {nextAnimationFrame} from '../util';
 
 describe(`ProxyComponent`, function() {
   let el;
@@ -13,7 +11,7 @@ describe(`ProxyComponent`, function() {
     el = document.createElement(`proxy-app`);
     el.setAttribute(`data-foo`, `bar`);
     document.body.appendChild(el);
-    await raf();
+    await nextAnimationFrame();
   });
 
   it(`renders the target element with attributes`, function() {

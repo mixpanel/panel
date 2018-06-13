@@ -3,11 +3,9 @@
 import '../../lib/isorender/dom-shims';
 
 import {expect} from 'chai';
-import requestAnimationFrameCB from 'raf';
 
 import {DOMPatcher, h} from '../../lib/dom-patcher';
-
-const raf = () => new Promise(requestAnimationFrameCB);
+import {nextAnimationFrame} from '../util';
 
 describe(`dom-patcher`, function() {
   context(`when first initialized`, function() {
@@ -116,7 +114,7 @@ describe(`dom-patcher`, function() {
       expect(domPatcher.el.textContent).to.eql(`Value of foo: bar`);
       domPatcher.update({foo: `moo`});
 
-      await raf();
+      await nextAnimationFrame();
 
       expect(domPatcher.el.textContent).to.eql(`Value of foo: moo`);
     });
@@ -128,7 +126,7 @@ describe(`dom-patcher`, function() {
       domPatcher.update({foo: `whew`});
       expect(domPatcher.el.textContent).to.eql(`Value of foo: bar`);
 
-      await raf();
+      await nextAnimationFrame();
 
       expect(domPatcher.el.textContent).to.eql(`Value of foo: whew`);
     });
