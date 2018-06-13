@@ -4,5 +4,6 @@ build
 test/fixtures/build.js
 npm-debug.log
 .DS_Store
+yarn.lock
 /.vscode
 /isorender
