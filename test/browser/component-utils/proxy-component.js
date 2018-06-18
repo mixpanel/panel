@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 /* global expect */
 
-import {nextAnimationFrame} from '../util';
+import nextAnimationFrame from '../nextAnimationFrame';
 
 describe(`ProxyComponent`, function() {
   let el;

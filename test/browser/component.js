@@ -2,7 +2,7 @@
 /* global sinon, expect */
 /* eslint no-unused-expressions:0 */
 
-import {nextAnimationFrame} from '../util';
+import nextAnimationFrame from './nextAnimationFrame';
 
 describe(`Simple Component instance`, function() {
   let el;

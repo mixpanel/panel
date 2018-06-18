@@ -3,10 +3,11 @@ import '../../lib/isorender/dom-shims';
 
 import {expect} from 'chai';
 
-import {nextAnimationFrame} from '../util';
 import {SimpleApp} from '../fixtures/simple-app';
 import {NestedApp, NestedChild} from '../fixtures/nested-app';
 import {AttrReflectionApp} from '../fixtures/attr-reflection-app';
+import nextAnimationFrame from './nextAnimationFrame';
+
 customElements.define(`nested-app`, NestedApp);
 customElements.define(`nested-child`, NestedChild);
 customElements.define(`simple-app`, SimpleApp);

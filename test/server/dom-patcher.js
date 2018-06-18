@@ -5,7 +5,7 @@ import '../../lib/isorender/dom-shims';
 import {expect} from 'chai';
 
 import {DOMPatcher, h} from '../../lib/dom-patcher';
-import {nextAnimationFrame} from '../util';
+import nextAnimationFrame from './nextAnimationFrame';
 
 describe(`dom-patcher`, function() {
   context(`when first initialized`, function() {
