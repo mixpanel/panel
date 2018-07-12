@@ -7,10 +7,10 @@ import {WebComponent} from 'webcomponent';
 export class StateStore<State> {
   constructor(options: { store?: StateStore<State> });
 
-  /* A readonly version of controller's state */
+  /** A readonly version of controller's state */
   readonly state: State;
 
-  /* Update the state by passing in a property bag */
+  /** Update the state by passing in a property bag */
   update(props?: Partial<State>): void;
 
   /**
@@ -26,13 +26,13 @@ export class StateStore<State> {
 export class StateController<State> {
   constructor(options: {store?: StateStore<State>});
 
-  /* A readonly version of controller's state */
+  /** A readonly version of controller's state */
   readonly state: State;
 
-  /* An initial default property bag for the controller's state implemented as get defaultState() */
+  /** An initial default property bag for the controller's state implemented as get defaultState() */
   readonly defaultState: State;
 
-  /* Update the state by passing in a property bag */
+  /** Update the state by passing in a property bag */
   _update(props?: Partial<State>): void;
 
   /**
@@ -102,19 +102,19 @@ export class Component<State> extends WebComponent {
 
 declare namespace Component {
     export interface ComponentConfigOptions<State> {
-        /* Function transforming state object to virtual dom tree */
+        /** Function transforming state object to virtual dom tree */
         template(state: object): VNode;
-        /* Component-specific Shadow DOM stylesheet */
+        /** Component-specific Shadow DOM stylesheet */
         css?: string;
-        /* An initial default value for the component's state property */
+        /** An initial default value for the component's state property */
         defaultState?: State;
-        /* Properties and functions injected automatically into template state object */
+        /** Properties and functions injected automatically into template state object */
         helpers?: object;
-        /* Object mapping string route expressions to handler functions */
+        /** Object mapping string route expressions to handler functions */
         routes?: object;
-        /* Whether to apply updates to DOM immediately, instead of batching to one update per frame */
+        /** Whether to apply updates to DOM immediately, instead of batching to one update per frame */
         updateSync?: boolean;
-        /* Whether to use Shadow DOM */
+        /** Whether to use Shadow DOM */
         useShadowDom?: boolean;
     }
 }
