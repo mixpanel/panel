@@ -48,23 +48,23 @@ export class StateController<State> {
 
 export class Component extends WebComponent {
     /**
-     *  Defines the state of the component, including all the properties required for rendering.
+     * Defines the state of the component, including all the properties required for rendering.
      */
-    state: any;
+    state: object;
     /**
-     *  Defines standard component configuration.
+     * Defines standard component configuration.
      */
     config: Component.ComponentConfigOptions;
     /**
-     *  Template helper functions defined in config object, and exposed to template code as $helpers.
-     *  This getter uses the component's internal config cache.
+     * Template helper functions defined in config object, and exposed to template code as $helpers.
+     * This getter uses the component's internal config cache.
      */
-    helpers: any;
+    helpers: object;
     /**
      * For use inside view templates, to create a child Panel component nested under this
      * component, which will share its state object and update cycle.
      */
-    child(tagName: string, config?: any): VNode;
+    child(tagName: string, config?: object): VNode;
     /**
      * Searches the component's Panel ancestors for the first component of the
      * given type (HTML tag name).
@@ -79,39 +79,39 @@ export class Component extends WebComponent {
      * Executes the route handler matching the given URL fragment, and updates
      * the URL, as though the user had navigated explicitly to that address.
      */
-    navigate(fragment: string, stateUpdate?: any): void;
+    navigate(fragment: string, stateUpdate?: object): void;
     /**
      * Sets a value in the component's configuration map after element
      * initialization.
      */
     setConfig(key: string, val: any): void;
     /**
-     *  To be overridden by subclasses, defining conditional logic for whether
+      * To be overridden by subclasses, defining conditional logic for whether
       * a component should rerender its template given the state to be applied.
       * In most cases this method can be left untouched, but can provide improved
       * performance when dealing with very many DOM elements.
       */
-    shouldUpdate(state: any): boolean;
+    shouldUpdate(state: object): boolean;
     /**
      * Applies a state update, triggering a re-render check of the component as
      * well as any other components sharing the same state. This is the primary
      * means of updating the DOM in a Panel application.
      */
-    update(stateUpdate?: any): void;
+    update(stateUpdate?: object): void;
 }
 
 declare namespace Component {
     export interface ComponentConfigOptions {
         /* Function transforming state object to virtual dom tree */
-        template(state: any): VNode;
+        template(state: object): VNode;
         /* Component-specific Shadow DOM stylesheet */
         css?: string;
         /* An initial default value for the component's state property */
-        defaultState?: any;
+        defaultState?: object;
         /* Properties and functions injected automatically into template state object */
-        helpers?: any;
+        helpers?: object;
         /* Object mapping string route expressions to handler functions */
-        routes?: any;
+        routes?: object;
         /* Whether to apply updates to DOM immediately, instead of batching to one update per frame */
         updateSync?: boolean;
         /* Whether to use Shadow DOM */
