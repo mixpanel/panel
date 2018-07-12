@@ -10,7 +10,7 @@ export class StateStore<State> {
   /* A readonly version of controller's state */
   readonly state: State;
 
-  /** Update the state by passing in a property bag */
+  /* Update the state by passing in a property bag */
   update(props?: Partial<State>): void;
 
   /**
@@ -29,10 +29,10 @@ export class StateController<State> {
   /* A readonly version of controller's state */
   readonly state: State;
 
-  /* An initial default property bag for the controller's state implemented as get defaultState()*/
+  /* An initial default property bag for the controller's state implemented as get defaultState() */
   readonly defaultState: State;
 
-  /** Update the state by passing in a property bag */
+  /* Update the state by passing in a property bag */
   _update(props?: Partial<State>): void;
 
   /**
@@ -86,11 +86,11 @@ export class Component extends WebComponent {
      */
     setConfig(key: string, val: any): void;
     /**
-      * To be overridden by subclasses, defining conditional logic for whether
-      * a component should rerender its template given the state to be applied.
-      * In most cases this method can be left untouched, but can provide improved
-      * performance when dealing with very many DOM elements.
-      */
+     * To be overridden by subclasses, defining conditional logic for whether
+     * a component should rerender its template given the state to be applied.
+     * In most cases this method can be left untouched, but can provide improved
+     * performance when dealing with very many DOM elements.
+     */
     shouldUpdate(state: object): boolean;
     /**
      * Applies a state update, triggering a re-render check of the component as
