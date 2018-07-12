@@ -46,6 +46,27 @@ export class StateController<State> {
   unsubscribeUpdates(listener: (props: Partial<State>) => void): void;
 }
 
+declare namespace Component {
+    export interface ConfigOptions<State> {
+        /** Function transforming state object to virtual dom tree */
+        template(state: State): VNode;
+        /** Component-specific Shadow DOM stylesheet */
+        css?: string;
+        /** An initial default value for the component's state property */
+        defaultState?: State;
+        /** Properties and functions injected automatically into template state object */
+        helpers?: object;
+        /** Object mapping string route expressions to handler functions */
+        routes?: {[route: string]: Function};
+        /** Whether to apply updates to DOM immediately, instead of batching to one update per frame */
+        updateSync?: boolean;
+        /** Whether to use Shadow DOM */
+        useShadowDom?: boolean;
+    }
+}
+
+type ConfigOptions<State> = Component.ConfigOptions<State>;
+
 export class Component<State> extends WebComponent {
     /**
      * Defines the state of the component, including all the properties required for rendering.
@@ -54,7 +75,7 @@ export class Component<State> extends WebComponent {
     /**
      * Defines standard component configuration.
      */
-    config: Component.ComponentConfigOptions<State>;
+    config: ConfigOptions<State>;
     /**
      * Template helper functions defined in config object, and exposed to template code as $helpers.
      * This getter uses the component's internal config cache.
@@ -74,7 +95,7 @@ export class Component<State> extends WebComponent {
      * Fetches a value from the component's configuration map (a combination of
      * values supplied in the config() getter and defaults applied automatically).
      */
-    getConfig(key: string): any;
+    getConfig<K extends keyof ConfigOptions<State>>(key: K): ConfigOptions<State>[K];
     /**
      * Executes the route handler matching the given URL fragment, and updates
      * the URL, as though the user had navigated explicitly to that address.
@@ -84,7 +105,7 @@ export class Component<State> extends WebComponent {
      * Sets a value in the component's configuration map after element
      * initialization.
      */
-    setConfig(key: string, val: any): void;
+    setConfig<K extends keyof ConfigOptions<State>>(key: K, val: ConfigOptions<State>[K]): void;
     /**
      * To be overridden by subclasses, defining conditional logic for whether
      * a component should rerender its template given the state to be applied.
@@ -98,23 +119,4 @@ export class Component<State> extends WebComponent {
      * means of updating the DOM in a Panel application.
      */
     update(stateUpdate?: Partial<State>): void;
-}
-
-declare namespace Component {
-    export interface ComponentConfigOptions<State> {
-        /** Function transforming state object to virtual dom tree */
-        template(state: object): VNode;
-        /** Component-specific Shadow DOM stylesheet */
-        css?: string;
-        /** An initial default value for the component's state property */
-        defaultState?: State;
-        /** Properties and functions injected automatically into template state object */
-        helpers?: object;
-        /** Object mapping string route expressions to handler functions */
-        routes?: object;
-        /** Whether to apply updates to DOM immediately, instead of batching to one update per frame */
-        updateSync?: boolean;
-        /** Whether to use Shadow DOM */
-        useShadowDom?: boolean;
-    }
 }
