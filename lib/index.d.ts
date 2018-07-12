@@ -46,15 +46,15 @@ export class StateController<State> {
   unsubscribeUpdates(listener: (props: Partial<State>) => void): void;
 }
 
-export class Component extends WebComponent {
+export class Component<State> extends WebComponent {
     /**
      * Defines the state of the component, including all the properties required for rendering.
      */
-    state: object;
+    state: State;
     /**
      * Defines standard component configuration.
      */
-    config: Component.ComponentConfigOptions;
+    config: Component.ComponentConfigOptions<State>;
     /**
      * Template helper functions defined in config object, and exposed to template code as $helpers.
      * This getter uses the component's internal config cache.
@@ -69,7 +69,7 @@ export class Component extends WebComponent {
      * Searches the component's Panel ancestors for the first component of the
      * given type (HTML tag name).
      */
-    findPanelParentByTagName(tagName: string): Component;
+    findPanelParentByTagName(tagName: string): Component<any>;
     /**
      * Fetches a value from the component's configuration map (a combination of
      * values supplied in the config() getter and defaults applied automatically).
@@ -79,7 +79,7 @@ export class Component extends WebComponent {
      * Executes the route handler matching the given URL fragment, and updates
      * the URL, as though the user had navigated explicitly to that address.
      */
-    navigate(fragment: string, stateUpdate?: object): void;
+    navigate(fragment: string, stateUpdate?: Partial<State>): void;
     /**
      * Sets a value in the component's configuration map after element
      * initialization.
@@ -91,23 +91,23 @@ export class Component extends WebComponent {
      * In most cases this method can be left untouched, but can provide improved
      * performance when dealing with very many DOM elements.
      */
-    shouldUpdate(state: object): boolean;
+    shouldUpdate(state: State): boolean;
     /**
      * Applies a state update, triggering a re-render check of the component as
      * well as any other components sharing the same state. This is the primary
      * means of updating the DOM in a Panel application.
      */
-    update(stateUpdate?: object): void;
+    update(stateUpdate?: Partial<State>): void;
 }
 
 declare namespace Component {
-    export interface ComponentConfigOptions {
+    export interface ComponentConfigOptions<State> {
         /* Function transforming state object to virtual dom tree */
         template(state: object): VNode;
         /* Component-specific Shadow DOM stylesheet */
         css?: string;
         /* An initial default value for the component's state property */
-        defaultState?: object;
+        defaultState?: State;
         /* Properties and functions injected automatically into template state object */
         helpers?: object;
         /* Object mapping string route expressions to handler functions */
