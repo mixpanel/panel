@@ -47,6 +47,11 @@ export class StateController<State> {
 }
 
 declare namespace Component {
+    interface Helpers {
+        [constant: string]: boolean|string|number|Array|null|object;
+        [helper: string]: Function;
+    }
+
     interface Hooks<State> {
         /** Function called before an update is applied */
         preUpdate?: (stateUpdate: Partial<State>) => void;
@@ -68,11 +73,9 @@ declare namespace Component {
          */
         appState?: AppState;
         /** Properties and functions injected automatically into template state object */
-        helpers?: object;
+        helpers?: Helpers;
         /** Extra rendering/lifecycle callbacks */
         hooks?: Hooks<State>;
-        /** Run a user-defined hook with the given params */
-        runHook: (hookName: keyof Hooks, options: {cascade: boolean, exclude: Component}, params: any) => void;
         /** Object mapping string route expressions to handler functions */
         routes?: {[route: string]: Function};
         /** Whether to apply updates to DOM immediately, instead of batching to one update per frame */
@@ -84,7 +87,11 @@ declare namespace Component {
 
 type ConfigOptions<State, AppState> = Component.ConfigOptions<State, AppState>;
 
-export class Component<State, AppState> extends WebComponent {
+export class Component<State, AppState = {}> extends WebComponent {
+    /**
+     * State object to share with nested descendant components.
+     */
+    appState: AppState;
     /**
      * Defines the state of the component, including all the properties required for rendering.
      */
@@ -97,7 +104,7 @@ export class Component<State, AppState> extends WebComponent {
      * Template helper functions defined in config object, and exposed to template code as $helpers.
      * This getter uses the component's internal config cache.
      */
-    helpers: object;
+    helpers: ConfigOptions<State, AppState>['helpers'];
     /**
      * For use inside view templates, to create a child Panel component nested under this
      * component, which will share its state object and update cycle.
@@ -112,17 +119,21 @@ export class Component<State, AppState> extends WebComponent {
      * Fetches a value from the component's configuration map (a combination of
      * values supplied in the config() getter and defaults applied automatically).
      */
-    getConfig<K extends keyof ConfigOptions<State>>(key: K): ConfigOptions<State>[K];
+    getConfig<K extends keyof ConfigOptions<State, AppState>>(key: K): ConfigOptions<State, AppState>[K];
     /**
      * Executes the route handler matching the given URL fragment, and updates
      * the URL, as though the user had navigated explicitly to that address.
      */
     navigate(fragment: string, stateUpdate?: Partial<State>): void;
     /**
+     * Run a user-defined hook with the given parameters.
+     */
+    runHook: (hookName: keyof ConfigOptions<State, AppState>['hooks'], options: {cascade: boolean, exclude: Component<any, any>}, params: any) => void;
+    /**
      * Sets a value in the component's configuration map after element
      * initialization.
      */
-    setConfig<K extends keyof ConfigOptions<State>>(key: K, val: ConfigOptions<State>[K]): void;
+    setConfig<K extends keyof ConfigOptions<State, AppState>>(key: K, val: ConfigOptions<State, AppState>[K]): void;
     /**
      * To be overridden by subclasses, defining conditional logic for whether
      * a component should rerender its template given the state to be applied.
