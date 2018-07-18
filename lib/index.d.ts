@@ -55,7 +55,7 @@ declare namespace Component {
         [hookName: string]: (params: any) => void;
     }
 
-    interface ConfigOptions<State> {
+    interface ConfigOptions<State, AppState> {
         /** Function transforming state object to virtual dom tree */
         template(state: State): VNode;
         /** Component-specific Shadow DOM stylesheet */
@@ -66,7 +66,7 @@ declare namespace Component {
          * A state object to share with nested descendant components. If not set, root component
          * shares entire state object with all descendants. Only applicable to app root components.
          */
-        appState?: object;
+        appState?: AppState;
         /** Properties and functions injected automatically into template state object */
         helpers?: object;
         /** Extra rendering/lifecycle callbacks */
@@ -82,9 +82,9 @@ declare namespace Component {
     }
 }
 
-type ConfigOptions<State> = Component.ConfigOptions<State>;
+type ConfigOptions<State, AppState> = Component.ConfigOptions<State, AppState>;
 
-export class Component<State> extends WebComponent {
+export class Component<State, AppState> extends WebComponent {
     /**
      * Defines the state of the component, including all the properties required for rendering.
      */
@@ -92,7 +92,7 @@ export class Component<State> extends WebComponent {
     /**
      * Defines standard component configuration.
      */
-    config: ConfigOptions<State>;
+    config: ConfigOptions<State, AppState>;
     /**
      * Template helper functions defined in config object, and exposed to template code as $helpers.
      * This getter uses the component's internal config cache.
@@ -130,6 +130,13 @@ export class Component<State> extends WebComponent {
      * performance when dealing with very many DOM elements.
      */
     shouldUpdate(state: State): boolean;
+    /**
+     * Applies a state update specifically to app state shared across components.
+     * In apps which don't specify `appState` in the root component config, all
+     * state is shared across all parent and child components and the standard
+     * update() method should be used instead.
+     */
+    updateApp(stateUpdate?: Partial<AppState>): void;
     /**
      * Applies a state update, triggering a re-render check of the component as
      * well as any other components sharing the same state. This is the primary
