@@ -47,15 +47,32 @@ export class StateController<State> {
 }
 
 declare namespace Component {
-    export interface ConfigOptions<State> {
+    interface Hooks<State> {
+        /** Function called before an update is applied */
+        preUpdate?: (stateUpdate: Partial<State>) => void;
+        /** Function called after an update is applied */
+        postUpdate?: (stateUpdate: Partial<State>) => void;
+        [hookName: string]: (params: any) => void;
+    }
+
+    interface ConfigOptions<State> {
         /** Function transforming state object to virtual dom tree */
         template(state: State): VNode;
         /** Component-specific Shadow DOM stylesheet */
         css?: string;
         /** An initial default value for the component's state property */
         defaultState?: State;
+        /**
+         * A state object to share with nested descendant components. If not set, root component
+         * shares entire state object with all descendants. Only applicable to app root components.
+         */
+        appState?: object;
         /** Properties and functions injected automatically into template state object */
         helpers?: object;
+        /** Extra rendering/lifecycle callbacks */
+        hooks?: Hooks<State>;
+        /** Run a user-defined hook with the given params */
+        runHook: (hookName: keyof Hooks, options: {cascade: boolean, exclude: Component}, params: any) => void;
         /** Object mapping string route expressions to handler functions */
         routes?: {[route: string]: Function};
         /** Whether to apply updates to DOM immediately, instead of batching to one update per frame */
