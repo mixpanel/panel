@@ -20,7 +20,8 @@
     "test-browser-local": "wct --plugin local test/browser/index.html",
     "test-browser-p": "wct --plugin local --persistent test/browser/index.html",
     "test-browser-sauce": "wct --plugin sauce test/browser/index.html",
-    "test-server": "NODE_ENV=test mocha --require babel-core/register --require babel-polyfill test/server"
+    "test-server": "NODE_ENV=test mocha --require babel-core/register --require babel-polyfill test/server",
+    "ts-check": "tsc"
   },
   "repository": {
     "type": "git",
@@ -67,6 +68,7 @@
     "mocha": "2.5.3",
     "promisify-node": "0.4.0",
     "readline-sync": "1.4.7",
+    "typescript": "2.9.1",
     "web-component-tester": "5.0.0",
     "webpack": "1.13.0",
     "zip-folder": "1.0.0"
