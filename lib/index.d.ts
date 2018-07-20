@@ -48,8 +48,7 @@ export class StateController<State> {
 
 declare namespace Component {
     interface Helpers {
-        [constant: string]: boolean|string|number|Array|null|object;
-        [helper: string]: Function;
+        [helper: string]: any;
     }
 
     interface Hooks<State> {
