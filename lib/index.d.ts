@@ -4,6 +4,8 @@
 import {VNode} from 'snabbdom/vnode';
 import {WebComponent} from 'webcomponent';
 
+export {h} from 'snabbdom/h';
+
 export class StateStore<State> {
   constructor(options: { store?: StateStore<State> });
 
