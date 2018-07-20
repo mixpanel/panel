@@ -1,5 +1,13 @@
+// @ts-check
 import {Component, h} from '../../lib';
 
+/**
+ * @typedef {Object} SimpleAppState
+ * @property {string} foo
+ * @property {string} baz
+ */
+
+/** @extends {Component<SimpleAppState>} */
 export class SimpleApp extends Component {
   get config() {
     return {
