@@ -45,7 +45,7 @@
     "loader-utils": "1.1.0",
     "lodash.pick": "4.4.0",
     "raf": "3.2.0",
-    "snabbdom": "0.6.1",
+    "snabbdom": "0.6.2",
     "snabbdom-delayed-class": "0.1.1",
     "webcomponent": "1.2.1"
   },
