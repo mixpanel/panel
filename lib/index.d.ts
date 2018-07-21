@@ -18,7 +18,7 @@ export class StateStore<State> {
   /**
    * @internal Subscribe to state updates via a listener callback.
    * Only use for rendering and debugging purposes
-   * */
+   */
   subscribeUpdates(listener: (props: Partial<State>) => void): void;
 
   /** @internal Unsubscribe the listener callback that was passed to subscribeUpdates */
@@ -41,7 +41,7 @@ export class StateController<State> {
    * @internal Subscribe to state updates via a listener callback.
    * panel component uses this to trigger dom update pipeline
    * Only use for rendering and debugging purposes
-   * */
+   */
   subscribeUpdates(listener: (props: Partial<State>) => void): void;
 
   /** @internal Unsubscribe the listener callback that was passed to subscribeUpdates */
@@ -99,19 +99,13 @@ declare namespace Component {
 type ConfigOptions<State, AppState> = Component.ConfigOptions<State, AppState>;
 
 export class Component<State, AppState = {}> extends WebComponent {
-    /**
-     * State object to share with nested descendant components.
-     */
+    /** State object to share with nested descendant components */
     appState: AppState;
 
-    /**
-     * Defines the state of the component, including all the properties required for rendering.
-     */
+    /** Defines the state of the component, including all the properties required for rendering */
     state: State;
 
-    /**
-     * Defines standard component configuration.
-     */
+    /** Defines standard component configuration */
     config: ConfigOptions<State, AppState>;
 
     /**
@@ -144,15 +138,14 @@ export class Component<State, AppState = {}> extends WebComponent {
      */
     navigate(fragment: string, stateUpdate?: Partial<State>): void;
 
-    /**
-     * Run a user-defined hook with the given parameters.
-     */
-    runHook: (hookName: keyof ConfigOptions<State, AppState>['hooks'], options: {cascade: boolean, exclude: Component<any, any>}, params: any) => void;
+    /** Run a user-defined hook with the given parameters */
+    runHook: (
+        hookName: keyof ConfigOptions<State, AppState>['hooks'],
+        options: {cascade: boolean, exclude: Component<any, any>},
+        params: any,
+    ) => void;
 
-    /**
-     * Sets a value in the component's configuration map after element
-     * initialization.
-     */
+    /** Sets a value in the component's configuration map after element initialization */
     setConfig<K extends keyof ConfigOptions<State, AppState>>(key: K, val: ConfigOptions<State, AppState>[K]): void;
 
     /**

@@ -1,0 +1,11 @@
+{
+  "extends": "eslint-config-mixpanel/tslint-config",
+  "rules": {
+    // "array-type": [false, "array-simple"],
+    "ban-types": [false, "Function"],
+    "member-access": false,
+    "member-ordering": false,
+    "no-namespace": false,
+    "max-classes-per-file": false
+  }
+}
