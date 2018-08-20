@@ -94,11 +94,53 @@ declare namespace Component {
         /** Whether to use Shadow DOM */
         useShadowDom?: boolean;
     }
+
+    interface AttrMetadata {
+        /** Type of the attribute */
+        type: 'string' | 'number' | 'boolean' | 'json';
+
+        /**
+         * Name of the property in state that corresponds to the attribute.
+         * If defined, Panel will parse attributes and update state automatically
+         * Relevant webcomponent attribute parsing functions are used e.g this.getJsonAttribute
+         */
+        propName?: string;
+
+        /** Enumeration of list of possible values */
+        enum?: Array<string | number>;
+
+        /** Description of attribute, what it does e.t.c */
+        description?: string;
+
+        /** Example usage of attribute */
+        example?: any;
+    }
+
+    interface EventMetadata {
+        /** Description of event and when it is fired */
+        description?: string;
+
+        /** Example of event value */
+        example?: any;
+    }
+
+    interface Metadata {
+        /** Description of the component. What it does, when to use, e.t.c */
+        description?: string;
+
+        /** Attributes of the component */
+        attrs: {[attr: string]: AttrMetadata};
+
+        /** Events fired by the component */
+        events: {[event: string]: EventMetadata};
+    }
 }
 
 type ConfigOptions<State, AppState> = Component.ConfigOptions<State, AppState>;
 
 export class Component<State, AppState = {}> extends WebComponent {
+    static metadata: Component.Metadata;
+
     /** State object to share with nested descendant components */
     appState: AppState;
 
