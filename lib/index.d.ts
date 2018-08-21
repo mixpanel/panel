@@ -63,9 +63,23 @@ declare namespace Component {
         [hookName: string]: (params: any) => void;
     }
 
+    interface TemplateScope<AppState = {}> {
+        /** AppState of the root panel component */
+        $app: AppState;
+
+        /** Attributes parsed from component's html attributes using attrsSchema types */
+        $attrs: {[attr: string]: any};
+
+        /** A reference to the component itself */
+        $component: WebComponent;
+
+        /** Helpers defined in component config */
+        $helpers: Helpers;
+    }
+
     interface ConfigOptions<State, AppState> {
         /** Function transforming state object to virtual dom tree */
-        template(state: State): VNode;
+        template(scope: (TemplateScope<AppState> & State)): VNode;
 
         /** Component-specific Shadow DOM stylesheet */
         css?: string;
@@ -96,50 +110,32 @@ declare namespace Component {
     }
 
     interface AttrMetadata {
-        /** Type of the attribute */
-        type: 'string' | 'number' | 'boolean' | 'json';
+        /**
+         * Type of the attribute
+         * Default is 'string'
+         */
+        type?: 'string' | 'number' | 'boolean' | 'json';
 
         /**
-         * Name of the property in state that corresponds to the attribute.
-         * If defined, Panel will parse attributes and update state automatically
-         * Relevant webcomponent attribute parsing functions are used e.g this.getJsonAttribute
+         * Name of the property in state that corresponds to the attribute
+         * If not defined, panel will convert from dash-case to camelCase
+         * Relevant webcomponent attribute parsing functions are used e.g this.getJsonAttribute for type:'json'
          */
         propName?: string;
 
-        /** Enumeration of list of possible values */
-        enum?: Array<string | number>;
-
         /** Description of attribute, what it does e.t.c */
         description?: string;
-
-        /** Example usage of attribute */
-        example?: any;
-    }
-
-    interface EventMetadata {
-        /** Description of event and when it is fired */
-        description?: string;
-
-        /** Example of event value */
-        example?: any;
-    }
-
-    interface Metadata {
-        /** Description of the component. What it does, when to use, e.t.c */
-        description?: string;
-
-        /** Attributes of the component */
-        attrs: {[attr: string]: AttrMetadata};
-
-        /** Events fired by the component */
-        events: {[event: string]: EventMetadata};
     }
 }
 
 type ConfigOptions<State, AppState> = Component.ConfigOptions<State, AppState>;
 
 export class Component<State, AppState = {}> extends WebComponent {
-    static metadata: Component.Metadata;
+    /**
+     * Attributes schema that defines the attributes and their types
+     * Panel auto parses attribute changes into this.attrs object and $attrs template helper
+     */
+    static attrsSchema: {[attr: string]: Component.AttrMetadata};
 
     /** State object to share with nested descendant components */
     appState: AppState;

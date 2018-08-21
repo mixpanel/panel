@@ -1,15 +1,16 @@
 import {Component, h} from '../../lib';
 
 export class AttrApp extends Component {
-  get config() {
+  static get attrsSchema() {
     return {
-      template: () => h(`div`, {class: {'attr-app': true}}, [
-        h(`p`, `Value of attribute wombats: ${this.getAttribute(`wombats`)}`),
-      ]),
+      wombats: {type: `number`},
     };
   }
-
-  static get observedAttributes() {
-    return [`wombats`];
+  get config() {
+    return {
+      template: scope => h(`div`, {class: {'attr-app': true}}, [
+        h(`p`, `Value of attribute wombats: ${scope.$attrs.wombats}`),
+      ]),
+    };
   }
 }

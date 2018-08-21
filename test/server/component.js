@@ -113,17 +113,20 @@ describe(`Server-side component renderer`, function() {
     const html = el.innerHTML;
     expect(html.toLowerCase()).to.contain(`<div class="attr-app">`);
     expect(html).to.contain(`Value of attribute wombats: 15`);
+    expect(el.attrs.wombats).to.equal(15);
   });
 
   it(`reacts to attribute updates`, async function() {
     const el = new AttrApp();
     el.setAttribute(`wombats`, `15`);
+    expect(el.attrs.wombats).to.equal(15);
     el.connectedCallback();
 
     await nextAnimationFrame();
 
     expect(el.innerHTML).to.contain(`Value of attribute wombats: 15`);
     el.setAttribute(`wombats`, `32`);
+    expect(el.attrs.wombats).to.equal(32);
 
     await nextAnimationFrame();
 
