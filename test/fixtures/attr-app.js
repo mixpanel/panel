@@ -1,6 +1,6 @@
 import {Component, h} from '../../lib';
 
-export class AttrReflectionApp extends Component {
+export class AttrApp extends Component {
   get config() {
     return {
       template: () => h(`div`, {class: {'attr-app': true}}, [

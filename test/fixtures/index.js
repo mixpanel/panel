@@ -1,4 +1,4 @@
-import {AttrReflectionApp} from './attr-reflection-app';
+import {AttrApp} from './attr-app';
 import {BreakableApp} from './breakable-app';
 import {ControlledApp} from './controlled-app';
 import {CssNoShadowApp} from './css-no-shadow-app';
@@ -8,7 +8,7 @@ import {ProxyApp, EventProducer} from './proxy-app';
 import {ShadowDomApp} from './shadow-dom-app';
 import {SimpleApp} from './simple-app';
 
-customElements.define(`attr-reflection-app`, AttrReflectionApp);
+customElements.define(`attr-app`, AttrApp);
 customElements.define(`breakable-app`, BreakableApp);
 customElements.define(`controlled-app`, ControlledApp);
 customElements.define(`css-no-shadow-app`, CssNoShadowApp);

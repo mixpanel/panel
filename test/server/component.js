@@ -5,13 +5,13 @@ import {expect} from 'chai';
 
 import {SimpleApp} from '../fixtures/simple-app';
 import {NestedApp, NestedChild} from '../fixtures/nested-app';
-import {AttrReflectionApp} from '../fixtures/attr-reflection-app';
+import {AttrApp} from '../fixtures/attr-app';
 import nextAnimationFrame from './nextAnimationFrame';
 
 customElements.define(`nested-app`, NestedApp);
 customElements.define(`nested-child`, NestedChild);
 customElements.define(`simple-app`, SimpleApp);
-customElements.define(`attr-reflection-app`, AttrReflectionApp);
+customElements.define(`attr-app`, AttrApp);
 
 describe(`Server-side component renderer`, function() {
   it(`can register and create components with document.createElement`, function() {
@@ -104,7 +104,7 @@ describe(`Server-side component renderer`, function() {
   });
 
   it(`renders attributes`, async function() {
-    const el = new AttrReflectionApp();
+    const el = new AttrApp();
     el.setAttribute(`wombats`, `15`);
     el.connectedCallback();
 
@@ -116,7 +116,7 @@ describe(`Server-side component renderer`, function() {
   });
 
   it(`reacts to attribute updates`, async function() {
-    const el = new AttrReflectionApp();
+    const el = new AttrApp();
     el.setAttribute(`wombats`, `15`);
     el.connectedCallback();
 
