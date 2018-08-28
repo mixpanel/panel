@@ -116,8 +116,7 @@ declare namespace Component {
          */
         type?: 'string' | 'number' | 'boolean' | 'json';
 
-
-        /** Default value if the attr is not defined*/
+        /** Default value if the attr is not defined */
         default?: any;
 
         /** Description of attribute, what it does e.t.c */
