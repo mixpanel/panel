@@ -1,8 +1,10 @@
 /* eslint-env mocha */
-/* global sinon, expect */
+/* global sinon, expect, chai */
 /* eslint no-unused-expressions:0 */
 
 import nextAnimationFrame from './nextAnimationFrame';
+
+chai.config.truncateThreshold = 0; // nicer deep equal errors
 
 describe(`Simple Component instance`, function() {
   let el;
@@ -187,6 +189,66 @@ describe(`Simple Component instance`, function() {
         expect(el.shadowRoot.children[0].innerHTML).to.equal(`color: blue;background: red;`);
       });
     });
+  });
+});
+
+describe(`Simple Component instance with attrs reflection`, function() {
+  let el;
+
+  function trimHtml(htmlStr) {
+    return htmlStr.trim().replace(/>\s+</gm, `><`);
+  }
+
+  beforeEach(async function() {
+    document.body.innerHTML = ``;
+    el = document.createElement(`attrs-reflection-app`);
+    el.setAttribute(`str-attr`, `hello world`);
+
+    document.body.appendChild(el);
+    await nextAnimationFrame();
+  });
+
+  it(`renders template and attrs`, function() {
+    expect(el.innerHTML).to.equal(trimHtml(`
+      <div class="attrs-reflection-app">
+        <p>str-attr: "hello world"</p>
+        <p>bool-attr: true</p>
+        <p>number-attr: 0</p>
+        <p>json-attr: null</p>
+      </div>
+    `));
+
+    expect(el.attrs).to.deep.equal({
+      'str-attr': `hello world`,
+      'bool-attr': true,
+      'number-attr': 0,
+      'json-attr': null,
+    });
+  });
+
+  it(`reacts to attr updates`, async function() {
+    el.setAttribute(`str-attr`, `foo bae`);
+    el.setAttribute(`bool-attr`, `false`);
+    el.setAttribute(`number-attr`, `500843`);
+    el.setAttribute(`json-attr`, `{"foo": "bae"}`);
+
+    expect(el.attrs).to.deep.equal({
+      'str-attr': `foo bae`,
+      'bool-attr': false,
+      'number-attr': 500843,
+      'json-attr': {foo: `bae`},
+    });
+
+    await nextAnimationFrame();
+
+    expect(el.innerHTML).to.equal(trimHtml(`
+    <div class="attrs-reflection-app">
+      <p>str-attr: "foo bae"</p>
+      <p>bool-attr: false</p>
+      <p>number-attr: 500843</p>
+      <p>json-attr: {"foo":"bae"}</p>
+    </div>
+  `));
   });
 });
 
@@ -423,3 +485,5 @@ describe(`Rendering exception`, function() {
     expect(el.textContent).to.contain(`Value of foo.bar: later success`);
   });
 });
+
+
