@@ -67,7 +67,7 @@ declare namespace Component {
         /** AppState of the root panel component */
         $app: AppState;
 
-        /** Attributes parsed from component's html attributes using attrsSchema types */
+        /** Attributes parsed from component's html attributes using attrsSchema */
         $attrs: {[attr: string]: any};
 
         /** A reference to the component itself */
@@ -132,6 +132,9 @@ export class Component<State, AppState = {}> extends WebComponent {
      * Panel auto parses attribute changes into this.attrs object and $attrs template helper
      */
     static attrsSchema: {[attr: string]: Component.AttrMetadata};
+
+    /** Attributes parsed from component's html attributes using attrsSchema */
+    attrs: {[attr: string]: any};
 
     /** State object to share with nested descendant components */
     appState: AppState;
