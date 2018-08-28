@@ -503,5 +503,3 @@ describe(`Rendering exception`, function() {
     expect(el.textContent).to.contain(`Value of foo.bar: later success`);
   });
 });
-
-
