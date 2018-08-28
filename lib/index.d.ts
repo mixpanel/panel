@@ -110,10 +110,7 @@ declare namespace Component {
     }
 
     interface AttrMetadata {
-        /**
-         * Type of the attribute
-         * Default is 'string'
-         */
+        /** Type of the attribute, default is 'string' */
         type?: 'string' | 'number' | 'boolean' | 'json';
 
         /** Default value if the attr is not defined */
