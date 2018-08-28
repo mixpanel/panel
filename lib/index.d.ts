@@ -116,12 +116,9 @@ declare namespace Component {
          */
         type?: 'string' | 'number' | 'boolean' | 'json';
 
-        /**
-         * Name of the property in state that corresponds to the attribute
-         * If not defined, panel will convert from dash-case to camelCase
-         * Relevant webcomponent attribute parsing functions are used e.g this.getJsonAttribute for type:'json'
-         */
-        propName?: string;
+
+        /** Default value if the attr is not defined*/
+        default?: any;
 
         /** Description of attribute, what it does e.t.c */
         description?: string;

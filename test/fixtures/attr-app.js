@@ -9,7 +9,7 @@ export class AttrApp extends Component {
   get config() {
     return {
       template: scope => h(`div`, {class: {'attr-app': true}}, [
-        h(`p`, `Value of attribute wombats: ${scope.$attrs.wombats}`),
+        h(`p`, `Value of attribute wombats: ${scope.$attrs[`wombats`]}`),
       ]),
     };
   }
