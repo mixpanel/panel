@@ -192,7 +192,7 @@ describe(`Simple Component instance`, function() {
   });
 });
 
-describe(`Simple Component instance with attrs reflection`, function() {
+describe(`Simple Component instance with attrsSchema`, function() {
   let el;
 
   function trimHtml(htmlStr) {
@@ -249,6 +249,24 @@ describe(`Simple Component instance with attrs reflection`, function() {
       <p>json-attr: {"foo":"bae"}</p>
     </div>
   `));
+  });
+
+  it(`can query schema from customElements registry`, async function() {
+    const component = customElements.get(`attrs-reflection-app`);
+    expect(component.attrsSchema).to.deep.equal({
+      'str-attr': {type: `string`},
+      'bool-attr': {type: `boolean`, default: true},
+      'number-attr': {type: `number`, default: 0},
+      'json-attr': {type: `json`},
+    });
+
+    expect(component.observedAttributes).to.deep.equal([
+      `style-override`,
+      `str-attr`,
+      `bool-attr`,
+      `number-attr`,
+      `json-attr`,
+    ]);
   });
 });
 
