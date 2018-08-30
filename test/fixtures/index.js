@@ -1,4 +1,3 @@
-import {AttrApp} from './attr-app';
 import {AttrsReflectionApp} from './attrs-reflection-app';
 import {BreakableApp} from './breakable-app';
 import {ControlledApp} from './controlled-app';
@@ -9,7 +8,6 @@ import {ProxyApp, EventProducer} from './proxy-app';
 import {ShadowDomApp} from './shadow-dom-app';
 import {SimpleApp} from './simple-app';
 
-customElements.define(`attr-app`, AttrApp);
 customElements.define(`attrs-reflection-app`, AttrsReflectionApp);
 customElements.define(`breakable-app`, BreakableApp);
 customElements.define(`controlled-app`, ControlledApp);

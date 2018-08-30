@@ -1,17 +1,19 @@
 /* eslint-env mocha */
 import '../../lib/isorender/dom-shims';
 
-import {expect} from 'chai';
+import {expect, config} from 'chai';
 
 import {SimpleApp} from '../fixtures/simple-app';
 import {NestedApp, NestedChild} from '../fixtures/nested-app';
-import {AttrApp} from '../fixtures/attr-app';
+import {AttrsReflectionApp} from '../fixtures/attrs-reflection-app';
 import nextAnimationFrame from './nextAnimationFrame';
+import {compactHtml} from '../utils';
 
+config.truncateThreshold = 0; // nicer deep equal errors
 customElements.define(`nested-app`, NestedApp);
 customElements.define(`nested-child`, NestedChild);
 customElements.define(`simple-app`, SimpleApp);
-customElements.define(`attr-app`, AttrApp);
+customElements.define(`attrs-reflection-app`, AttrsReflectionApp);
 
 describe(`Server-side component renderer`, function() {
   it(`can register and create components with document.createElement`, function() {
@@ -104,33 +106,73 @@ describe(`Server-side component renderer`, function() {
   });
 
   it(`renders attributes`, async function() {
-    const el = new AttrApp();
-    el.setAttribute(`wombats`, `15`);
+    const el = new AttrsReflectionApp();
     el.connectedCallback();
-
     await nextAnimationFrame();
 
-    const html = el.innerHTML;
-    expect(html.toLowerCase()).to.contain(`<div class="attr-app">`);
-    expect(html).to.contain(`Value of attribute wombats: 15`);
-    expect(el.attrs.wombats).to.equal(15);
+    expect(el.innerHTML).to.equal(compactHtml(`
+      <div class="attrs-reflection-app">
+        <p>str-attr: null</p>
+        <p>bool-attr: true</p>
+        <p>number-attr: 0</p>
+        <p>json-attr: null</p>
+      </div>
+    `));
   });
 
   it(`reacts to attribute updates`, async function() {
-    const el = new AttrApp();
-    el.setAttribute(`wombats`, `15`);
-    expect(el.attrs.wombats).to.equal(15);
+    const el = new AttrsReflectionApp();
+    el.connectedCallback();
+    await nextAnimationFrame();
+
+    el.setAttribute(`str-attr`, `foo bae`);
+    el.setAttribute(`bool-attr`, `false`);
+    el.setAttribute(`number-attr`, `500843`);
+    el.setAttribute(`json-attr`, `{"foo": "bae"}`);
+
+    expect(el.attrs).to.deep.equal({
+      'str-attr': `foo bae`,
+      'bool-attr': false,
+      'number-attr': 500843,
+      'json-attr': {foo: `bae`},
+    });
+
+    await nextAnimationFrame();
+
+    expect(el.innerHTML).to.equal(compactHtml(`
+      <div class="attrs-reflection-app">
+        <p>str-attr: "foo bae"</p>
+        <p>bool-attr: false</p>
+        <p>number-attr: 500843</p>
+        <p>json-attr: {"foo":"bae"}</p>
+      </div>
+    `));
+  });
+
+  it(`handles malformed attribute updates`, async function() {
+    const el = new AttrsReflectionApp();
+    el.setAttribute(`str-attr`, `💩🤒🤢☠️ -> 👻🎉💐🎊😱😍`);
+    el.setAttribute(`bool-attr`, ``);
+    el.setAttribute(`number-attr`, `500843 abra cadabra`);
+    el.setAttribute(`json-attr`, `{"foo": not %%^ json`);
     el.connectedCallback();
 
+    expect(el.attrs).to.deep.equal({
+      'str-attr': `💩🤒🤢☠️ -> 👻🎉💐🎊😱😍`,
+      'bool-attr': true,
+      'number-attr': null,
+      'json-attr': null,
+    });
+
     await nextAnimationFrame();
 
-    expect(el.innerHTML).to.contain(`Value of attribute wombats: 15`);
-    el.setAttribute(`wombats`, `32`);
-    expect(el.attrs.wombats).to.equal(32);
-
-    await nextAnimationFrame();
-
-    expect(el.innerHTML).to.contain(`Value of attribute wombats: 32`);
-    expect(el.innerHTML).not.to.contain(`15`);
+    expect(el.innerHTML).to.equal(compactHtml(`
+      <div class="attrs-reflection-app">
+        <p>str-attr: "💩🤒🤢☠️ -&gt; 👻🎉💐🎊😱😍"</p>
+        <p>bool-attr: true</p>
+        <p>number-attr: null</p>
+        <p>json-attr: null</p>
+      </div>
+    `));
   });
 });

@@ -3,6 +3,7 @@
 /* eslint no-unused-expressions:0 */
 
 import nextAnimationFrame from './nextAnimationFrame';
+import {compactHtml} from '../utils';
 
 describe(`Simple Component instance`, function() {
   let el;
@@ -193,10 +194,6 @@ describe(`Simple Component instance`, function() {
 describe(`Simple Component instance with attrsSchema`, function() {
   let el;
 
-  function trimHtml(htmlStr) {
-    return htmlStr.trim().replace(/>\s+</gm, `><`);
-  }
-
   beforeEach(async function() {
     document.body.innerHTML = ``;
     el = document.createElement(`attrs-reflection-app`);
@@ -207,7 +204,7 @@ describe(`Simple Component instance with attrsSchema`, function() {
   });
 
   it(`renders template`, function() {
-    expect(el.innerHTML).to.equal(trimHtml(`
+    expect(el.innerHTML).to.equal(compactHtml(`
       <div class="attrs-reflection-app">
         <p>str-attr: "hello world"</p>
         <p>bool-attr: true</p>
@@ -241,7 +238,7 @@ describe(`Simple Component instance with attrsSchema`, function() {
 
     await nextAnimationFrame();
 
-    expect(el.innerHTML).to.equal(trimHtml(`
+    expect(el.innerHTML).to.equal(compactHtml(`
     <div class="attrs-reflection-app">
       <p>str-attr: "foo bae"</p>
       <p>bool-attr: false</p>
