@@ -125,7 +125,7 @@ type ConfigOptions<State, AppState> = Component.ConfigOptions<State, AppState>;
 
 export class Component<State, AppState = {}> extends WebComponent {
     /**
-     * Attributes schema that defines the component's attributes and their types
+     * Attributes schema that defines the component's html attributes and their types
      * Panel auto parses attribute changes into this.attrs object and $attrs template helper
      */
     static attrsSchema: {[attr: string]: Component.AttrSchema};
