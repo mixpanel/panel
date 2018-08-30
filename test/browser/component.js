@@ -270,7 +270,6 @@ describe(`Simple Component instance with attrsSchema`, function() {
   });
 });
 
-
 describe(`Nested Component instance`, function() {
   let el, childEl;
 
