@@ -1,10 +1,8 @@
 /* eslint-env mocha */
-/* global sinon, expect, chai */
+/* global sinon, expect */
 /* eslint no-unused-expressions:0 */
 
 import nextAnimationFrame from './nextAnimationFrame';
-
-chai.config.truncateThreshold = 0; // nicer deep equal errors
 
 describe(`Simple Component instance`, function() {
   let el;
@@ -208,7 +206,7 @@ describe(`Simple Component instance with attrsSchema`, function() {
     await nextAnimationFrame();
   });
 
-  it(`renders template and attrs`, function() {
+  it(`renders template`, function() {
     expect(el.innerHTML).to.equal(trimHtml(`
       <div class="attrs-reflection-app">
         <p>str-attr: "hello world"</p>
@@ -217,7 +215,9 @@ describe(`Simple Component instance with attrsSchema`, function() {
         <p>json-attr: null</p>
       </div>
     `));
+  });
 
+  it(`updates attrs`, function() {
     expect(el.attrs).to.deep.equal({
       'str-attr': `hello world`,
       'bool-attr': true,
