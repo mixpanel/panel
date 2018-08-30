@@ -7,8 +7,6 @@ export class AttrsReflectionApp extends Component {
       'bool-attr': {type: `boolean`, default: true},
       'number-attr': {type: `number`, default: 0},
       'json-attr': {type: `json`},
-
-
     };
   }
   get config() {
