@@ -1,8 +1,8 @@
 {
-  "version": "1.5",
+  "version": "1.7",
   "manifest_version": 2,
-  "name": "Panel State",
-  "description": "Shows Mixpanel's Panel component state",
+  "name": "Panel Components",
+  "description": "Shows debug info and internal state for Panel components",
   "devtools_page": "devtools.html",
   "author": "dev@mixpanel.com",
   "icons": {
