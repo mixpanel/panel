@@ -1,6 +1,6 @@
 /* global chrome */
 // The function below is executed in the context of the inspected page.
-// Event listener global scope is slightly different to inspector scope, so we test for window[`$0`]
+// Event listener global scope is different to inspector scope, so we test for window[`$0`]
 function getPanelElementState() {
   if (!window[`__$panelDevToolsReady`] && window[`$0`] && window.document.body) {
     // Chrome extension api doesn't let us know when expression has been edited
