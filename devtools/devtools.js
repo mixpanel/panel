@@ -1,7 +1,7 @@
 /* global chrome */
 // The function below is executed in the context of the inspected page.
 function getPanelElementState() {
-  if (!window[`__$panelDevToolsReady`] && window.document.body) {
+  if (!window[`__$panelDevToolsReady`] && window[`$0`] && window.document.body) {
     // Chrome extension api doesn't let us know when expression has been edited
     // Work around is to refresh the UI with latest state on mouseenter
     window.document.body.addEventListener(`mouseenter`, getPanelElementState);
@@ -9,25 +9,48 @@ function getPanelElementState() {
   }
 
   // $0 is not available if called via event listeners
-  const selectedElem = window[`$0`] || window[`__$panelDevToolsLastSelectedElem`];
+  const selectedElem = window[`$0`] || window[`__$panelDevToolsLastElem`];
 
   if (selectedElem) {
-    // Force an update so UI refreshes to latest edited state
-    if (selectedElem.controller && selectedElem.controller.state) {
-      window[`__$panelDevToolsLastSelectedElem`] = selectedElem;
-      selectedElem.controller._update();
-      return selectedElem.controller.state;
+    // Go through ancestors to find a panel element. panelID is used as signifier for a panel component
+    // This is so user can right click -> inspect element anywhere inside a panel component and see its debug info
+    let panelElem = selectedElem;
+    while (!panelElem.panelID && (panelElem.parentElement || panelElem.getRootNode().host)) {
+      // using getRootNode().host to jump through shadow dom boundaries as well
+      panelElem = panelElem.parentElement || panelElem.getRootNode().host;
     }
-    else if (selectedElem.state && selectedElem.update) {
-      window[`__$panelDevToolsLastSelectedElem`] = selectedElem;
-      selectedElem.update();
-      return selectedElem.state;
+
+    if (panelElem.panelID) {
+      window[`__$panelDevToolsLastElem`] = panelElem;
+      const debugInfo = Object.create(null); // Don't show extra __proto__ key in extension
+      debugInfo.component = panelElem;
+
+      // Force an update so UI refreshes to latest edited state
+      if (panelElem.controller && panelElem.controller._update) {
+        panelElem.controller._update();
+        debugInfo.state = panelElem.controller.state;
+        debugInfo.controller = panelElem.controller;
+      }
+      else if (panelElem.update) {
+        panelElem.update();
+        debugInfo.state = panelElem.state;
+      }
+
+      if (!panelElem.isStateShared && panelElem.appState) {
+        debugInfo.appState = panelElem.appState;
+      }
+
+      if (panelElem.attrsSchema && Object.keys(panelElem.attrsSchema).length) {
+        debugInfo.attrs = panelElem.attrs;
+      }
+
+      return debugInfo;
     }
   }
 
   // No panel component selected, remove references
-  window[`__$panelDevToolsLastSelectedElem`] = null;
-  return {error: `component state not found`};
+  window[`__$panelDevToolsLastElem`] = null;
+  return {error: `No panel component found`};
 }
 
 chrome.devtools.panels.elements.createSidebarPane(`Panel State`, function(sidebar) {
