@@ -22,7 +22,8 @@ function getPanelElementState() {
     else {
       window[`__$panelDevToolsLastElem`] = panelElem;
       const debugInfo = Object.create(null); // Don't show extra __proto__ key in extension tab
-      debugInfo.component = panelElem;
+      debugInfo.$component = panelElem; // so it appears first
+      debugInfo.config = panelElem.config;
 
       // Force an update so UI refreshes to latest edited state
       if (panelElem.controller && panelElem.controller._update) {
