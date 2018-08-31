@@ -1,5 +1,6 @@
 /* global chrome */
 // The function below is executed in the context of the inspected page.
+// Event listener global scope is slightly different to inspector scope, so we test for window[`$0`]
 function getPanelElementState() {
   if (!window[`__$panelDevToolsReady`] && window[`$0`] && window.document.body) {
     // Chrome extension api doesn't let us know when expression has been edited
@@ -9,20 +10,18 @@ function getPanelElementState() {
   }
 
   // $0 is not available if called via event listeners
-  const selectedElem = window[`$0`] || window[`__$panelDevToolsLastElem`];
+  let panelElem = window[`$0`] || window[`__$panelDevToolsLastElem`];
 
-  if (selectedElem) {
-    // Go through ancestors to find a panel element. panelID is used as signifier for a panel component
-    // This is so user can right click -> inspect element anywhere inside a panel component and see its debug info
-    let panelElem = selectedElem;
-    while (!panelElem.panelID && (panelElem.parentElement || panelElem.getRootNode().host)) {
+  // Go through ancestors to find a panel element. panelID is used as signifier for a panel component
+  // This is so user can right click -> inspect element anywhere inside a panel component and see its debug info
+  while (panelElem) {
+    if (!panelElem.panelID) {
       // using getRootNode().host to jump through shadow dom boundaries as well
       panelElem = panelElem.parentElement || panelElem.getRootNode().host;
     }
-
-    if (panelElem.panelID) {
+    else {
       window[`__$panelDevToolsLastElem`] = panelElem;
-      const debugInfo = Object.create(null); // Don't show extra __proto__ key in extension
+      const debugInfo = Object.create(null); // Don't show extra __proto__ key in extension tab
       debugInfo.component = panelElem;
 
       // Force an update so UI refreshes to latest edited state
@@ -40,8 +39,9 @@ function getPanelElementState() {
         debugInfo.appState = panelElem.appState;
       }
 
-      if (panelElem.attrsSchema && Object.keys(panelElem.attrsSchema).length) {
+      if (panelElem.attrs && Object.keys(panelElem.attrs).length) {
         debugInfo.attrs = panelElem.attrs;
+        debugInfo.attrsSchema = panelElem.constructor.attrsSchema;
       }
 
       return debugInfo;
