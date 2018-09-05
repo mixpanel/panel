@@ -217,7 +217,7 @@ describe(`Simple Component instance with attrsSchema`, function() {
   it(`updates attrs`, function() {
     expect(el.attrs).to.deep.equal({
       'str-attr': `hello world`,
-      'bool-attr': true,
+      'bool-attr': false,
       'number-attr': 0,
       'json-attr': null,
     });
@@ -251,10 +251,10 @@ describe(`Simple Component instance with attrsSchema`, function() {
   it(`can query schema from customElements registry`, async function() {
     const component = customElements.get(`attrs-reflection-app`);
     expect(component.attrsSchema).to.deep.equal({
-      'str-attr': {type: `string`},
-      'bool-attr': {type: `boolean`, default: true},
-      'number-attr': {type: `number`, default: 0},
-      'json-attr': {type: `json`},
+      'str-attr': {type: `string`, default: `placeholder`},
+      'bool-attr': `boolean`,
+      'number-attr': `number`,
+      'json-attr': `json`,
     });
 
     expect(component.observedAttributes).to.deep.equal([
