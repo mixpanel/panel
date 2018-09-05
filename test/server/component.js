@@ -6,6 +6,7 @@ import {expect, config} from 'chai';
 import {SimpleApp} from '../fixtures/simple-app';
 import {NestedApp, NestedChild} from '../fixtures/nested-app';
 import {AttrsReflectionApp} from '../fixtures/attrs-reflection-app';
+import {BadAttrsSchemaApp} from '../fixtures/bad-attrs-schema-app';
 import nextAnimationFrame from './nextAnimationFrame';
 import {compactHtml} from '../utils';
 
@@ -174,5 +175,12 @@ describe(`Server-side component renderer`, function() {
         <p>json-attr: null</p>
       </div>
     `));
+  });
+
+  it(`throws error if there is a malformed attrsSchema type`, function() {
+    const el = new BadAttrsSchemaApp();
+    expect(() => el.connectedCallback()).to.throw(
+      `Unknown type: bool for attr: bad-attr in attrsSchema. Only (string | boolean | number | json) supported.`
+    );
   });
 });

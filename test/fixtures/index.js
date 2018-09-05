@@ -1,4 +1,5 @@
 import {AttrsReflectionApp} from './attrs-reflection-app';
+import {BadAttrsSchemaApp} from './bad-attrs-schema-app';
 import {BreakableApp} from './breakable-app';
 import {ControlledApp} from './controlled-app';
 import {CssNoShadowApp} from './css-no-shadow-app';
@@ -9,6 +10,7 @@ import {ShadowDomApp} from './shadow-dom-app';
 import {SimpleApp} from './simple-app';
 
 customElements.define(`attrs-reflection-app`, AttrsReflectionApp);
+customElements.define(`bad-attrs-schema-app`, BadAttrsSchemaApp);
 customElements.define(`breakable-app`, BreakableApp);
 customElements.define(`controlled-app`, ControlledApp);
 customElements.define(`css-no-shadow-app`, CssNoShadowApp);
