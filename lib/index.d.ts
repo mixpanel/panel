@@ -109,9 +109,11 @@ declare namespace Component {
         useShadowDom?: boolean;
     }
 
+    type AttrType = 'string' | 'number' | 'boolean' | 'json';
+
     interface AttrSchema {
-        /** Type of the attribute, default is 'string' */
-        type?: 'string' | 'number' | 'boolean' | 'json';
+        /** Type of the attribute */
+        type: AttrType;
 
         /** Default value if the attr is not defined */
         default?: any;
@@ -128,7 +130,7 @@ export class Component<State, AppState = {}> extends WebComponent {
      * Attributes schema that defines the component's html attributes and their types
      * Panel auto parses attribute changes into this.attrs object and $attrs template helper
      */
-    static attrsSchema: {[attr: string]: Component.AttrSchema};
+    static attrsSchema: {[attr: string]: (Component.AttrSchema | Component.AttrType)};
 
     /** Attributes parsed from component's html attributes using attrsSchema */
     attrs: {[attr: string]: any};

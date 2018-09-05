@@ -3,10 +3,10 @@ import {Component, h} from '../../lib';
 export class AttrsReflectionApp extends Component {
   static get attrsSchema() {
     return {
-      'str-attr': {type: `string`},
-      'bool-attr': {type: `boolean`, default: true},
-      'number-attr': {type: `number`, default: 0},
-      'json-attr': {type: `json`},
+      'str-attr': {type: `string`, default: `placeholder`},
+      'bool-attr': `boolean`,
+      'number-attr': `number`,
+      'json-attr': `json`,
     };
   }
   get config() {

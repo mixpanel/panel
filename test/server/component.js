@@ -112,8 +112,8 @@ describe(`Server-side component renderer`, function() {
 
     expect(el.innerHTML).to.equal(compactHtml(`
       <div class="attrs-reflection-app">
-        <p>str-attr: null</p>
-        <p>bool-attr: true</p>
+        <p>str-attr: "placeholder"</p>
+        <p>bool-attr: false</p>
         <p>number-attr: 0</p>
         <p>json-attr: null</p>
       </div>

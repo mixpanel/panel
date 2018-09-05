@@ -207,7 +207,7 @@ describe(`Simple Component instance with attrsSchema`, function() {
     expect(el.innerHTML).to.equal(compactHtml(`
       <div class="attrs-reflection-app">
         <p>str-attr: "hello world"</p>
-        <p>bool-attr: true</p>
+        <p>bool-attr: false</p>
         <p>number-attr: 0</p>
         <p>json-attr: null</p>
       </div>
