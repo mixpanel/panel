@@ -15,7 +15,6 @@ export class AttrsReflectionApp extends Component {
         Object.entries(scope.$attrs).map(([attr, val]) => h(`p`, `${attr}: ${JSON.stringify(val)}`)),
       ),
       defaultState: {
-        // get config is called in constructor(), this.attrs should be accessible
         str: this.attrs[`str-attr`],
       },
     };

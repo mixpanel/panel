@@ -274,7 +274,7 @@ describe(`Simple Component instance with attrsSchema`, function() {
       'number-attr': 0,
       'json-attr': null,
     });
-    // _config is initialised in construtor. defaultState should be able to access el.attrs
+    // _config is initialised in constructor. defaultState should be able to access el.attrs
     expect(el._config.defaultState.str).to.equal(`placeholder`);
   });
 });
