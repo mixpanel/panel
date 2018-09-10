@@ -178,8 +178,7 @@ describe(`Server-side component renderer`, function() {
   });
 
   it(`throws error if there is a malformed attrsSchema type`, function() {
-    const el = new BadAttrsSchemaApp();
-    expect(() => el.connectedCallback()).to.throw(
+    expect(() => new BadAttrsSchemaApp()).to.throw(
       `Unknown type: bool for attr: bad-attr in attrsSchema. Only (string | boolean | number | json) supported.`
     );
   });
