@@ -265,6 +265,18 @@ describe(`Simple Component instance with attrsSchema`, function() {
       `json-attr`,
     ]);
   });
+
+  it(`has default attrs present after createElement`, function() {
+    el = document.createElement(`attrs-reflection-app`);
+    expect(el.attrs).to.deep.equal({
+      'str-attr': `placeholder`,
+      'bool-attr': false,
+      'number-attr': 0,
+      'json-attr': null,
+    });
+    // _config is initialised in construtor. defaultState should be able to access el.attrs
+    expect(el._config.defaultState.str).to.equal(`placeholder`);
+  });
 });
 
 describe(`Nested Component instance`, function() {
