@@ -24,7 +24,7 @@ function getPanelElementState() {
       const debugInfo = Object.create(null); // Don't show extra __proto__ key in extension tab
       debugInfo.$component = panelElem; // so it appears first
       debugInfo.config = panelElem.config;
-      debugInfo.constructor = panelElem.constructor; // so we can right-click 'go to definition'
+      debugInfo.constructor = panelElem.constructor; // so we can right-click +'show function definition'
 
       // Force an update so UI refreshes to latest edited state
       if (panelElem.controller && panelElem.controller._update) {
