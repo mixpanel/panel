@@ -110,7 +110,7 @@ declare namespace Component {
     }
 
     interface AttrSchema {
-        /** Type of the attribute. one of 'string' | 'number' | 'boolean' | 'json' */
+        /** Type of the attribute. One of 'string' | 'number' | 'boolean' | 'json' */
         type: string;
 
         /** Default value if the attr is not defined */
