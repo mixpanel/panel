@@ -5,7 +5,7 @@ before_script:
   - npm run build
   - npm run build-test
   - npm run lint
-  - npm run ts-check
+  - npm run type-check
 script:
   - npm run test-server
   - npm run test-browser-sauce
