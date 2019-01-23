@@ -122,7 +122,7 @@ declare namespace Component {
         description?: string;
 
         /** Possible values of an attribute. e.g ['primary', 'secondary'] */
-        enum: string[];
+        enum: Array<string>;
     }
 }
 
