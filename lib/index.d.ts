@@ -120,6 +120,9 @@ declare namespace Component {
 
         /** Description of attribute, what it does e.t.c */
         description?: string;
+
+        /** Possible values of an attribute. e.g ['primary', 'secondary'] */
+        enum: string[];
     }
 }
 
