@@ -267,13 +267,13 @@ describe(`Simple Component instance with attrsSchema`, function() {
   it(`has default attrs present after createElement`, function() {
     el = document.createElement(`attrs-reflection-app`);
     expect(el.attrs).to.deep.equal({
-      'str-attr': `placeholder`,
+      'str-attr': `hello`,
       'bool-attr': false,
       'number-attr': 0,
       'json-attr': null,
     });
     // _config is initialised in constructor. defaultState should be able to access el.attrs
-    expect(el._config.defaultState.str).to.equal(`placeholder`);
+    expect(el._config.defaultState.str).to.equal(`hello`);
   });
 });
 
