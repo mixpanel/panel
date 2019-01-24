@@ -195,7 +195,7 @@ describe(`Simple Component instance with attrsSchema`, function() {
   beforeEach(async function() {
     document.body.innerHTML = ``;
     el = document.createElement(`attrs-reflection-app`);
-    el.setAttribute(`str-attr`, `hello world`);
+    el.setAttribute(`str-attr`, `world`);
 
     document.body.appendChild(el);
     await nextAnimationFrame();
@@ -204,7 +204,7 @@ describe(`Simple Component instance with attrsSchema`, function() {
   it(`renders template`, function() {
     expect(el.innerHTML).to.equal(compactHtml(`
       <div class="attrs-reflection-app">
-        <p>str-attr: "hello world"</p>
+        <p>str-attr: "world"</p>
         <p>bool-attr: false</p>
         <p>number-attr: 0</p>
         <p>json-attr: null</p>
@@ -214,7 +214,7 @@ describe(`Simple Component instance with attrsSchema`, function() {
 
   it(`updates attrs`, function() {
     expect(el.attrs).to.deep.equal({
-      'str-attr': `hello world`,
+      'str-attr': `world`,
       'bool-attr': false,
       'number-attr': 0,
       'json-attr': null,
@@ -222,13 +222,13 @@ describe(`Simple Component instance with attrsSchema`, function() {
   });
 
   it(`reacts to attr updates`, async function() {
-    el.setAttribute(`str-attr`, `foo bae`);
+    el.setAttribute(`str-attr`, `💩🤒🤢☠️ -> 👻🎉💐🎊😱😍`);
     el.setAttribute(`bool-attr`, `false`);
     el.setAttribute(`number-attr`, `500843`);
     el.setAttribute(`json-attr`, `{"foo": "bae"}`);
 
     expect(el.attrs).to.deep.equal({
-      'str-attr': `foo bae`,
+      'str-attr': `💩🤒🤢☠️ -> 👻🎉💐🎊😱😍`,
       'bool-attr': false,
       'number-attr': 500843,
       'json-attr': {foo: `bae`},
@@ -238,7 +238,7 @@ describe(`Simple Component instance with attrsSchema`, function() {
 
     expect(el.innerHTML).to.equal(compactHtml(`
     <div class="attrs-reflection-app">
-      <p>str-attr: "foo bae"</p>
+      <p>str-attr: "💩🤒🤢☠️ -&gt; 👻🎉💐🎊😱😍"</p>
       <p>bool-attr: false</p>
       <p>number-attr: 500843</p>
       <p>json-attr: {"foo":"bae"}</p>
@@ -249,7 +249,7 @@ describe(`Simple Component instance with attrsSchema`, function() {
   it(`can query schema from customElements registry`, async function() {
     const component = customElements.get(`attrs-reflection-app`);
     expect(component.attrsSchema).to.deep.equal({
-      'str-attr': {type: `string`, default: `hello`, enum: [ `hello`, `world` ]},
+      'str-attr': {type: `string`, default: `hello`, enum: [ `hello`, `world`, `💩🤒🤢☠️ -> 👻🎉💐🎊😱😍` ]},
       'bool-attr': `boolean`,
       'number-attr': `number`,
       'json-attr': `json`,

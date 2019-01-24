@@ -4,6 +4,7 @@ import {Component, h} from '../../lib';
 const STR_ATTR = {
   HELLO: `hello`,
   WORLD: `world`,
+  BLEH: `💩🤒🤢☠️ -> 👻🎉💐🎊😱😍`,
 };
 
 /**

@@ -126,13 +126,13 @@ describe(`Server-side component renderer`, function() {
     el.connectedCallback();
     await nextAnimationFrame();
 
-    el.setAttribute(`str-attr`, `foo bae`);
+    el.setAttribute(`str-attr`, `world`);
     el.setAttribute(`bool-attr`, `false`);
     el.setAttribute(`number-attr`, `500843`);
     el.setAttribute(`json-attr`, `{"foo": "bae"}`);
 
     expect(el.attrs).to.deep.equal({
-      'str-attr': `foo bae`,
+      'str-attr': `world`,
       'bool-attr': false,
       'number-attr': 500843,
       'json-attr': {foo: `bae`},
@@ -142,7 +142,7 @@ describe(`Server-side component renderer`, function() {
 
     expect(el.innerHTML).to.equal(compactHtml(`
       <div class="attrs-reflection-app">
-        <p>str-attr: "foo bae"</p>
+        <p>str-attr: "world"</p>
         <p>bool-attr: false</p>
         <p>number-attr: 500843</p>
         <p>json-attr: {"foo":"bae"}</p>
@@ -175,6 +175,14 @@ describe(`Server-side component renderer`, function() {
         <p>json-attr: null</p>
       </div>
     `));
+  });
+
+  it(`throws error for invalid value in an enum attr`, function() {
+    const el = new AttrsReflectionApp();
+
+    expect(() => el.setAttribute(`str-attr`, `boo!`)).to.throw(
+      `Invalid value: 'boo!' for enum attr: str-attr`
+    );
   });
 
   it(`throws error if there is a malformed attrsSchema type`, function() {
