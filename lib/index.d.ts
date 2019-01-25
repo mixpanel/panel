@@ -145,7 +145,7 @@ export class Component<State, AppState = {}, App = unknown> extends WebComponent
     /** State object to share with nested descendant components */
     appState: AppState;
 
-    /** Reference to the root element contained inside this component -- generally, the outer-most component in your template file. */
+    /** Refers to the outer-most element in the template file for shadow DOM components. Otherwise, el refers to the component itself. */
     el: HTMLElement;
 
     /** A flag that represents whether the component is currently connected and initialized */
