@@ -126,6 +126,10 @@ declare namespace Component {
 type ConfigOptions<State, AppState> = Component.ConfigOptions<State, AppState>;
 
 export class Component<State, AppState = {}, App = unknown> extends WebComponent {
+
+    /** The first Panel Component ancestor in the DOM tree; null if this component is the root */
+    $panelParent: Component<unknown>;
+
     /**
      * Attributes schema that defines the component's html attributes and their types
      * Panel auto parses attribute changes into this.attrs object and $attrs template helper
@@ -140,6 +144,9 @@ export class Component<State, AppState = {}, App = unknown> extends WebComponent
 
     /** State object to share with nested descendant components */
     appState: AppState;
+
+    /** Reference to the root element contained inside this component -- generally, the outer-most component in your template file. */
+    el: HTMLElement;
 
     /** A flag that represents whether the component is currently connected and initialized */
     initialized: boolean;
