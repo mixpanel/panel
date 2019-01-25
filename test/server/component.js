@@ -181,13 +181,13 @@ describe(`Server-side component renderer`, function() {
     const el = new AttrsReflectionApp();
 
     expect(() => el.setAttribute(`str-attr`, `boo!`)).to.throw(
-      `Invalid value: 'boo!' for enum attr: str-attr`
+      `Invalid value: 'boo!' for attr: str-attr. Only ('hello' | 'world' | '💩🤒🤢☠️ -> 👻🎉💐🎊😱😍') is valid.`
     );
   });
 
   it(`throws error if there is a malformed attrsSchema type`, function() {
     expect(() => new BadAttrsSchemaApp()).to.throw(
-      `Unknown type: bool for attr: bad-attr in attrsSchema. Only (string | boolean | number | json) supported.`
+      `Invalid type: bool for attr: bad-attr in attrsSchema. Only ('string' | 'boolean' | 'number' | 'json') is valid.`
     );
   });
 });
