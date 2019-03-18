@@ -9,7 +9,7 @@ import {SimpleApp} from '../fixtures/simple-app';
 import {ShadowDomApp} from '../fixtures/shadow-dom-app';
 
 customElements.define(`my-app`, SimpleApp);
-customElements.define(`shadow-dom-app`, ShadowDomApp)
+customElements.define(`shadow-dom-app`, ShadowDomApp);
 
 describe(`customElements registry`, function() {
   describe(`.get()`, function() {
