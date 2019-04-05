@@ -26,7 +26,7 @@ describe(`customElements registry`, function() {
 });
 
 describe(`customElement with shadowDom`, function() {
-  it(`el contains #shadow-root`, function() {
+  it(`el contains shadow-root`, function() {
     const elem = document.createElement(`shadow-dom-app`);
     expect(elem.el.tagName).to.equal(`shadow-root`);
   });
