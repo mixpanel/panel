@@ -176,11 +176,11 @@ describe(`Server-side component renderer`, function() {
   });
 
   it(`throws error for invalid attr access`, async function() {
-    const el = new AttrsReflectionApp();
+    const el = document.createElement(`attrs-reflection-app`);
     el.connectedCallback();
 
     expect(() => el.attr(`bad-attr`)).to.throw(
-      `attr 'bad-attr' is not defined in attrSchema`
+      `attrs-reflection-app: attr 'bad-attr' is not defined in attrsSchema`
     );
   });
 
