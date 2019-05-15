@@ -1,5 +1,10 @@
 {
   "verbose": false,
+
+  "compile": "never",
+  "moduleResolution": "none",
+  "npm": true,
+
   "plugins": {
     "local": {
       "disabled": true,

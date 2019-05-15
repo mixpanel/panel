@@ -23,7 +23,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Component.html">Component</a><ul class='methods'><li data-type='method'><a href="Component.html#_updateAttr">_updateAttr</a></li><li data-type='method'><a href="Component.html#child">child</a></li><li data-type='method'><a href="Component.html#findPanelParentByTagName">findPanelParentByTagName</a></li><li data-type='method'><a href="Component.html#getConfig">getConfig</a></li><li data-type='method'><a href="Component.html#navigate">navigate</a></li><li data-type='method'><a href="Component.html#setConfig">setConfig</a></li><li data-type='method'><a href="Component.html#shouldUpdate">shouldUpdate</a></li><li data-type='method'><a href="Component.html#update">update</a></li><li data-type='method'><a href="Component.html#updateApp">updateApp</a></li></ul></li><li><a href="module.exports.html">exports</a></li><li><a href="ProxyComponent.html">ProxyComponent</a><ul class='methods'><li data-type='method'><a href="ProxyComponent.html#_updateAttr">_updateAttr</a></li><li data-type='method'><a href="ProxyComponent.html#allowEvent">allowEvent</a></li><li data-type='method'><a href="ProxyComponent.html#child">child</a></li><li data-type='method'><a href="ProxyComponent.html#findPanelParentByTagName">findPanelParentByTagName</a></li><li data-type='method'><a href="ProxyComponent.html#getConfig">getConfig</a></li><li data-type='method'><a href="ProxyComponent.html#getTargetElementTag">getTargetElementTag</a></li><li data-type='method'><a href="ProxyComponent.html#navigate">navigate</a></li><li data-type='method'><a href="ProxyComponent.html#setConfig">setConfig</a></li><li data-type='method'><a href="ProxyComponent.html#shouldUpdate">shouldUpdate</a></li><li data-type='method'><a href="ProxyComponent.html#update">update</a></li><li data-type='method'><a href="ProxyComponent.html#updateApp">updateApp</a></li></ul></li><li><a href="StateController.html">StateController</a></li><li><a href="StateStore.html">StateStore</a></li></ul><h3>Modules</h3><ul><li><a href="module-component-utils.html">component-utils</a></li><li><a href="module-isorender_dom-shims.html">isorender/dom-shims</a></li><li><a href="module-panel.html">panel</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Component.html">Component</a><ul class='methods'><li data-type='method'><a href="Component.html#_syncAttrs">_syncAttrs</a></li><li data-type='method'><a href="Component.html#_updateAttr">_updateAttr</a></li><li data-type='method'><a href="Component.html#child">child</a></li><li data-type='method'><a href="Component.html#findPanelParentByTagName">findPanelParentByTagName</a></li><li data-type='method'><a href="Component.html#getConfig">getConfig</a></li><li data-type='method'><a href="Component.html#navigate">navigate</a></li><li data-type='method'><a href="Component.html#setConfig">setConfig</a></li><li data-type='method'><a href="Component.html#shouldUpdate">shouldUpdate</a></li><li data-type='method'><a href="Component.html#update">update</a></li><li data-type='method'><a href="Component.html#updateApp">updateApp</a></li></ul></li><li><a href="module.exports.html">exports</a></li><li><a href="ProxyComponent.html">ProxyComponent</a><ul class='methods'><li data-type='method'><a href="ProxyComponent.html#_syncAttrs">_syncAttrs</a></li><li data-type='method'><a href="ProxyComponent.html#_updateAttr">_updateAttr</a></li><li data-type='method'><a href="ProxyComponent.html#allowEvent">allowEvent</a></li><li data-type='method'><a href="ProxyComponent.html#child">child</a></li><li data-type='method'><a href="ProxyComponent.html#findPanelParentByTagName">findPanelParentByTagName</a></li><li data-type='method'><a href="ProxyComponent.html#getConfig">getConfig</a></li><li data-type='method'><a href="ProxyComponent.html#getTargetElementTag">getTargetElementTag</a></li><li data-type='method'><a href="ProxyComponent.html#navigate">navigate</a></li><li data-type='method'><a href="ProxyComponent.html#setConfig">setConfig</a></li><li data-type='method'><a href="ProxyComponent.html#shouldUpdate">shouldUpdate</a></li><li data-type='method'><a href="ProxyComponent.html#update">update</a></li><li data-type='method'><a href="ProxyComponent.html#updateApp">updateApp</a></li></ul></li><li><a href="StateController.html">StateController</a></li><li><a href="StateStore.html">StateStore</a></li></ul><h3>Modules</h3><ul><li><a href="module-component-utils.html">component-utils</a></li><li><a href="module-isorender_dom-shims.html">isorender/dom-shims</a></li><li><a href="module-panel.html">panel</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <div id="main">
@@ -45,6 +45,7 @@ import {EMPTY_DIV, DOMPatcher, h} from './dom-patcher';
 import Router from './router';
 
 const DOCUMENT_FRAGMENT_NODE = 11;
+const ATTR_TYPE_DEFAULTS = {string: ``, boolean: false, number: 0, json: null};
 
 /**
  * Definition of a Panel component/app, implemented as an HTML custom element.
@@ -240,6 +241,10 @@ class Component extends WebComponent {
     super();
 
     this.panelID = cuid();
+
+    this.attrs = {};
+    this._syncAttrs(); // constructor sync ensures default properties are present on this.attrs
+
     this._config = Object.assign({}, {
       css: ``,
       helpers: {},
@@ -253,8 +258,8 @@ class Component extends WebComponent {
     // appState and isStateShared of child components will be overwritten by parent/root
     // when the component is connected to the hierarchy
     this.state = {};
-    this.attrs = {};
     this.appState = this.getConfig(`appState`);
+
     if (!this.appState) {
       this.appState = {};
       this.isStateShared = true;
@@ -327,7 +332,6 @@ class Component extends WebComponent {
     );
 
     Object.assign(this.state, newState);
-    Object.keys(this.constructor.attrsSchema).forEach(attr => this._updateAttr(attr));
 
     if (Object.keys(this.getConfig(`routes`)).length) {
       this.router = new Router(this, {historyMethod: this.historyMethod});
@@ -347,6 +351,9 @@ class Component extends WebComponent {
       return;
     }
 
+    if (this.router) {
+      this.router.unregisterListeners();
+    }
     if (this.$panelParent) {
       this.$panelParent.$panelChildren.delete(this);
     }
@@ -384,7 +391,7 @@ class Component extends WebComponent {
       this._applyStyles(newVal);
     }
 
-    if (this.isPanelRoot &amp;&amp; this.initialized) {
+    if (this.initialized) {
       this.update();
     }
   }
@@ -417,7 +424,7 @@ class Component extends WebComponent {
           $attrs: this.attrs,
         }));
       } catch (e) {
-        this.logError(`Error while rendering ${this.toString()}`, this, e.stack);
+        this.logError(`Error while rendering ${this.toString()}`, this, `\n`, e);
       }
     }
     return this._rendered || EMPTY_DIV;
@@ -460,20 +467,76 @@ class Component extends WebComponent {
   }
 
   /**
+   * Validates attrsSchema and syncs element attributes defined in attrsSchema with this.attrs
+   */
+  _syncAttrs() {
+    // maintain local validated map where all schema keys are defined
+    this._attrsSchema = {};
+    const attrsSchema = this.constructor.attrsSchema;
+
+    for (const attr of Object.keys(attrsSchema)) {
+      // convert type shorthand to object
+      let attrSchema = attrsSchema[attr];
+      if (typeof attrSchema === `string`) {
+        attrSchema = {type: attrSchema};
+      }
+
+      // Ensure attr type is valid
+      const attrType = attrSchema.type;
+      if (!ATTR_TYPE_DEFAULTS.hasOwnProperty(attrType)) {
+        throw new Error(
+          `Invalid type: ${attrType} for attr: ${attr} in attrsSchema. ` +
+          `Only (${Object.keys(ATTR_TYPE_DEFAULTS).map(v => `'${v}'`).join(` | `)}) is valid.`
+        );
+      }
+
+      const attrSchemaObj = {
+        type: attrType,
+        default: attrSchema.hasOwnProperty(`default`) ? attrSchema.default : ATTR_TYPE_DEFAULTS[attrType],
+      };
+
+      // convert enum to a set for perf
+      if (attrSchema.hasOwnProperty(`enum`)) {
+        const attrEnum = attrSchema.enum;
+        if (!Array.isArray(attrEnum)) {
+          throw new Error(`Enum not an array for attr: ${attr}`);
+        }
+
+        const enumSet = new Set(attrEnum);
+        enumSet.add(attrSchema.default);
+        attrSchemaObj.enumSet = enumSet;
+      }
+
+      this._attrsSchema[attr] = attrSchemaObj;
+      this._updateAttr(attr);
+    }
+
+    return this.attrs;
+  }
+
+  /**
    * Parses html attribute using type information from attrsSchema and updates this.attrs
    * @param {string} attr - attribute name
    */
   _updateAttr(attr) {
-    const attrsSchema = this.constructor.attrsSchema;
+    const attrsSchema = this._attrsSchema;
     if (attrsSchema.hasOwnProperty(attr)) {
       const attrSchema = attrsSchema[attr];
-      const attrType = attrSchema.type || `string`;
+      const attrType = attrSchema.type;
       let attrValue = null;
 
-      if (!this.hasAttribute(attr) &amp;&amp; attrSchema.hasOwnProperty(`default`)) {
+      if (!this.hasAttribute(attr)) {
         attrValue = attrSchema.default;
       } else if (attrType === `string`) {
         attrValue = this.getAttribute(attr);
+        const enumSet = attrSchema.enumSet;
+
+        if (enumSet &amp;&amp; !enumSet.has(attrValue)) {
+          throw new Error(
+            `Invalid value: '${attrValue}' for attr: ${attr}. ` +
+            `Only (${Array.from(enumSet).map(v => `'${v}'`).join(` | `)}) is valid.`
+          );
+        }
       } else if (attrType === `boolean`) {
         attrValue = this.isAttributeEnabled(attr);
       } else if (attrType === `number`) {
@@ -563,7 +626,7 @@ export default Component;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Aug 30 2018 17:04:14 GMT-0700 (PDT) using the Minami theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Apr 22 2019 18:13:59 GMT-0700 (PDT) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

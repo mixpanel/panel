@@ -23,7 +23,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Component.html">Component</a><ul class='methods'><li data-type='method'><a href="Component.html#_updateAttr">_updateAttr</a></li><li data-type='method'><a href="Component.html#child">child</a></li><li data-type='method'><a href="Component.html#findPanelParentByTagName">findPanelParentByTagName</a></li><li data-type='method'><a href="Component.html#getConfig">getConfig</a></li><li data-type='method'><a href="Component.html#navigate">navigate</a></li><li data-type='method'><a href="Component.html#setConfig">setConfig</a></li><li data-type='method'><a href="Component.html#shouldUpdate">shouldUpdate</a></li><li data-type='method'><a href="Component.html#update">update</a></li><li data-type='method'><a href="Component.html#updateApp">updateApp</a></li></ul></li><li><a href="module.exports.html">exports</a></li><li><a href="ProxyComponent.html">ProxyComponent</a><ul class='methods'><li data-type='method'><a href="ProxyComponent.html#_updateAttr">_updateAttr</a></li><li data-type='method'><a href="ProxyComponent.html#allowEvent">allowEvent</a></li><li data-type='method'><a href="ProxyComponent.html#child">child</a></li><li data-type='method'><a href="ProxyComponent.html#findPanelParentByTagName">findPanelParentByTagName</a></li><li data-type='method'><a href="ProxyComponent.html#getConfig">getConfig</a></li><li data-type='method'><a href="ProxyComponent.html#getTargetElementTag">getTargetElementTag</a></li><li data-type='method'><a href="ProxyComponent.html#navigate">navigate</a></li><li data-type='method'><a href="ProxyComponent.html#setConfig">setConfig</a></li><li data-type='method'><a href="ProxyComponent.html#shouldUpdate">shouldUpdate</a></li><li data-type='method'><a href="ProxyComponent.html#update">update</a></li><li data-type='method'><a href="ProxyComponent.html#updateApp">updateApp</a></li></ul></li><li><a href="StateController.html">StateController</a></li><li><a href="StateStore.html">StateStore</a></li></ul><h3>Modules</h3><ul><li><a href="module-component-utils.html">component-utils</a></li><li><a href="module-isorender_dom-shims.html">isorender/dom-shims</a></li><li><a href="module-panel.html">panel</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Component.html">Component</a><ul class='methods'><li data-type='method'><a href="Component.html#_syncAttrs">_syncAttrs</a></li><li data-type='method'><a href="Component.html#_updateAttr">_updateAttr</a></li><li data-type='method'><a href="Component.html#child">child</a></li><li data-type='method'><a href="Component.html#findPanelParentByTagName">findPanelParentByTagName</a></li><li data-type='method'><a href="Component.html#getConfig">getConfig</a></li><li data-type='method'><a href="Component.html#navigate">navigate</a></li><li data-type='method'><a href="Component.html#setConfig">setConfig</a></li><li data-type='method'><a href="Component.html#shouldUpdate">shouldUpdate</a></li><li data-type='method'><a href="Component.html#update">update</a></li><li data-type='method'><a href="Component.html#updateApp">updateApp</a></li></ul></li><li><a href="module.exports.html">exports</a></li><li><a href="ProxyComponent.html">ProxyComponent</a><ul class='methods'><li data-type='method'><a href="ProxyComponent.html#_syncAttrs">_syncAttrs</a></li><li data-type='method'><a href="ProxyComponent.html#_updateAttr">_updateAttr</a></li><li data-type='method'><a href="ProxyComponent.html#allowEvent">allowEvent</a></li><li data-type='method'><a href="ProxyComponent.html#child">child</a></li><li data-type='method'><a href="ProxyComponent.html#findPanelParentByTagName">findPanelParentByTagName</a></li><li data-type='method'><a href="ProxyComponent.html#getConfig">getConfig</a></li><li data-type='method'><a href="ProxyComponent.html#getTargetElementTag">getTargetElementTag</a></li><li data-type='method'><a href="ProxyComponent.html#navigate">navigate</a></li><li data-type='method'><a href="ProxyComponent.html#setConfig">setConfig</a></li><li data-type='method'><a href="ProxyComponent.html#shouldUpdate">shouldUpdate</a></li><li data-type='method'><a href="ProxyComponent.html#update">update</a></li><li data-type='method'><a href="ProxyComponent.html#updateApp">updateApp</a></li></ul></li><li><a href="StateController.html">StateController</a></li><li><a href="StateStore.html">StateStore</a></li></ul><h3>Modules</h3><ul><li><a href="module-component-utils.html">component-utils</a></li><li><a href="module-isorender_dom-shims.html">isorender/dom-shims</a></li><li><a href="module-panel.html">panel</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <div id="main">
@@ -109,7 +109,7 @@ either by including the tag in HTML markup, or by using the DOM API method
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="component.js.html">component.js</a>, <a href="component.js.html#line37">line 37</a>
+        <a href="component.js.html">component.js</a>, <a href="component.js.html#line38">line 38</a>
     </li></ul></dd>
     
 
@@ -696,7 +696,7 @@ immediately, instead of batching to one update per frame</td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="component.js.html">component.js</a>, <a href="component.js.html#line67">line 67</a>
+        <a href="component.js.html">component.js</a>, <a href="component.js.html#line68">line 68</a>
     </li></ul></dd>
     
 
@@ -783,7 +783,7 @@ as $helpers. This getter uses the component's internal config cache.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="component.js.html">component.js</a>, <a href="component.js.html#line80">line 80</a>
+        <a href="component.js.html">component.js</a>, <a href="component.js.html#line81">line 81</a>
     </li></ul></dd>
     
 
@@ -811,6 +811,88 @@ as $helpers. This getter uses the component's internal config cache.
 
     
         <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="_syncAttrs"><span class="type-signature"></span>_syncAttrs<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Validates attrsSchema and syncs element attributes defined in attrsSchema with this.attrs
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="component.js.html">component.js</a>, <a href="component.js.html#line432">line 432</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         
             
@@ -917,7 +999,7 @@ as $helpers. This getter uses the component's internal config cache.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="component.js.html">component.js</a>, <a href="component.js.html#line426">line 426</a>
+        <a href="component.js.html">component.js</a>, <a href="component.js.html#line481">line 481</a>
     </li></ul></dd>
     
 
@@ -1105,7 +1187,7 @@ to be created</td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="component.js.html">component.js</a>, <a href="component.js.html#line94">line 94</a>
+        <a href="component.js.html">component.js</a>, <a href="component.js.html#line95">line 95</a>
     </li></ul></dd>
     
 
@@ -1264,7 +1346,7 @@ given type (HTML tag name).
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="component.js.html">component.js</a>, <a href="component.js.html#line108">line 108</a>
+        <a href="component.js.html">component.js</a>, <a href="component.js.html#line109">line 109</a>
     </li></ul></dd>
     
 
@@ -1435,7 +1517,7 @@ values supplied in the config() getter and defaults applied automatically).
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="component.js.html">component.js</a>, <a href="component.js.html#line126">line 126</a>
+        <a href="component.js.html">component.js</a>, <a href="component.js.html#line127">line 127</a>
     </li></ul></dd>
     
 
@@ -1638,7 +1720,7 @@ routing</td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="component.js.html">component.js</a>, <a href="component.js.html#line139">line 139</a>
+        <a href="component.js.html">component.js</a>, <a href="component.js.html#line140">line 140</a>
     </li></ul></dd>
     
 
@@ -1793,7 +1875,7 @@ initialization.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="component.js.html">component.js</a>, <a href="component.js.html#line151">line 151</a>
+        <a href="component.js.html">component.js</a>, <a href="component.js.html#line152">line 152</a>
     </li></ul></dd>
     
 
@@ -1932,7 +2014,7 @@ performance when dealing with very many DOM elements.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="component.js.html">component.js</a>, <a href="component.js.html#line168">line 168</a>
+        <a href="component.js.html">component.js</a>, <a href="component.js.html#line169">line 169</a>
     </li></ul></dd>
     
 
@@ -2116,7 +2198,7 @@ the component's state object</td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="component.js.html">component.js</a>, <a href="component.js.html#line181">line 181</a>
+        <a href="component.js.html">component.js</a>, <a href="component.js.html#line182">line 182</a>
     </li></ul></dd>
     
 
@@ -2276,7 +2358,7 @@ the app's appState object</td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="component.js.html">component.js</a>, <a href="component.js.html#line195">line 195</a>
+        <a href="component.js.html">component.js</a>, <a href="component.js.html#line196">line 196</a>
     </li></ul></dd>
     
 
@@ -2325,7 +2407,7 @@ the app's appState object</td>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Aug 30 2018 17:04:14 GMT-0700 (PDT) using the Minami theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Apr 22 2019 18:13:59 GMT-0700 (PDT) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

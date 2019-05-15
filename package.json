@@ -1,6 +1,6 @@
 {
   "name": "panel",
-  "version": "1.6.5",
+  "version": "1.6.6",
   "description": "Web Components with Virtual DOM: lightweight composable web apps",
   "main": "build/index.js",
   "types": "lib/index.d.ts",
@@ -72,7 +72,8 @@
     "promisify-node": "0.4.0",
     "readline-sync": "1.4.7",
     "typescript": "3.2.2",
-    "web-component-tester": "5.0.0",
+    "wct-browser-legacy": "1.0.2",
+    "web-component-tester": "6.9.2",
     "webpack": "1.13.0",
     "zip-folder": "1.0.0"
   }
