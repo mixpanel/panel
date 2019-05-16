@@ -127,7 +127,7 @@ export interface AttrSchema {
   deprecatedMsg?: string;
 
   /**
-   * For a type: `json` attr, the typescript interface that corresponds to it
+   * For a type: `json` attr, the typescript interface that corresponds to it.
    * Can be used to auto-generate Attrs interface
    */
   interface?: string;
