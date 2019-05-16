@@ -7,12 +7,10 @@ const STR_ATTR = {
   BLEH: `💩🤒🤢☠️ -> 👻🎉💐🎊😱😍`,
 };
 
-/**
- * @typedef {Object} State
- * @property {string} str
- */
+/** @typedef {{str: string}} State */
+/** @typedef {{'str-attr': string, 'bool-attr': boolean, 'number-attr': number, 'json-attr': any }} Attrs */
 
-/** @extends {Component<State>} */
+/** @extends {Component<State, unknown, unknown, Attrs>} */
 export class AttrsReflectionApp extends Component {
   static get attrsSchema() {
     return {
@@ -29,6 +27,8 @@ export class AttrsReflectionApp extends Component {
         Object.keys(scope.$component.attrs()).map(attr => h(`p`, `${attr}: ${JSON.stringify(scope.$attr(attr))}`)),
       ),
       defaultState: {
+        // Typescript will infer attr(`str-attr`) returns a string.
+        // Changing to 'bad-attr' will fail npm run type-check
         str: this.attr(`str-attr`),
       },
     };
