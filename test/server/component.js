@@ -180,7 +180,7 @@ describe(`Server-side component renderer`, function() {
     el.connectedCallback();
 
     expect(() => el.attr(`bad-attr`)).to.throw(
-      `attrs-reflection-app: attr 'bad-attr' is not defined in attrsSchema`
+      `${el}: attr 'bad-attr' is not defined in attrsSchema`
     );
   });
 
