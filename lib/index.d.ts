@@ -126,7 +126,10 @@ export interface AttrSchema {
   /** When setAttribute is invoked, console.warn that attr is deprecated e.g 'use xyz instead' */
   deprecatedMsg?: string;
 
-  /** For a type: `json` attr, the typescript interface that corresponds to it. Can be used to auto-generate Attrs interface */
+  /**
+   * For a type: `json` attr, the typescript interface that corresponds to it
+   * Can be used to auto-generate Attrs interface
+   */
   interface?: string;
 }
 

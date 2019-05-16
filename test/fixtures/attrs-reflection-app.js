@@ -29,7 +29,7 @@ export class AttrsReflectionApp extends Component {
       defaultState: {
         // Typescript will infer attr(`str-attr`) returns a string.
         // Changing to 'bad-attr' will fail npm run type-check
-        str: this.attr(`str-attr`),
+        str: this.attr(`bad-attr`),
       },
     };
   }
