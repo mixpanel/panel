@@ -13,7 +13,7 @@ describe(`Simple Component instance`, function() {
 
   describe(`toString()`, function() {
     it(`includes the tag name`, function() {
-      expect(el.toString()).to.contain(`SIMPLE-APP`);
+      expect(el.toString()).to.contain(`simple-app`);
     });
   });
 
@@ -499,7 +499,7 @@ describe(`Rendering exception`, function() {
 
   it(`logs an error`, function() {
     expect(el.logError.getCall(0).args[0]).to.contain(`Error while rendering`);
-    expect(el.logError.getCall(0).args[0]).to.contain(`BREAKABLE-APP`);
+    expect(el.logError.getCall(0).args[0]).to.contain(`breakable-app`);
   });
 
   it(`does not prevent further updates from rendering`, async function() {
