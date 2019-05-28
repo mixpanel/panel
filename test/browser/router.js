@@ -114,6 +114,25 @@ describe(`Router`, function() {
       expect(window.location.hash).to.equal(`#foo`);
     });
 
+    it(`does not update the URL if hash is the same`, function() {
+      const historyLength = window.history.length;
+
+      this.routerApp.router.navigate(`foo`);
+      expect(window.history.length).to.equal(historyLength + 1);
+      this.routerApp.router.navigate(`foo`);
+      expect(window.history.length).to.equal(historyLength + 1);
+
+      // ensure window.location.hash is properly URI-decoded for comparison,
+      // otherwise `widget/bar baz` !== `widget/bar%20baz` may be compared
+      // resulting in possible circular redirect loop
+      this.routerApp.router.navigate(`widget/bar baz`);
+      expect(window.history.length).to.equal(historyLength + 2);
+      this.routerApp.router.navigate(`widget/bar baz`);
+      expect(window.history.length).to.equal(historyLength + 2);
+      this.routerApp.router.navigate(`widget/bar%20baz`);
+      expect(window.history.length).to.equal(historyLength + 2);
+    });
+
     it(`supports passing state updates to the route handler`, async function() {
       this.routerApp.router.navigate(`widget/5`, {additionalText: ` and more!`});
       await retryable(() => expect(this.routerApp.textContent).to.equal(`Widget 5 and more!`));
@@ -128,6 +147,51 @@ describe(`Router`, function() {
       await nextAnimationFrame();
       await nextAnimationFrame();
       expect(this.routerApp.textContent).to.equal(`Number: 42`);
+    });
+  });
+
+  describe(`replaceHash()`, function() {
+    it(`updates the URL`, function() {
+      expect(window.location.hash).not.to.equal(`#foo`);
+      this.routerApp.router.replaceHash(`foo`);
+      expect(window.location.hash).to.equal(`#foo`);
+    });
+
+    it(`does not update the URL if hash is the same`, function() {
+      const historyLength = window.history.length;
+
+      this.routerApp.router.replaceHash(`foo`);
+      expect(window.history.length).to.equal(historyLength + 1);
+      this.routerApp.router.replaceHash(`foo`);
+      expect(window.history.length).to.equal(historyLength + 1);
+
+      // ensure window.location.hash is properly URI-decoded for comparison,
+      // otherwise `widget/bar baz` !== `widget/bar%20baz` may be compared
+      // resulting in possible circular redirect loop
+      this.routerApp.router.replaceHash(`widget/bar baz`);
+      expect(window.history.length).to.equal(historyLength + 2);
+      this.routerApp.router.replaceHash(`widget/bar baz`);
+      expect(window.history.length).to.equal(historyLength + 2);
+      this.routerApp.router.replaceHash(`widget/bar%20baz`);
+      expect(window.history.length).to.equal(historyLength + 2);
+    });
+
+    it(`uses pushState by default and adds a history entry`, function() {
+      const historyLength = window.history.length;
+
+      this.routerApp.router.replaceHash(`foo`);
+      expect(window.history.length).to.equal(historyLength + 1);
+      this.routerApp.router.replaceHash(`widget/bar baz`);
+      expect(window.history.length).to.equal(historyLength + 2);
+    });
+
+    it(`can use replaceState to avoid adding a history entry`, function() {
+      const historyLength = window.history.length;
+
+      this.routerApp.router.replaceHash(`foo`, {historyMethod: `replaceState`});
+      expect(window.history.length).to.equal(historyLength);
+      this.routerApp.router.replaceHash(`widget/bar baz`, {historyMethod: `replaceState`});
+      expect(window.history.length).to.equal(historyLength);
     });
   });
 });
