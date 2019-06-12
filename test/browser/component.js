@@ -504,6 +504,7 @@ describe(`Rendering exception`, function() {
   beforeEach(async function() {
     document.body.innerHTML = ``;
     el = document.createElement(`breakable-app`);
+    el.logRenderError = sinon.spy();
     eventSpy = sinon.spy();
     el.addEventListener(`rendererror`, eventSpy);
     document.body.appendChild(el);
@@ -514,10 +515,14 @@ describe(`Rendering exception`, function() {
     expect(el.initialized).to.be.ok;
   });
 
+  it(`logs an error`, function() {
+    expect(el.logRenderError.getCall(0).args[0]).to.contain(`Error while rendering breakable-app`);
+  });
+
   it(`emits a rendererror event`, function() {
     const errorEvent = eventSpy.getCall(0).args[0];
     expect(errorEvent.detail.message).to.contain(`Error while rendering breakable-app`);
-    expect(errorEvent.detail.exception).to.be.instanceof(Error);
+    expect(errorEvent.detail.error).to.be.instanceof(Error);
   });
 
   it(`does not prevent further updates from rendering`, async function() {
