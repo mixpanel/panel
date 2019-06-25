@@ -1,7 +1,7 @@
+/* globals WCT */
 import {nextAnimationFrame} from 'domsuite';
 
 import {compactHtml} from '../utils';
-
 
 describe(`Simple Component instance`, function() {
   let el;
@@ -502,21 +502,21 @@ describe(`Rendering exception`, function() {
   let eventSpy;
 
   beforeEach(async function() {
+    WCT._config.trackConsoleError = false;
     document.body.innerHTML = ``;
     el = document.createElement(`breakable-app`);
-    el.logRenderError = sinon.spy();
     eventSpy = sinon.spy();
     el.addEventListener(`rendererror`, eventSpy);
     document.body.appendChild(el);
     await nextAnimationFrame();
   });
 
-  it(`does not prevent component from initializing`, function() {
-    expect(el.initialized).to.be.ok;
+  afterEach(function() {
+    WCT._config.trackConsoleError = true;
   });
 
-  it(`logs an error`, function() {
-    expect(el.logRenderError.getCall(0).args[0]).to.contain(`Error while rendering breakable-app`);
+  it(`does not prevent component from initializing`, function() {
+    expect(el.initialized).to.be.ok;
   });
 
   it(`emits a rendererror event`, function() {
