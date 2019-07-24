@@ -137,7 +137,7 @@ export interface AnyAttrs {
   [attr: string]: any;
 }
 
-export type ConfigOptions<State, AppState={}> = Component.ConfigOptions<State, AppState>;
+export type ConfigOptions<State, AppState = {}> = Component.ConfigOptions<State, AppState>;
 
 export class Component<State, AppState = {}, App = unknown, Attrs = AnyAttrs> extends WebComponent {
   /** The first Panel Component ancestor in the DOM tree; null if this component is the root */
