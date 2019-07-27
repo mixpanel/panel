@@ -68,7 +68,7 @@ declare namespace Component {
     $app: AppState;
 
     /** Attributes parsed from component's html attributes using attrsSchema */
-    $attrs: {[attr: string]: any};
+    $attr: {[attr: string]: any};
 
     /** A reference to the component itself */
     $component: WebComponent;
