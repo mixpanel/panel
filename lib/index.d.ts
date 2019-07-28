@@ -63,12 +63,12 @@ declare namespace Component {
     [hookName: string]: (params: any) => void;
   }
 
-  interface TemplateScope<AppState = {}> {
+  interface TemplateScope<AppState = {}, Attrs = {}> {
     /** AppState of the root panel component */
     $app: AppState;
 
     /** Attributes parsed from component's html attributes using attrsSchema */
-    $attr: {[attr: string]: any};
+    $attr<A extends keyof Attrs>(attr: A): Attrs[A];
 
     /** A reference to the component itself */
     $component: WebComponent;
@@ -77,9 +77,9 @@ declare namespace Component {
     $helpers: Helpers;
   }
 
-  interface ConfigOptions<State, AppState> {
+  interface ConfigOptions<State, AppState, Attrs> {
     /** Function transforming state object to virtual dom tree */
-    template(scope: (TemplateScope<AppState> & State)): VNode;
+    template(scope: TemplateScope<AppState, Attrs> & State): VNode;
 
     /** Component-specific Shadow DOM stylesheet */
     css?: string;
@@ -137,7 +137,7 @@ export interface AnyAttrs {
   [attr: string]: any;
 }
 
-export type ConfigOptions<State, AppState = {}> = Component.ConfigOptions<State, AppState>;
+export type ConfigOptions<State, AppState = {}, Attrs = {}> = Component.ConfigOptions<State, AppState, Attrs>;
 
 export class Component<State, AppState = {}, App = unknown, Attrs = AnyAttrs> extends WebComponent {
   /** The first Panel Component ancestor in the DOM tree; null if this component is the root */
@@ -171,7 +171,7 @@ export class Component<State, AppState = {}, App = unknown, Attrs = AnyAttrs> ex
    * Template helper functions defined in config object, and exposed to template code as $helpers.
    * This getter uses the component's internal config cache.
    */
-  helpers: ConfigOptions<State, AppState>['helpers'];
+  helpers: ConfigOptions<State, AppState, Attrs>['helpers'];
 
   /** Gets the attribute value. Throws an error if attr not defined in attrsSchema */
   attr<A extends keyof Attrs>(attr: A): Attrs[A];
