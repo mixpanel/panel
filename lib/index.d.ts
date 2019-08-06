@@ -63,12 +63,12 @@ declare namespace Component {
     [hookName: string]: (params: any) => void;
   }
 
-  interface TemplateScope<AppState = {}> {
+  interface TemplateScope<AppState = {}, Attrs = AnyAttrs> {
     /** AppState of the root panel component */
     $app: AppState;
 
     /** Attributes parsed from component's html attributes using attrsSchema */
-    $attrs: {[attr: string]: any};
+    $attr<A extends keyof Attrs>(attr: A): Attrs[A];
 
     /** A reference to the component itself */
     $component: WebComponent;
@@ -77,9 +77,9 @@ declare namespace Component {
     $helpers: Helpers;
   }
 
-  interface ConfigOptions<State, AppState> {
+  interface ConfigOptions<State, AppState, Attrs> {
     /** Function transforming state object to virtual dom tree */
-    template(scope: (TemplateScope<AppState> & State)): VNode;
+    template(scope: TemplateScope<AppState, Attrs> & State): VNode;
 
     /** Component-specific Shadow DOM stylesheet */
     css?: string;
@@ -137,7 +137,7 @@ export interface AnyAttrs {
   [attr: string]: any;
 }
 
-export type ConfigOptions<State, AppState = {}> = Component.ConfigOptions<State, AppState>;
+export type ConfigOptions<State, AppState = {}, Attrs = AnyAttrs> = Component.ConfigOptions<State, AppState, Attrs>;
 
 export class Component<State, AppState = {}, App = unknown, Attrs = AnyAttrs> extends WebComponent {
   /** The first Panel Component ancestor in the DOM tree; null if this component is the root */
@@ -165,7 +165,7 @@ export class Component<State, AppState = {}, App = unknown, Attrs = AnyAttrs> ex
   state: State;
 
   /** Defines standard component configuration */
-  config: ConfigOptions<State, AppState>;
+  config: ConfigOptions<State, AppState, Attrs>;
 
   /**
    * Template helper functions defined in config object, and exposed to template code as $helpers.
