@@ -63,7 +63,7 @@ declare namespace Component {
     [hookName: string]: (params: any) => void;
   }
 
-  interface TemplateScope<AppState = {}, Attrs = AnyAttrs> {
+  interface TemplateScope<State, AppState = {}, Attrs = AnyAttrs> {
     /** AppState of the root panel component */
     $app: AppState;
 
@@ -71,7 +71,7 @@ declare namespace Component {
     $attr<A extends keyof Attrs>(attr: A): Attrs[A];
 
     /** A reference to the component itself */
-    $component: WebComponent;
+    $component: Component<State, AppState, unknown, Attrs>;
 
     /** Helpers defined in component config */
     $helpers: Helpers;
@@ -79,7 +79,7 @@ declare namespace Component {
 
   interface ConfigOptions<State, AppState, Attrs> {
     /** Function transforming state object to virtual dom tree */
-    template(scope: TemplateScope<AppState, Attrs> & State): VNode;
+    template(scope: TemplateScope<State, AppState, Attrs> & State): VNode;
 
     /** Component-specific Shadow DOM stylesheet */
     css?: string;
