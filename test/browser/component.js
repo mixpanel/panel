@@ -126,6 +126,25 @@ describe(`Simple Component instance`, function() {
     });
   });
 
+  context(`when detached from DOM`, function() {
+    beforeEach(async function() {
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+      document.body.removeChild(el);
+      await nextAnimationFrame();
+    });
+
+    it(`disconnectedCallback deinitializes component`, function() {
+      expect(el.$panelRoot).to.equal(null);
+      expect(el.$panelParent).to.equal(null);
+      expect(el.appState).to.equal(null);
+      expect(el.app).to.equal(null);
+      expect(el.domPatcher).to.equal(null);
+      expect(el._rendered).to.equal(null);
+      expect(el.initialized).to.equal(false);
+    });
+  });
+
   context(`when using shadow DOM`, function() {
     beforeEach(async function() {
       el = document.createElement(`shadow-dom-app`);
