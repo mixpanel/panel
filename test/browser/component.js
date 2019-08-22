@@ -134,7 +134,7 @@ describe(`Simple Component instance`, function() {
       await nextAnimationFrame();
     });
 
-    it(`disconnectedCallback deinitializes component`, function() {
+    it(`disconnectedCallback cleans up to be GC friendly`, function() {
       expect(el.$panelRoot).to.equal(null);
       expect(el.$panelParent).to.equal(null);
       expect(el.appState).to.equal(null);
