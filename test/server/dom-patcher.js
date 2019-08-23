@@ -133,7 +133,7 @@ describe(`dom-patcher`, function() {
   });
 
   context(`when disconnected`, function() {
-    it(`cleans up to be GC friendly`, function() {
+    it(`cleans up references to be GC friendly`, function() {
       const domPatcher = new DOMPatcher({foo: `bar`}, () => h(`div`));
       domPatcher.disconnect();
 

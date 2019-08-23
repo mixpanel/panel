@@ -127,14 +127,12 @@ describe(`Simple Component instance`, function() {
   });
 
   context(`when detached from DOM`, function() {
-    beforeEach(async function() {
+    it(`cleans up references to be GC friendly`, async function() {
       document.body.appendChild(el);
       await nextAnimationFrame();
       document.body.removeChild(el);
       await nextAnimationFrame();
-    });
 
-    it(`disconnectedCallback cleans up to be GC friendly`, function() {
       expect(el.$panelRoot).to.equal(null);
       expect(el.$panelParent).to.equal(null);
       expect(el.appState).to.equal(null);
@@ -142,6 +140,27 @@ describe(`Simple Component instance`, function() {
       expect(el.domPatcher).to.equal(null);
       expect(el._rendered).to.equal(null);
       expect(el.initialized).to.equal(false);
+    });
+  });
+
+  context(`when detached and re-attached to DOM multiple times`, function() {
+    it(`renders its template`, async function() {
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+
+      for (let i = 0 ; i < 5; ++i) {
+        document.body.removeChild(el);
+        await nextAnimationFrame();
+        document.body.appendChild(el);
+        await nextAnimationFrame();
+      }
+
+      expect(document.querySelector(`simple-app`)).to.equal(el);
+      expect(el.textContent).to.equal([
+        `Value of foo: bar`,
+        `Value of baz: qux`,
+        `Foo capitalized: Bar`,
+      ].join(``));
     });
   });
 
