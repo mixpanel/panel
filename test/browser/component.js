@@ -164,6 +164,76 @@ describe(`Simple Component instance`, function() {
     });
   });
 
+  context(`when detached and attached via keyed children`, function() {
+    beforeEach(async function() {
+      document.body.innerHTML = ``;
+      el = document.createElement(`nested-keyed-children-app`);
+      el.setAttribute(`letters`, JSON.stringify([`a`, `b`, `c`, `d`, `e`]));
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+    });
+
+    it(`renders its template after children position change`, async function() {
+      expect(el.textContent).to.equal([
+        `alpha`,
+        `bravo`,
+        `charlie`,
+        `delta`,
+        `echo`,
+      ].join(``));
+
+      el.setAttribute(`letters`, JSON.stringify([`e`, `c`, `a`, `d`, `b`]));
+      await nextAnimationFrame();
+
+      expect(el.textContent).to.equal([
+        `echo`,
+        `charlie`,
+        `alpha`,
+        `delta`,
+        `bravo`,
+      ].join(``));
+
+      el.setAttribute(`letters`, JSON.stringify([`d`, `b`, `a`]));
+      await nextAnimationFrame();
+
+      expect(el.textContent).to.equal([
+        `delta`,
+        `bravo`,
+        `alpha`,
+      ].join(``));
+    });
+
+    it(`doesn't clear parent references if immediately added back`, async function() {
+      const childEl = el.querySelector(`nested-keyed-child1`);
+      const parentEl = childEl.parentElement;
+
+      parentEl.removeChild(childEl);
+      expect(childEl.$panelParent).to.be.ok;
+      expect(childEl.app).to.equal(el);
+
+      parentEl.appendChild(childEl);
+      expect(childEl.$panelParent).to.be.ok;
+      expect(childEl.app).to.equal(el);
+
+      await nextAnimationFrame();
+      expect(childEl.$panelParent).to.be.ok;
+      expect(childEl.app).to.equal(el);
+    });
+
+    it(`clears parent references after a frame`, async function() {
+      const childEl = el.querySelector(`nested-keyed-child1`);
+      const parentEl = childEl.parentElement;
+
+      parentEl.removeChild(childEl);
+      expect(childEl.$panelParent).to.be.ok;
+      expect(childEl.app).to.equal(el);
+
+      await nextAnimationFrame();
+      expect(childEl.$panelParent).to.equal(null);
+      expect(childEl.app).to.equal(null);
+    });
+  });
+
   context(`when using shadow DOM`, function() {
     beforeEach(async function() {
       el = document.createElement(`shadow-dom-app`);
