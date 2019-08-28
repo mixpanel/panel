@@ -133,12 +133,12 @@ describe(`Simple Component instance`, function() {
       document.body.removeChild(el);
       await nextAnimationFrame();
 
-      expect(el.$panelRoot).to.equal(null);
-      expect(el.$panelParent).to.equal(null);
-      expect(el.appState).to.equal(null);
-      expect(el.app).to.equal(null);
-      expect(el.domPatcher).to.equal(null);
-      expect(el._rendered).to.equal(null);
+      expect(el.$panelRoot).to.be.null;
+      expect(el.$panelParent).to.be.null;
+      expect(el.appState).to.be.null;
+      expect(el.app).to.be.null;
+      expect(el.domPatcher).to.be.null;
+      expect(el._rendered).to.be.null;
       expect(el.initialized).to.equal(false);
     });
   });
@@ -173,7 +173,7 @@ describe(`Simple Component instance`, function() {
       await nextAnimationFrame();
     });
 
-    it(`renders its template after children position change`, async function() {
+    it(`renders its template after children change position`, async function() {
       expect(el.textContent).to.equal([
         `alpha`,
         `bravo`,
@@ -229,8 +229,8 @@ describe(`Simple Component instance`, function() {
       expect(childEl.app).to.equal(el);
 
       await nextAnimationFrame();
-      expect(childEl.$panelParent).to.equal(null);
-      expect(childEl.app).to.equal(null);
+      expect(childEl.$panelParent).to.be.null;
+      expect(childEl.app).to.be.null;
 
       // add child back otherwise vdom sync will barf
       parentEl.appendChild(childEl);
