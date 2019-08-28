@@ -231,6 +231,9 @@ describe(`Simple Component instance`, function() {
       await nextAnimationFrame();
       expect(childEl.$panelParent).to.equal(null);
       expect(childEl.app).to.equal(null);
+
+      // add child back otherwise vdom sync will barf
+      parentEl.appendChild(childEl);
     });
   });
 
