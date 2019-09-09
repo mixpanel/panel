@@ -100,6 +100,24 @@ describe(`Simple Component instance`, function() {
       expect(el.textContent).to.contain(`Foo capitalized: New value`);
     });
 
+    it(`re-renders when state is updated with update function`, async function() {
+      expect(el.textContent).to.contain(`Value of foo: bar`);
+      expect(el.textContent).to.contain(`Foo capitalized: Bar`);
+      el.update(() => ({foo: `new value`}));
+      await nextAnimationFrame();
+      expect(el.textContent).to.contain(`Value of foo: new value`);
+      expect(el.textContent).to.contain(`Foo capitalized: New value`);
+    });
+
+    it(`re-renders when state is updated with function accessing existing state`, async function() {
+      expect(el.textContent).to.contain(`Value of foo: bar`);
+      expect(el.textContent).to.contain(`Foo capitalized: Bar`);
+      el.update(state => ({foo: `new ${state.foo}`}));
+      await nextAnimationFrame();
+      expect(el.textContent).to.contain(`Value of foo: new bar`);
+      expect(el.textContent).to.contain(`Foo capitalized: New bar`);
+    });
+
     it(`does not re-render if shouldUpdate() returns false`, async function() {
       expect(el.textContent).to.contain(`Value of foo: bar`);
       el.update({foo: `meow`});

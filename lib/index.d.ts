@@ -234,5 +234,5 @@ export class Component<State, AppState = {}, App = unknown, Attrs = AnyAttrs> ex
    * well as any other components sharing the same state. This is the primary
    * means of updating the DOM in a Panel application.
    */
-  update(stateUpdate?: Partial<State>): void;
+  update(stateUpdate?: Partial<State> | ((state: State) => Partial<State>)): void;
 }
