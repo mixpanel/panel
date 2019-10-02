@@ -100,6 +100,24 @@ describe(`Simple Component instance`, function() {
       expect(el.textContent).to.contain(`Foo capitalized: New value`);
     });
 
+    it(`re-renders when state is updated with update function`, async function() {
+      expect(el.textContent).to.contain(`Value of foo: bar`);
+      expect(el.textContent).to.contain(`Foo capitalized: Bar`);
+      el.update(() => ({foo: `new value`}));
+      await nextAnimationFrame();
+      expect(el.textContent).to.contain(`Value of foo: new value`);
+      expect(el.textContent).to.contain(`Foo capitalized: New value`);
+    });
+
+    it(`re-renders when state is updated with function accessing existing state`, async function() {
+      expect(el.textContent).to.contain(`Value of foo: bar`);
+      expect(el.textContent).to.contain(`Foo capitalized: Bar`);
+      el.update(state => ({foo: `new ${state.foo}`}));
+      await nextAnimationFrame();
+      expect(el.textContent).to.contain(`Value of foo: new bar`);
+      expect(el.textContent).to.contain(`Foo capitalized: New bar`);
+    });
+
     it(`does not re-render if shouldUpdate() returns false`, async function() {
       expect(el.textContent).to.contain(`Value of foo: bar`);
       el.update({foo: `meow`});
@@ -123,6 +141,117 @@ describe(`Simple Component instance`, function() {
       el.update({foo: `llamas`});
       expect(el.preFoo).to.equal(`bar`);
       expect(el.postFoo).to.equal(`llamas`);
+    });
+  });
+
+  context(`when detached from DOM`, function() {
+    it(`cleans up references to be GC friendly`, async function() {
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+      document.body.removeChild(el);
+      await nextAnimationFrame();
+
+      expect(el.$panelRoot).to.be.null;
+      expect(el.$panelParent).to.be.null;
+      expect(el.appState).to.be.null;
+      expect(el.app).to.be.null;
+      expect(el.domPatcher).to.be.null;
+      expect(el._rendered).to.be.null;
+      expect(el.initialized).to.equal(false);
+    });
+  });
+
+  context(`when detached and re-attached to DOM multiple times`, function() {
+    it(`renders its template`, async function() {
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+
+      for (let i = 0 ; i < 5; ++i) {
+        document.body.removeChild(el);
+        await nextAnimationFrame();
+        document.body.appendChild(el);
+        await nextAnimationFrame();
+      }
+
+      expect(document.querySelector(`simple-app`)).to.equal(el);
+      expect(el.textContent).to.equal([
+        `Value of foo: bar`,
+        `Value of baz: qux`,
+        `Foo capitalized: Bar`,
+      ].join(``));
+    });
+  });
+
+  context(`when detached and attached via keyed children`, function() {
+    beforeEach(async function() {
+      document.body.innerHTML = ``;
+      el = document.createElement(`nested-keyed-children-app`);
+      el.setAttribute(`letters`, JSON.stringify([`a`, `b`, `c`, `d`, `e`]));
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+    });
+
+    it(`renders its template after children change position`, async function() {
+      expect(el.textContent).to.equal([
+        `alpha`,
+        `bravo`,
+        `charlie`,
+        `delta`,
+        `echo`,
+      ].join(``));
+
+      el.setAttribute(`letters`, JSON.stringify([`e`, `c`, `a`, `d`, `b`]));
+      await nextAnimationFrame();
+
+      expect(el.textContent).to.equal([
+        `echo`,
+        `charlie`,
+        `alpha`,
+        `delta`,
+        `bravo`,
+      ].join(``));
+
+      el.setAttribute(`letters`, JSON.stringify([`d`, `b`, `a`]));
+      await nextAnimationFrame();
+
+      expect(el.textContent).to.equal([
+        `delta`,
+        `bravo`,
+        `alpha`,
+      ].join(``));
+    });
+
+    it(`doesn't clear parent references if immediately added back`, async function() {
+      const childEl = el.querySelector(`nested-keyed-child1`);
+      const parentEl = childEl.parentElement;
+
+      parentEl.removeChild(childEl);
+      expect(childEl.$panelParent).to.be.ok;
+      expect(childEl.app).to.equal(el);
+
+      parentEl.appendChild(childEl);
+      expect(childEl.$panelParent).to.be.ok;
+      expect(childEl.app).to.equal(el);
+
+      await nextAnimationFrame();
+      expect(childEl.$panelParent).to.be.ok;
+      expect(childEl.app).to.equal(el);
+    });
+
+    it(`clears parent references after a frame`, async function() {
+      const childEl = el.querySelector(`nested-keyed-child1`);
+      const parentEl = childEl.parentElement;
+
+      parentEl.removeChild(childEl);
+      expect(childEl.$panelParent).to.be.ok;
+      expect(childEl.app).to.equal(el);
+
+      await nextAnimationFrame();
+      expect(childEl.$panelParent).to.be.null;
+      expect(childEl.app).to.be.null;
+
+      // add child back otherwise vdom sync will barf
+      parentEl.appendChild(childEl);
     });
   });
 

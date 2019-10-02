@@ -131,4 +131,16 @@ describe(`dom-patcher`, function() {
       expect(domPatcher.el.textContent).to.eql(`Value of foo: whew`);
     });
   });
+
+  context(`when disconnected`, function() {
+    it(`cleans up references to be GC friendly`, function() {
+      const domPatcher = new DOMPatcher({foo: `bar`}, () => h(`div`));
+      domPatcher.disconnect();
+
+      expect(domPatcher.renderFunc).to.equal(null);
+      expect(domPatcher.state).to.equal(null);
+      expect(domPatcher.vnode).to.equal(null);
+      expect(domPatcher.el).to.equal(null);
+    });
+  });
 });

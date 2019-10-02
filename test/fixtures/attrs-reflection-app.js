@@ -9,6 +9,7 @@ const STR_ATTR = {
 
 /** @typedef {{str: string}} State */
 /** @typedef {{'str-attr': string, 'bool-attr': boolean, 'number-attr': number, 'json-attr': any }} Attrs */
+/** @typedef {import('../../lib/index.d').ConfigOptions<State, {}, Attrs>} ConfigOptions*/
 
 /** @extends {Component<State, unknown, unknown, Attrs>} */
 export class AttrsReflectionApp extends Component {
@@ -21,10 +22,14 @@ export class AttrsReflectionApp extends Component {
     };
   }
 
+  /** @returns {ConfigOptions} */
   get config() {
     return {
       template: scope => h(`div`, {class: {'attrs-reflection-app': true}},
-        Object.keys(scope.$component.attrs()).map(attr => h(`p`, `${attr}: ${JSON.stringify(scope.$attr(attr))}`)),
+        Object.keys(scope.$component.attrs()).map(
+          /** @param attr {keyof Attrs} */
+          attr => h(`p`, `${attr}: ${JSON.stringify(scope.$attr(attr))}`)
+        ),
       ),
       defaultState: {
         // Typescript will infer attr(`str-attr`) returns a string.
