@@ -1,7 +1,7 @@
-/* globals WCT */
 import {nextAnimationFrame} from 'domsuite';
 
 import {compactHtml} from '../utils';
+
 
 describe(`Simple Component instance`, function() {
   let el;
@@ -628,30 +628,29 @@ describe(`Nested Component instance with partially shared state`, function() {
 
 describe(`Rendering exception`, function() {
   let el;
-  let eventSpy;
+  let renderErrorSpy;
 
   beforeEach(async function() {
-    WCT._config.trackConsoleError = false;
     document.body.innerHTML = ``;
     el = document.createElement(`breakable-app`);
-    eventSpy = sinon.spy();
-    el.addEventListener(`rendererror`, eventSpy);
+    renderErrorSpy = sinon.spy();
+    el.addEventListener(`renderError`, renderErrorSpy);
+    el._logError = sinon.spy();
     document.body.appendChild(el);
     await nextAnimationFrame();
-  });
-
-  afterEach(function() {
-    WCT._config.trackConsoleError = true;
   });
 
   it(`does not prevent component from initializing`, function() {
     expect(el.initialized).to.be.ok;
   });
 
-  it(`emits a rendererror event`, function() {
-    const errorEvent = eventSpy.getCall(0).args[0];
-    expect(errorEvent.detail.message).to.contain(`Error while rendering breakable-app`);
-    expect(errorEvent.detail.error).to.be.instanceof(Error);
+  it(`logs error and emits renderError event`, function() {
+    const errorMessage = `Error while rendering breakable-app`;
+    expect(el._logError.getCall(0).args[0]).to.contain(errorMessage);
+
+    const renderErrorEvent = renderErrorSpy.getCall(0).args[0];
+    expect(renderErrorEvent.detail.message).to.contain(errorMessage);
+    expect(renderErrorEvent.detail.error).to.be.instanceof(Error);
   });
 
   it(`does not prevent further updates from rendering`, async function() {
