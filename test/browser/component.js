@@ -1,4 +1,4 @@
-import {nextAnimationFrame} from 'domsuite';
+import {nextAnimationFrame, sleep} from 'domsuite';
 
 import {compactHtml} from '../utils';
 
@@ -658,5 +658,29 @@ describe(`Rendering exception`, function() {
     el.update({foo: {bar: `later success`}});
     await nextAnimationFrame();
     expect(el.textContent).to.contain(`Value of foo.bar: later success`);
+  });
+});
+
+context.only(`$hooks`, function() {
+  context(`.delayedAttrRemove`, function() {
+    it(`sets attr open:false immediately and removes modal after delay`, async function() {
+      document.body.innerHTML = ``;
+      const bodyText = `modal body!`;
+      const el = document.createElement(`delayed-attr-remove-app`);
+      document.body.appendChild(el);
+
+      el.setAttribute(`open`, `true`);
+      await nextAnimationFrame();
+      expect(el.textContent).to.contain(bodyText);
+
+      el.setAttribute(`open`, `false`);
+      await nextAnimationFrame();
+      expect(el.textContent).to.contain(bodyText);
+      expect(el.querySelector(`my-modal`).getAttribute(`open`)).to.equal(`false`);
+
+      await sleep(50);
+      expect(el.textContent).not.to.contain(bodyText);
+      expect(el.querySelector(`my-modal`)).to.equal(null);
+    });
   });
 });

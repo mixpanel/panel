@@ -63,6 +63,10 @@ declare namespace Component {
     [hookName: string]: (params: any) => void;
   }
 
+  interface HookHelpers {
+    delayedAttrRemove: (attr: string, value: string, waitMs?: number) => void;
+  }
+
   interface TemplateScope<State, AppState = {}, Attrs = AnyAttrs> {
     /** AppState of the root panel component */
     $app: AppState;
@@ -75,6 +79,9 @@ declare namespace Component {
 
     /** Helpers defined in component config */
     $helpers: Helpers;
+
+    /** Hook helpers for snabbdom hooks module */
+    $hooks: HookHelpers;
   }
 
   interface ConfigOptions<State, AppState, Attrs> {
