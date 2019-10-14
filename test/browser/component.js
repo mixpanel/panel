@@ -661,9 +661,9 @@ describe(`Rendering exception`, function() {
   });
 });
 
-context.only(`$hooks`, function() {
-  context(`.delayedAttrRemove`, function() {
-    it(`sets attr open:false immediately and removes modal after delay`, async function() {
+context(`$hooks`, function() {
+  describe(`.delayedAttrRemove`, function() {
+    it(`sets attr immediately and removes element after delay`, async function() {
       document.body.innerHTML = ``;
       const bodyText = `modal body!`;
       const el = document.createElement(`delayed-attr-remove-app`);
@@ -680,7 +680,7 @@ context.only(`$hooks`, function() {
 
       await sleep(50);
       expect(el.textContent).not.to.contain(bodyText);
-      expect(el.querySelector(`my-modal`)).to.equal(null);
+      expect(el.querySelector(`my-modal`)).to.be.null;
     });
   });
 });
