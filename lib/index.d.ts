@@ -178,7 +178,7 @@ export class Component<State, AppState = {}, App = unknown, Attrs = AnyAttrs> ex
    * Template helper functions defined in config object, and exposed to template code as $helpers.
    * This getter uses the component's internal config cache.
    */
-  helpers: ConfigOptions<State, AppState>['helpers'];
+  helpers: this['config']['helpers'];
 
   /** Gets the attribute value. Throws an error if attr not defined in attrsSchema */
   attr<A extends keyof Attrs>(attr: A): Attrs[A];
