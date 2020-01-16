@@ -140,6 +140,10 @@ export interface AttrSchema {
   interface?: string;
 }
 
+export type AttrsSchema<T> = {
+  [attr in keyof T]: string | AttrSchema;
+};
+
 export interface AnyAttrs {
   [attr: string]: any;
 }
