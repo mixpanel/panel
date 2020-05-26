@@ -1,5 +1,5 @@
 // @ts-check
-import {Component, h} from '../../lib';
+import {Component, jsx} from '../../lib';
 
 const STR_ATTR = {
   HELLO: `hello`,
@@ -30,12 +30,12 @@ export class AttrsReflectionApp extends Component {
   get config() {
     return {
       template: (scope) =>
-        h(
+        jsx(
           `div`,
           {class: {'attrs-reflection-app': true}},
           Object.keys(scope.$component.attrs()).map(
             /** @param attr {keyof Attrs} */
-            (attr) => h(`p`, `${attr}: ${JSON.stringify(scope.$attr(attr))}`),
+            (attr) => jsx(`p`, null, `${attr}: ${JSON.stringify(scope.$attr(attr))}`),
           ),
         ),
       defaultState: {
