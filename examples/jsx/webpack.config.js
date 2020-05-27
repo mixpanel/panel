@@ -19,7 +19,7 @@ const webpackConfig = {
         exclude: /node_modules/,
         loader: `babel`,
         query: {
-          plugins: [[`transform-react-jsx`, {pragma: `html`}]],
+          plugins: [[`transform-react-jsx`, {pragma: `jsx`}]],
           presets: [`es2015`],
         },
       },

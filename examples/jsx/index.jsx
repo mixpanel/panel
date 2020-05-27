@@ -1,7 +1,6 @@
 // import from the same repo. in a different repo you'd use:
 // import { Component } from 'panel';
-import { Component } from '../../lib';
-import { html } from 'snabbdom-jsx';
+import { Component, jsx } from '../../lib';
 
 customElements.define('counter-app', class extends Component {
   get config() {
@@ -14,13 +13,13 @@ customElements.define('counter-app', class extends Component {
       },
 
       template: props =>
-        <div className="counter">
-          <div className="val">
+        <div sel=".counter">
+          <div sel=".val">
             Counter: {props.count}
           </div>
-          <div className="controls">
-            <button className="decr" on-click={props.$helpers.decr}>-</button>
-            <button className="incr" on-click={props.$helpers.incr}>+</button>
+          <div sel=".controls">
+            <button sel=".decr" on={{click: props.$helpers.decr}}>-</button>
+            <button sel=".incr" on={{click: props.$helpers.incr}}>+</button>
           </div>
         </div>
     };
