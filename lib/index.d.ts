@@ -2,7 +2,7 @@
 // Project: panel
 // Definitions by: Mixpanel (https://mixpanel.com)
 import {VNode} from 'snabbdom/vnode';
-import {WebComponent} from 'webcomponent';
+import WebComponent from 'webcomponent';
 
 export {h} from 'snabbdom/h';
 export {jsx} from 'snabbdom-jsx-lite';
