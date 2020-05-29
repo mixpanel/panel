@@ -52,7 +52,7 @@
     "snabbdom": "0.7.4",
     "snabbdom-delayed-class": "0.1.1",
     "snabbdom-jsx-lite": "1.0.10",
-    "webcomponent": "1.2.1"
+    "webcomponent": "1.2.2"
   },
   "devDependencies": {
     "@webcomponents/custom-elements": "1.0.6",
