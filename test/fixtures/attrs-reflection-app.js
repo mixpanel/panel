@@ -1,5 +1,6 @@
 // @ts-check
-import {Component, jsx} from '../../lib';
+import {Component} from '../../lib';
+import {template} from './attrs-reflection-template';
 
 const STR_ATTR = {
   HELLO: `hello`,
@@ -10,20 +11,6 @@ const STR_ATTR = {
 /** @typedef {{str: string}} State */
 /** @typedef {{'str-attr': string, 'bool-attr': boolean, 'number-attr': number, 'json-attr': any }} Attrs */
 /** @typedef {import('../../lib/index.d').ConfigOptions<State, {}, Attrs>} ConfigOptions*/
-
-/** @this {AttrsReflectionApp}
- * fixture example with `this` implicitly bound to the component instance
- */
-function template() {
-  return jsx(
-    `div`,
-    {class: {'attrs-reflection-app': true}},
-    Object.keys(this.attrs()).map(
-      /** @param attr {keyof Attrs} */
-      (attr) => jsx(`p`, null, `${attr}: ${JSON.stringify(this.attr(attr))}`),
-    ),
-  );
-}
 
 /** @extends {Component<State, unknown, unknown, Attrs>} */
 export class AttrsReflectionApp extends Component {
