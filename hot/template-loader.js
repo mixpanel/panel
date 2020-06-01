@@ -20,15 +20,13 @@ module.exports.pitch = function (request) {
   // we just need to call their .update()
   return `
     const getTemplateFn = (mod) => mod.__esModule ? mod.template : mod;
-    const templateModule = require(${moduleId});
-    let templateFn = getTemplateFn(templateModule);
-    const wrappedTemplateFn = function() {return templateFn.apply(this, arguments)};
+    let templateFn = getTemplateFn(require(${moduleId}));
     module.hot.accept(${moduleId}, () => {
-      const templateModule = require(${moduleId});
-      templateFn = getTemplateFn(templateModule)
+      templateFn = getTemplateFn(require(${moduleId}))
       const updatePanelElems = require('panel/hot/update-panel-elems');
       updatePanelElems('${elemName}', elem => true);
     });
+    const wrappedTemplateFn = function() {return templateFn.apply(this, arguments)};
     if (templateModule.__esModule) {
       module.exports = {...templateModule, __esModule: true, template: wrappedTemplateFn};
     } else {
