@@ -49,11 +49,6 @@ const webpackConfig = {
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
   ]
-  resolveLoader: {
-    alias: {
-      'panel-controller': `panel/hot/controller-loader`,
-    },
-  },
 };
 
 if (isDevServer && HOT) {
@@ -64,46 +59,3 @@ if (isDevServer && HOT) {
 ```
 
 Panel hot loaders only activate if `webpackConfig.devServer.hot === true` otherwise they do a no-op and behave like they are non-existent
-
-
-## Inside a panel component
-
-```js
-import {Component} from 'panel';
-// Ensure controller uses a `export default class SampleController`
-import SampleController from 'panel-controller!./controller';
-import template from './index.jade';
-import './index.styl';
-
-customElements.define('sample-component', class SampleComponent extends Component {
-  get config() {
-    return {
-      template,
-    };
-  }
-
-  constructor() {
-    super(...arguments);
-    this.controller = new SampleController({store: this});
-  }
-}
-```
-
-Or using a ControlledComponent
-
-```js
-import {ControlledComponent} from 'panel';
-import SampleController from 'panel-controller!./controller';
-import template from './index.jade';
-import './index.styl';
-
-customElements.define('sample-component', class SampleComponent extends ControlledComponent {
-  get config() {
-    return {
-      template,
-      // new instance of class is used after hot mode replacement when element is created
-      controller: new SampleController(),
-    };
-  }
-}
-```
