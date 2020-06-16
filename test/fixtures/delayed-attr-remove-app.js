@@ -1,5 +1,7 @@
 /* eslint-disable multiline-ternary */
+// @ts-check
 import {Component, h} from '../../lib';
+import {delayedAttrRemove} from '../../lib/component-utils/hook-helpers';
 
 export class DelayedAttrRemoveApp extends Component {
   static get attrsSchema() {
@@ -10,7 +12,7 @@ export class DelayedAttrRemoveApp extends Component {
 
   get config() {
     return {
-      template: ({$hooks, $attr}) =>
+      template: ({$attr}) =>
         h(
           `div`,
           [
@@ -19,7 +21,7 @@ export class DelayedAttrRemoveApp extends Component {
                   `my-modal`,
                   {
                     attrs: {open: true},
-                    hook: {remove: $hooks.delayedAttrRemove(`open`, `false`, 50)},
+                    hook: {remove: delayedAttrRemove(`open`, `false`, 50)},
                   },
                   `modal body!`,
                 )
