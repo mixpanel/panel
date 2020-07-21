@@ -63,27 +63,27 @@ export interface PanelHooks<State> {
   [hookName: string]: (params: any) => void;
 }
 
-export interface ConfigOptions<ComponentT extends Component<any>> {
+export interface ConfigOptions<StateT, AppStateT = unknown> {
   /** Function transforming state object to virtual dom tree */
-  template(this: ComponentT, scope?: ComponentT['state']): VNode;
+  template(scope?: StateT): VNode;
 
   /** Component-specific Shadow DOM stylesheet */
   css?: string;
 
   /** An initial default value for the component's state property */
-  defaultState?: ComponentT['state'];
+  defaultState?: StateT;
 
   /**
    * A state object to share with nested descendant components. If not set, root component
    * shares entire state object with all descendants. Only applicable to app root components.
    */
-  appState?: ComponentT['appState'];
+  appState?: AppStateT;
 
   /** Properties and functions injected automatically into template state object */
   helpers?: PanelHelpers;
 
   /** Extra rendering/lifecycle callbacks */
-  hooks?: PanelHooks<ComponentT['state']>;
+  hooks?: PanelHooks<StateT>;
 
   /** Object mapping string route expressions to handler functions */
   routes?: {[route: string]: Function};
@@ -152,7 +152,7 @@ export class Component<StateT, AttrsT = AnyAttrs, AppStateT = unknown, AppT = un
   state: StateT;
 
   /** Defines standard component configuration */
-  config: ConfigOptions<Component<StateT, AttrsT, AppStateT, AppT>>;
+  config: ConfigOptions<StateT, AppStateT>;
 
   /**
    * Template helper functions defined in config object, and exposed to template code as $helpers.
@@ -182,10 +182,10 @@ export class Component<StateT, AttrsT = AnyAttrs, AppStateT = unknown, AppT = un
    * Fetches a value from the component's configuration map (a combination of
    * values supplied in the config() getter and defaults applied automatically).
    */
-  getConfig<K extends keyof ConfigOptions<this>>(key: K): this['config'][K];
+  getConfig<K extends keyof ConfigOptions<StateT, AppStateT>>(key: K): this['config'][K];
 
   /** Sets a value in the component's configuration map after element initialization */
-  setConfig<K extends keyof ConfigOptions<this>>(key: K, val: ConfigOptions<this>[K]): void;
+  setConfig<K extends keyof ConfigOptions<StateT, AppStateT>>(key: K, val: ConfigOptions<StateT, AppStateT>[K]): void;
 
   /**
    * Executes the route handler matching the given URL fragment, and updates
@@ -195,7 +195,7 @@ export class Component<StateT, AttrsT = AnyAttrs, AppStateT = unknown, AppT = un
 
   /** Run a user-defined hook with the given parameters */
   runHook: (
-    hookName: keyof ConfigOptions<this>['hooks'],
+    hookName: keyof ConfigOptions<StateT, AppStateT>['hooks'],
     options: {cascade: boolean; exclude: Component<any, any>},
     params: any,
   ) => void;
