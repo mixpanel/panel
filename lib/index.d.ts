@@ -65,7 +65,7 @@ export interface PanelHooks<State> {
 
 export interface ConfigOptions<ComponentT extends Component<any>> {
   /** Function transforming state object to virtual dom tree */
-  template(this: ComponentT): VNode;
+  template(this: ComponentT, scope?: ComponentT['state']): VNode;
 
   /** Component-specific Shadow DOM stylesheet */
   css?: string;
@@ -152,7 +152,7 @@ export class Component<StateT, AttrsT = AnyAttrs, AppStateT = unknown, AppT = un
   state: StateT;
 
   /** Defines standard component configuration */
-  config: ConfigOptions<this>;
+  config: ConfigOptions<Component<StateT, AttrsT, AppStateT, AppT>>;
 
   /**
    * Template helper functions defined in config object, and exposed to template code as $helpers.
