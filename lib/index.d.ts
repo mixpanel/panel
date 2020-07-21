@@ -49,73 +49,50 @@ export class StateController<State> {
   unsubscribeUpdates(listener: (props: Partial<State>) => void): void;
 }
 
-declare namespace Component {
-  interface Helpers {
-    [helper: string]: any;
-  }
+export interface PanelHelpers {
+  [helper: string]: any;
+}
 
-  interface Hooks<State> {
-    /** Function called before an update is applied */
-    preUpdate?: (stateUpdate: Partial<State>) => void;
+export interface PanelHooks<State> {
+  /** Function called before an update is applied */
+  preUpdate?: (stateUpdate: Partial<State>) => void;
 
-    /** Function called after an update is applied */
-    postUpdate?: (stateUpdate: Partial<State>) => void;
+  /** Function called after an update is applied */
+  postUpdate?: (stateUpdate: Partial<State>) => void;
 
-    [hookName: string]: (params: any) => void;
-  }
+  [hookName: string]: (params: any) => void;
+}
 
-  interface HookHelpers {
-    delayedAttrRemove: (attr: string, value: string, waitMs?: number) => void;
-  }
+export interface ConfigOptions<ComponentT extends Component<any>> {
+  /** Function transforming state object to virtual dom tree */
+  template(this: ComponentT): VNode;
 
-  interface TemplateScope<State, AppState = {}, Attrs = AnyAttrs> {
-    /** AppState of the root panel component */
-    $app: AppState;
+  /** Component-specific Shadow DOM stylesheet */
+  css?: string;
 
-    /** Attributes parsed from component's html attributes using attrsSchema */
-    $attr<A extends keyof Attrs>(attr: A): Attrs[A];
+  /** An initial default value for the component's state property */
+  defaultState?: ComponentT['state'];
 
-    /** A reference to the component itself */
-    $component: Component<State, AppState, unknown, Attrs>;
+  /**
+   * A state object to share with nested descendant components. If not set, root component
+   * shares entire state object with all descendants. Only applicable to app root components.
+   */
+  appState?: ComponentT['appState'];
 
-    /** Helpers defined in component config */
-    $helpers: Helpers;
+  /** Properties and functions injected automatically into template state object */
+  helpers?: PanelHelpers;
 
-    /** Hook helpers for snabbdom hooks module */
-    $hooks: HookHelpers;
-  }
+  /** Extra rendering/lifecycle callbacks */
+  hooks?: PanelHooks<ComponentT['state']>;
 
-  interface ConfigOptions<State, AppState, Attrs> {
-    /** Function transforming state object to virtual dom tree */
-    template(scope: TemplateScope<State, AppState, Attrs> & State): VNode;
+  /** Object mapping string route expressions to handler functions */
+  routes?: {[route: string]: Function};
 
-    /** Component-specific Shadow DOM stylesheet */
-    css?: string;
+  /** Whether to apply updates to DOM immediately, instead of batching to one update per frame */
+  updateSync?: boolean;
 
-    /** An initial default value for the component's state property */
-    defaultState?: State;
-
-    /**
-     * A state object to share with nested descendant components. If not set, root component
-     * shares entire state object with all descendants. Only applicable to app root components.
-     */
-    appState?: AppState;
-
-    /** Properties and functions injected automatically into template state object */
-    helpers?: Helpers;
-
-    /** Extra rendering/lifecycle callbacks */
-    hooks?: Hooks<State>;
-
-    /** Object mapping string route expressions to handler functions */
-    routes?: {[route: string]: Function};
-
-    /** Whether to apply updates to DOM immediately, instead of batching to one update per frame */
-    updateSync?: boolean;
-
-    /** Whether to use Shadow DOM */
-    useShadowDom?: boolean;
-  }
+  /** Whether to use Shadow DOM */
+  useShadowDom?: boolean;
 }
 
 export interface AttrSchema {
@@ -149,9 +126,7 @@ export interface AnyAttrs {
   [attr: string]: any;
 }
 
-export type ConfigOptions<State, AppState = {}, Attrs = AnyAttrs> = Component.ConfigOptions<State, AppState, Attrs>;
-
-export class Component<State, AppState = {}, App = unknown, Attrs = AnyAttrs> extends WebComponent {
+export class Component<StateT, AttrsT = AnyAttrs, AppStateT = unknown, AppT = unknown> extends WebComponent {
   /** The first Panel Component ancestor in the DOM tree; null if this component is the root */
   $panelParent: Component<unknown>;
 
@@ -162,10 +137,10 @@ export class Component<State, AppState = {}, App = unknown, Attrs = AnyAttrs> ex
   static attrsSchema: {[attr: string]: string | AttrSchema};
 
   /** A reference to the top-level component */
-  app: App;
+  app: AppT;
 
   /** State object to share with nested descendant components */
-  appState: AppState;
+  appState: AppStateT;
 
   /** Refers to the outer-most element in the template file for shadow DOM components. Otherwise, el refers to the component itself. */
   el: HTMLElement;
@@ -174,10 +149,10 @@ export class Component<State, AppState = {}, App = unknown, Attrs = AnyAttrs> ex
   initialized: boolean;
 
   /** Defines the state of the component, including all the properties required for rendering */
-  state: State;
+  state: StateT;
 
   /** Defines standard component configuration */
-  config: ConfigOptions<State, AppState, Attrs>;
+  config: ConfigOptions<this>;
 
   /**
    * Template helper functions defined in config object, and exposed to template code as $helpers.
@@ -186,10 +161,10 @@ export class Component<State, AppState = {}, App = unknown, Attrs = AnyAttrs> ex
   helpers: this['config']['helpers'];
 
   /** Gets the attribute value. Throws an error if attr not defined in attrsSchema */
-  attr<A extends keyof Attrs>(attr: A): Attrs[A];
+  attr<A extends keyof AttrsT>(attr: A): AttrsT[A];
 
   /** Attributes parsed from component's html attributes using attrsSchema */
-  attrs(): Attrs;
+  attrs(): AttrsT;
 
   /**
    * For use inside view templates, to create a child Panel component nested under this
@@ -207,23 +182,23 @@ export class Component<State, AppState = {}, App = unknown, Attrs = AnyAttrs> ex
    * Fetches a value from the component's configuration map (a combination of
    * values supplied in the config() getter and defaults applied automatically).
    */
-  getConfig<K extends keyof ConfigOptions<State, AppState>>(key: K): ConfigOptions<State, AppState>[K];
+  getConfig<K extends keyof ConfigOptions<this>>(key: K): this['config'][K];
+
+  /** Sets a value in the component's configuration map after element initialization */
+  setConfig<K extends keyof ConfigOptions<this>>(key: K, val: ConfigOptions<this>[K]): void;
 
   /**
    * Executes the route handler matching the given URL fragment, and updates
    * the URL, as though the user had navigated explicitly to that address.
    */
-  navigate(fragment: string, stateUpdate?: Partial<State>): void;
+  navigate(fragment: string, stateUpdate?: Partial<StateT>): void;
 
   /** Run a user-defined hook with the given parameters */
   runHook: (
-    hookName: keyof ConfigOptions<State, AppState>['hooks'],
+    hookName: keyof ConfigOptions<this>['hooks'],
     options: {cascade: boolean; exclude: Component<any, any>},
     params: any,
   ) => void;
-
-  /** Sets a value in the component's configuration map after element initialization */
-  setConfig<K extends keyof ConfigOptions<State, AppState>>(key: K, val: ConfigOptions<State, AppState>[K]): void;
 
   /**
    * To be overridden by subclasses, defining conditional logic for whether
@@ -231,7 +206,7 @@ export class Component<State, AppState = {}, App = unknown, Attrs = AnyAttrs> ex
    * In most cases this method can be left untouched, but can provide improved
    * performance when dealing with very many DOM elements.
    */
-  shouldUpdate(state: State): boolean;
+  shouldUpdate(state: StateT): boolean;
 
   /**
    * Applies a state update specifically to app state shared across components.
@@ -239,12 +214,12 @@ export class Component<State, AppState = {}, App = unknown, Attrs = AnyAttrs> ex
    * state is shared across all parent and child components and the standard
    * update() method should be used instead.
    */
-  updateApp(stateUpdate?: Partial<AppState>): void;
+  updateApp(stateUpdate?: Partial<AppStateT>): void;
 
   /**
    * Applies a state update, triggering a re-render check of the component as
    * well as any other components sharing the same state. This is the primary
    * means of updating the DOM in a Panel application.
    */
-  update(stateUpdate?: Partial<State> | ((state: State) => Partial<State>)): void;
+  update(stateUpdate?: Partial<StateT> | ((state: StateT) => Partial<StateT>)): void;
 }

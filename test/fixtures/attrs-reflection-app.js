@@ -10,9 +10,9 @@ const STR_ATTR = {
 
 /** @typedef {{str: string}} State */
 /** @typedef {{'str-attr': string, 'bool-attr': boolean, 'number-attr': number, 'json-attr': any }} Attrs */
-/** @typedef {import('../../lib/index.d').ConfigOptions<State, {}, Attrs>} ConfigOptions*/
+/** @typedef {import('../../lib/index.d').ConfigOptions<AttrsReflectionApp>} ConfigOptions*/
 
-/** @extends {Component<State, unknown, unknown, Attrs>} */
+/** @extends {Component<State, Attrs>} */
 export class AttrsReflectionApp extends Component {
   static get attrsSchema() {
     return {
