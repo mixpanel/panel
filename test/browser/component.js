@@ -651,7 +651,6 @@ describe(`Rendering exception`, function () {
     expect(el._logError.getCall(0).args[0]).to.equal(errorMessage);
 
     const renderErrorEvent = renderErrorSpy.getCall(0).args[0];
-    expect(renderErrorEvent.detail.message).to.contain(errorMessage);
     expect(renderErrorEvent.detail.error).to.be.instanceof(Error);
     expect(renderErrorEvent.detail.component).to.be.instanceof(BreakableApp);
   });
