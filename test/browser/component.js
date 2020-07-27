@@ -1,5 +1,6 @@
 import {nextAnimationFrame, sleep} from 'domsuite';
 
+import {BreakableApp} from '../fixtures/breakable-app';
 import {compactHtml} from '../utils';
 
 describe(`Simple Component instance`, function () {
@@ -646,12 +647,13 @@ describe(`Rendering exception`, function () {
   });
 
   it(`logs error and emits renderError event`, function () {
-    const errorMessage = `Error while rendering breakable-app`;
-    expect(el._logError.getCall(0).args[0]).to.contain(errorMessage);
+    const errorMessage = `Error while rendering`;
+    expect(el._logError.getCall(0).args[0]).to.equal(errorMessage);
 
     const renderErrorEvent = renderErrorSpy.getCall(0).args[0];
     expect(renderErrorEvent.detail.message).to.contain(errorMessage);
     expect(renderErrorEvent.detail.error).to.be.instanceof(Error);
+    expect(renderErrorEvent.detail.component).to.be.instanceof(BreakableApp);
   });
 
   it(`does not prevent further updates from rendering`, async function () {
