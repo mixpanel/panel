@@ -134,7 +134,7 @@ export class Component<StateT, AttrsT = AnyAttrs, AppStateT = unknown, AppT = un
    * Attributes schema that defines the component's html attributes and their types
    * Panel auto parses attribute changes into this.attrs object and $attrs template helper
    */
-  static attrsSchema: {[attr: string]: string | AttrSchema};
+  static get attrsSchema(): {[attr: string]: string | AttrSchema};
 
   /** A reference to the top-level component */
   app: AppT;
@@ -152,13 +152,13 @@ export class Component<StateT, AttrsT = AnyAttrs, AppStateT = unknown, AppT = un
   state: StateT;
 
   /** Defines standard component configuration */
-  config: ConfigOptions<StateT, AppStateT>;
+  get config(): ConfigOptions<StateT, AppStateT>;
 
   /**
    * Template helper functions defined in config object, and exposed to template code as $helpers.
    * This getter uses the component's internal config cache.
    */
-  helpers: this['config']['helpers'];
+  get helpers(): this['config']['helpers'];
 
   /** Gets the attribute value. Throws an error if attr not defined in attrsSchema */
   attr<A extends keyof AttrsT>(attr: A): AttrsT[A];
