@@ -78,7 +78,7 @@
     "promisify-node": "0.4.0",
     "readline-sync": "1.4.7",
     "tslint": "5.18.0",
-    "typescript": "3.2.2",
+    "typescript": "3.9.7",
     "wct-browser-legacy": "1.0.2",
     "web-component-tester": "6.9.2",
     "webpack": "1.13.0",
