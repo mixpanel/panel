@@ -32,7 +32,7 @@ export class StateController<State> {
   /** A readonly version of controller's state */
   get state(): State;
 
-  /** An initial default property bag for the controller's state implemented as get defaultState() */
+  /** An initial default property bag for the controller's state */
   get defaultState(): State;
 
   /** Update the state by passing in a property bag */
