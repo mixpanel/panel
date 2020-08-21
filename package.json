@@ -1,6 +1,6 @@
 {
   "name": "panel",
-  "version": "5.1.0",
+  "version": "5.2.0",
   "description": "Web Components with Virtual DOM: lightweight composable web apps",
   "main": "build/index.js",
   "types": "lib/index.d.ts",
@@ -70,7 +70,7 @@
     "eslint": "6.8.0",
     "eslint-config-mixpanel": "4.0.0",
     "husky": "4.2.3",
-    "jsdoc": "3.5.5",
+    "jsdoc": "3.6.5",
     "lint-staged": "10.1.1",
     "minami": "1.1.1",
     "mocha": "2.5.3",

@@ -23,7 +23,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Component.html">Component</a><ul class='methods'><li data-type='method'><a href="Component.html#_syncAttrs">_syncAttrs</a></li><li data-type='method'><a href="Component.html#_updateAttr">_updateAttr</a></li><li data-type='method'><a href="Component.html#child">child</a></li><li data-type='method'><a href="Component.html#findPanelParentByTagName">findPanelParentByTagName</a></li><li data-type='method'><a href="Component.html#getConfig">getConfig</a></li><li data-type='method'><a href="Component.html#navigate">navigate</a></li><li data-type='method'><a href="Component.html#setConfig">setConfig</a></li><li data-type='method'><a href="Component.html#shouldUpdate">shouldUpdate</a></li><li data-type='method'><a href="Component.html#update">update</a></li><li data-type='method'><a href="Component.html#updateApp">updateApp</a></li></ul></li><li><a href="module.exports.html">exports</a></li><li><a href="ProxyComponent.html">ProxyComponent</a><ul class='methods'><li data-type='method'><a href="ProxyComponent.html#_syncAttrs">_syncAttrs</a></li><li data-type='method'><a href="ProxyComponent.html#_updateAttr">_updateAttr</a></li><li data-type='method'><a href="ProxyComponent.html#allowEvent">allowEvent</a></li><li data-type='method'><a href="ProxyComponent.html#child">child</a></li><li data-type='method'><a href="ProxyComponent.html#findPanelParentByTagName">findPanelParentByTagName</a></li><li data-type='method'><a href="ProxyComponent.html#getConfig">getConfig</a></li><li data-type='method'><a href="ProxyComponent.html#getTargetElementTag">getTargetElementTag</a></li><li data-type='method'><a href="ProxyComponent.html#navigate">navigate</a></li><li data-type='method'><a href="ProxyComponent.html#setConfig">setConfig</a></li><li data-type='method'><a href="ProxyComponent.html#shouldUpdate">shouldUpdate</a></li><li data-type='method'><a href="ProxyComponent.html#update">update</a></li><li data-type='method'><a href="ProxyComponent.html#updateApp">updateApp</a></li></ul></li><li><a href="StateController.html">StateController</a></li><li><a href="StateStore.html">StateStore</a></li></ul><h3>Modules</h3><ul><li><a href="module-component-utils.html">component-utils</a></li><li><a href="module-isorender_dom-shims.html">isorender/dom-shims</a></li><li><a href="module-panel.html">panel</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Component.html">Component</a><ul class='methods'><li data-type='method'><a href="Component.html#_syncAttrs">_syncAttrs</a></li><li data-type='method'><a href="Component.html#_updateAttr">_updateAttr</a></li><li data-type='method'><a href="Component.html#attr">attr</a></li><li data-type='method'><a href="Component.html#attrs">attrs</a></li><li data-type='method'><a href="Component.html#child">child</a></li><li data-type='method'><a href="Component.html#findPanelParentByTagName">findPanelParentByTagName</a></li><li data-type='method'><a href="Component.html#getConfig">getConfig</a></li><li data-type='method'><a href="Component.html#navigate">navigate</a></li><li data-type='method'><a href="Component.html#onConnected">onConnected</a></li><li data-type='method'><a href="Component.html#onDisconnected">onDisconnected</a></li><li data-type='method'><a href="Component.html#setConfig">setConfig</a></li><li data-type='method'><a href="Component.html#shouldUpdate">shouldUpdate</a></li><li data-type='method'><a href="Component.html#update">update</a></li><li data-type='method'><a href="Component.html#updateApp">updateApp</a></li></ul></li><li><a href="StateController.html">StateController</a></li><li><a href="StateStore.html">StateStore</a></li></ul><h3>Modules</h3><ul><li><a href="module-component-utils.html">component-utils</a></li><li><a href="module-isorender_dom-shims.html">isorender/dom-shims</a></li><li><a href="module-panel.html">panel</a></li></ul><h3>Global</h3><ul><li><a href="global.html#delayedAttrRemove">delayedAttrRemove</a></li></ul>
 </nav>
 
 <div id="main">
@@ -43,9 +43,15 @@ import WebComponent from 'webcomponent';
 
 import {EMPTY_DIV, DOMPatcher, h} from './dom-patcher';
 import Router from './router';
+import * as hookHelpers from './component-utils/hook-helpers';
 
 const DOCUMENT_FRAGMENT_NODE = 11;
-const ATTR_TYPE_DEFAULTS = {string: ``, boolean: false, number: 0, json: null};
+const ATTR_TYPE_DEFAULTS = {
+  string: ``,
+  boolean: false,
+  number: 0,
+  json: null,
+};
 
 /**
  * Definition of a Panel component/app, implemented as an HTML custom element.
@@ -76,7 +82,6 @@ const ATTR_TYPE_DEFAULTS = {string: ``, boolean: false, number: 0, json: null};
  * @extends WebComponent
  */
 class Component extends WebComponent {
-
   /**
    * Defines standard component configuration.
    * @type {object}
@@ -132,8 +137,10 @@ class Component extends WebComponent {
    * @example
    * {template: state => h('.header', this.child('my-child-widget'))}
    */
-  child(tagName, config={}) {
-    config.props = Object.assign({}, config.props, {$panelParentID: this.panelID});
+  child(tagName, config = {}) {
+    config.props = Object.assign({}, config.props, {
+      $panelParentID: this.panelID,
+    });
     return h(tagName, config);
   }
 
@@ -182,6 +189,61 @@ class Component extends WebComponent {
   }
 
   /**
+   * Helper function which will queue a function to be run once the component has been
+   * initialized and added to the DOM. If the component has already had its connectedCallback
+   * run, the function will run immediately.
+   *
+   * It can optionally return a function to be enqueued to be run just before the component is
+   * removed from the DOM. This occurs during the disconnectedCallback lifecycle.
+   * @param {function} fn - callback to be run after the component has been added to the DOM. If this
+   * callback returns another function, the returned function will be run when the component disconnects from the DOM.
+   * @example
+   * myApp.onConnected(() => {
+   *   const handleResize = () => calculateSize();
+   *   document.body.addEventListener(`resize`, handleResize);
+   *   return () => document.body.removeEventListener(`resize`, handleResize);
+   * });
+   */
+  onConnected(fn) {
+    if (this.initialized) {
+      this._maybeEnqueueResult(fn.call(this));
+    }
+    this._connectedQueue.push(fn);
+  }
+
+  _maybeEnqueueResult(result) {
+    if (result &amp;&amp; typeof result === `function`) {
+      result.removeAfterExec = true;
+      this._disconnectedQueue.push(result);
+    }
+  }
+
+  /**
+   * Helper function which will queue a function to be run just before the component is
+   * removed from the DOM. This occurs during the disconnectedCallback lifecycle.
+   *
+   * @param {function} fn - callback to be run just before the component is removed from the DOM
+   * @example
+   * connectedCallback() {
+   *   const shiftKeyListener = () => {
+   *     if (ev.keyCode === SHIFT_KEY_CODE) {
+   *       const doingRangeSelect = ev.type === `keydown` &amp;&amp; this.isMouseOver &amp;&amp; this.lastSelectedRowIdx !== null;
+   *       if (this.state.doingRangeSelect !== doingRangeSelect) {
+   *         this.update({doingRangeSelect});
+   *       }
+   *     }
+   *   }
+   *   document.body.addEventListener(`keydown`, shiftKeyListener);
+   *   this.onDisconnected(() => {
+   *     document.body.removeEventListener(`keydown`, shiftKeyListener);
+   *   });
+   * }
+   */
+  onDisconnected(fn) {
+    this._disconnectedQueue.push(fn);
+  }
+
+  /**
    * Sets a value in the component's configuration map after element
    * initialization.
    * @param {string} key - key of config item to set
@@ -206,7 +268,8 @@ class Component extends WebComponent {
    *   return state.largeResultSetID !== this._cachedResultID;
    * }
    */
-  shouldUpdate(state) { // eslint-disable-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars
+  shouldUpdate(state) {
     return true;
   }
 
@@ -214,13 +277,17 @@ class Component extends WebComponent {
    * Applies a state update, triggering a re-render check of the component as
    * well as any other components sharing the same state. This is the primary
    * means of updating the DOM in a Panel application.
-   * @param {object} [stateUpdate={}] - keys and values of entries to update in
+   * @param {object|function} [stateUpdate={}] - keys and values of entries to update in
    * the component's state object
    * @example
    * myWidget.update({name: 'Bob'});
    */
-  update(stateUpdate={}) {
-    return this._updateStore(stateUpdate, {store: `state`, cascade: this.isStateShared});
+  update(stateUpdate = {}) {
+    const stateUpdateResult = typeof stateUpdate === `function` ? stateUpdate(this.state) : stateUpdate;
+    return this._updateStore(stateUpdateResult, {
+      store: `state`,
+      cascade: this.isStateShared,
+    });
   }
 
   /**
@@ -233,7 +300,7 @@ class Component extends WebComponent {
    * @example
    * myWidget.updateApp({name: 'Bob'});
    */
-  updateApp(stateUpdate={}) {
+  updateApp(stateUpdate = {}) {
     return this._updateStore(stateUpdate, {store: `appState`, cascade: true});
   }
 
@@ -242,22 +309,31 @@ class Component extends WebComponent {
 
     this.panelID = cuid();
 
-    this.attrs = {};
-    this._syncAttrs(); // constructor sync ensures default properties are present on this.attrs
+    this._connectedQueue = [];
+    this._disconnectedQueue = [];
 
-    this._config = Object.assign({}, {
-      css: ``,
-      helpers: {},
-      routes: {},
-      template: () => { throw Error(`No template provided by Component subclass`); },
-      updateSync: false,
-      useShadowDom: false,
-    }, this.config);
+    this._attrs = {};
+    this._syncAttrs(); // constructor sync ensures default properties are present on this._attrs
+
+    this._config = Object.assign(
+      {},
+      {
+        css: ``,
+        helpers: {},
+        routes: {},
+        template: () => {
+          throw Error(`No template provided by Component subclass`);
+        },
+        updateSync: false,
+        useShadowDom: false,
+      },
+      this.config,
+    );
 
     // initialize shared state store, either in `appState` or default to `state`
     // appState and isStateShared of child components will be overwritten by parent/root
     // when the component is connected to the hierarchy
-    this.state = {};
+    this.state = Object.assign({}, this.getConfig(`defaultState`));
     this.appState = this.getConfig(`appState`);
 
     if (!this.appState) {
@@ -297,7 +373,8 @@ class Component extends WebComponent {
       this.isPanelChild = true;
       // find $panelParent
       for (let node = this.parentNode; node &amp;&amp; !this.$panelParent; node = node.parentNode) {
-        if (node.nodeType === DOCUMENT_FRAGMENT_NODE) { // handle shadow-root
+        if (node.nodeType === DOCUMENT_FRAGMENT_NODE) {
+          // handle shadow-root
           node = node.host;
         }
         if (node.panelID === this.$panelParentID) {
@@ -311,11 +388,16 @@ class Component extends WebComponent {
       this.$panelParent.$panelChildren.add(this);
 
       // share either appState or all of state
-      Object.assign(this.$panelRoot.appState, this.appState); // flush any queued appState changes
-      this.appState = this.$panelRoot.appState;
-      this.isStateShared = this.$panelRoot.isStateShared;
-      this.state = this.isStateShared ? this.$panelRoot.state : {};
+      // flush any queued appState changes
+      this.appState = Object.assign(this.$panelRoot.appState, this.appState);
 
+      // if child element state is shared, point
+      // state to parent's state object and flush any
+      // queued state changes to the parent state
+      this.isStateShared = this.$panelRoot.isStateShared;
+      if (this.isStateShared) {
+        this.state = Object.assign(this.$panelRoot.state, this.state);
+      }
     } else {
       this.isPanelRoot = true;
       this.$panelRoot = this;
@@ -323,15 +405,7 @@ class Component extends WebComponent {
     }
     this.app = this.$panelRoot;
 
-    const newState = Object.assign(
-      {},
-      this.getConfig(`defaultState`),
-      this.state,
-      this.getJSONAttribute(`data-state`),
-      this._stateFromAttributes()
-    );
-
-    Object.assign(this.state, newState);
+    Object.assign(this.state, this.getJSONAttribute(`data-state`), this._stateFromAttributes());
 
     if (Object.keys(this.getConfig(`routes`)).length) {
       this.router = new Router(this, {historyMethod: this.historyMethod});
@@ -339,9 +413,19 @@ class Component extends WebComponent {
     }
 
     this.domPatcher = new DOMPatcher(this.state, this._render.bind(this), {
-      updateMode: this.getConfig(`updateSync`) ? `sync`: `async`,
+      updateMode: this.getConfig(`updateSync`) ? `sync` : `async`,
     });
     this.el.appendChild(this.domPatcher.el);
+
+    for (let i = 0; i &lt; this._connectedQueue.length; i++) {
+      const connectedCallbackFn = this._connectedQueue[i];
+      try {
+        this._maybeEnqueueResult(connectedCallbackFn.call(this));
+      } catch (err) {
+        console.warn(`error running onConnected function`, err);
+      }
+    }
+
     this.initialized = true;
     this.initializing = false;
   }
@@ -351,22 +435,54 @@ class Component extends WebComponent {
       return;
     }
 
+    for (let i = 0; i &lt; this._disconnectedQueue.length; i++) {
+      const disconnectedCallbackFn = this._disconnectedQueue[i];
+      try {
+        disconnectedCallbackFn.call(this);
+      } catch (err) {
+        console.warn(`error running onDisconnected function`, err);
+      }
+    }
+
+    this._disconnectedQueue = this._disconnectedQueue.filter((fn) => !fn.removeAfterExec);
+
     if (this.router) {
       this.router.unregisterListeners();
     }
+
     if (this.$panelParent) {
       this.$panelParent.$panelChildren.delete(this);
     }
+
     if (this.domPatcher) {
       this.el.removeChild(this.domPatcher.el);
+      this.domPatcher.disconnect();
     }
+
     this.domPatcher = null;
+    this._rendered = null;
     this.initialized = false;
+
+    // if a child component is added via child() and has keys, snabbdom uses parentEl.insertBefore
+    // which disconnects the element and immediately connects it at another position.
+    // usually the child's disconnectedCallback is called before the parent's
+    // but in that case the parents are removed from dom before the children
+    // which causes a $panelParent not found exception for the grandchildren.
+    // we clean up parent references in an async manner so we can handle that situation.
+    Promise.resolve().then(() => {
+      // only clear references if element hasn't been re-initialized
+      if (!this.initialized) {
+        this.$panelRoot = null;
+        this.$panelParent = null;
+        this.appState = null;
+        this.app = null;
+      }
+    });
   }
 
   /**
    * Attributes schema that defines the component's html attributes and their types
-   * Panel auto parses attribute changes into this.attrs object and $attrs template helper
+   * Panel auto parses attribute changes into attrs() object and $attr template helper
    *
    * @typedef {object} AttrSchema
    * @prop {'string' | 'number' | 'boolean' | 'json'} type - type of the attribute
@@ -402,13 +518,13 @@ class Component extends WebComponent {
     }
   }
 
-  logError() {
+  _logError() {
     console.error(...arguments);
   }
 
   toString() {
     try {
-      return `${this.tagName}#${this.panelID}`;
+      return `${(this.tagName || ``).toLowerCase()}#${this.panelID}`;
     } catch (e) {
       return `UNKNOWN COMPONENT`;
     }
@@ -417,14 +533,25 @@ class Component extends WebComponent {
   _render(state) {
     if (this.shouldUpdate(state)) {
       try {
-        this._rendered = this.getConfig(`template`)(Object.assign({}, state, {
-          $app: this.appState,
-          $component: this,
-          $helpers: this.helpers,
-          $attrs: this.attrs,
-        }));
-      } catch (e) {
-        this.logError(`Error while rendering ${this.toString()}`, this, `\n`, e);
+        this._rendered = this.getConfig(`template`).call(
+          this,
+          Object.assign({}, state, {
+            $app: this.appState,
+            $component: this,
+            $helpers: this.helpers,
+            $attr: this.attr.bind(this),
+            $hooks: hookHelpers,
+          }),
+        );
+      } catch (error) {
+        this._logError(`Error while rendering`, this, `\n`, error);
+        this.dispatchEvent(
+          new CustomEvent(`renderError`, {
+            detail: {error, component: this},
+            bubbles: true,
+            composed: true,
+          }),
+        );
       }
     }
     return this._rendered || EMPTY_DIV;
@@ -442,7 +569,7 @@ class Component extends WebComponent {
       hook(...params);
     }
     if (options.cascade) {
-      for (let child of this.$panelChildren) {
+      for (const child of this.$panelChildren) {
         if (options.exclude !== child) {
           child.runHook(hookName, options, ...params);
         }
@@ -451,14 +578,14 @@ class Component extends WebComponent {
   }
 
   _stateFromAttributes() {
-    let state = {};
+    const state = {};
 
     // this.attributes is a NamedNodeMap, without normal iterators
     for (let ai = 0; ai &lt; this.attributes.length; ai++) {
-      let attr = this.attributes[ai];
-      let attrMatch = attr.name.match(/^state-(.+)/);
+      const attr = this.attributes[ai];
+      const attrMatch = attr.name.match(/^state-(.+)/);
       if (attrMatch) {
-        let num = Number(attr.value);
+        const num = Number(attr.value);
         state[attrMatch[1]] = isNaN(num) ? attr.value : num;
       }
     }
@@ -467,7 +594,7 @@ class Component extends WebComponent {
   }
 
   /**
-   * Validates attrsSchema and syncs element attributes defined in attrsSchema with this.attrs
+   * Validates attrsSchema and syncs element attributes defined in attrsSchema
    */
   _syncAttrs() {
     // maintain local validated map where all schema keys are defined
@@ -486,7 +613,9 @@ class Component extends WebComponent {
       if (!ATTR_TYPE_DEFAULTS.hasOwnProperty(attrType)) {
         throw new Error(
           `Invalid type: ${attrType} for attr: ${attr} in attrsSchema. ` +
-          `Only (${Object.keys(ATTR_TYPE_DEFAULTS).map(v => `'${v}'`).join(` | `)}) is valid.`
+            `Only (${Object.keys(ATTR_TYPE_DEFAULTS)
+              .map((v) => `'${v}'`)
+              .join(` | `)}) is valid.`,
         );
       }
 
@@ -509,13 +638,15 @@ class Component extends WebComponent {
 
       this._attrsSchema[attr] = attrSchemaObj;
       this._updateAttr(attr);
+      // updated at end so we don't console.warn on initial sync
+      attrSchemaObj.deprecatedMsg = attrSchema.deprecatedMsg;
     }
 
-    return this.attrs;
+    return this._attrs;
   }
 
   /**
-   * Parses html attribute using type information from attrsSchema and updates this.attrs
+   * Parses html attribute using type information from attrsSchema and updates this._attrs
    * @param {string} attr - attribute name
    */
   _updateAttr(attr) {
@@ -526,6 +657,11 @@ class Component extends WebComponent {
       let attrValue = null;
 
       if (!this.hasAttribute(attr)) {
+        if (attrType === `boolean` &amp;&amp; attrSchema.default) {
+          console.warn(
+            `${this}: attr '${attr}' is defaulted to true. Default-true boolean attributes are deprecated and will be removed in a future release`,
+          );
+        }
         attrValue = attrSchema.default;
       } else if (attrType === `string`) {
         attrValue = this.getAttribute(attr);
@@ -534,7 +670,9 @@ class Component extends WebComponent {
         if (enumSet &amp;&amp; !enumSet.has(attrValue)) {
           throw new Error(
             `Invalid value: '${attrValue}' for attr: ${attr}. ` +
-            `Only (${Array.from(enumSet).map(v => `'${v}'`).join(` | `)}) is valid.`
+              `Only (${Array.from(enumSet)
+                .map((v) => `'${v}'`)
+                .join(` | `)}) is valid.`,
           );
         }
       } else if (attrType === `boolean`) {
@@ -545,23 +683,44 @@ class Component extends WebComponent {
         attrValue = this.getJSONAttribute(attr);
       }
 
-      this.attrs[attr] = attrValue;
+      this._attrs[attr] = attrValue;
+
+      if (attrSchema.deprecatedMsg) {
+        console.warn(`${this}: attr '${attr}' is deprecated. ${attrSchema.deprecatedMsg}`);
+      }
     }
+  }
+
+  /**
+   * gets the parsed value of an attribute
+   * @param {string} attr - attribute name
+   */
+  attr(attr) {
+    if (attr in this._attrs) {
+      return this._attrs[attr];
+    } else {
+      throw new TypeError(`${this}: attr '${attr}' is not defined in attrsSchema`);
+    }
+  }
+
+  /**
+   * Returns the parsed attrs as a key-value POJO
+   * @returns {object} parsed attribute values from attrsSchema
+   */
+  attrs() {
+    return this._attrs;
   }
 
   // update helpers
 
   // Update a given state store (this.state or this.appState), with option
   // to 'cascade' the update across other linked components
-  _updateStore(stateUpdate, options={}) {
+  _updateStore(stateUpdate, options = {}) {
     const {cascade, store} = options;
     if (!this.initialized) {
-
       // just update store without patching DOM etc
       Object.assign(this[store], stateUpdate);
-
     } else {
-
       // update DOM, router, descendants etc.
       const updateHash = `$fragment` in stateUpdate &amp;&amp; stateUpdate.$fragment !== this[store].$fragment;
       const cascadeFromRoot = cascade &amp;&amp; !this.isPanelRoot;
@@ -592,7 +751,7 @@ class Component extends WebComponent {
   // optionally excluding one node's subtree. This is useful for applying
   // a full state update to one component while sending only "shared" state
   // updates to the app root.
-  updateSelfAndChildren(stateUpdate, options={}) {
+  updateSelfAndChildren(stateUpdate, options = {}) {
     if (!this.initialized) {
       return;
     }
@@ -603,7 +762,7 @@ class Component extends WebComponent {
       this.domPatcher.update(this.state);
 
       if (cascade) {
-        for (let child of this.$panelChildren) {
+        for (const child of this.$panelChildren) {
           if (options.exclude !== child) {
             child.updateSelfAndChildren(stateUpdate, options);
           }
@@ -626,7 +785,7 @@ export default Component;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Apr 22 2019 18:13:59 GMT-0700 (PDT) using the Minami theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.5</a> on Mon Aug 17 2020 14:57:30 GMT-0700 (Pacific Daylight Time) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

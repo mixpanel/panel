@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>component-utils/index.js - Documentation</title>
+    <title>component-utils/hook-helpers.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -28,7 +28,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">component-utils/index.js</h1>
+    <h1 class="page-title">component-utils/hook-helpers.js</h1>
     
 
     
@@ -39,27 +39,16 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * Optional component wrappers and utilities for state management;
- * exported in the main {@link panel} module for convenience.
- * @module component-utils
- * @example
- * // direct top-level import
- * import {ProxyComponent, StateController} from 'panel';
- * // module import
- * import {ComponentUtils} from 'panel';
- * const {ProxyComponent, StateController} = ComponentUtils;
+ * A simple remove hook generator so we remove an element after it's finished its closing animation.
+ * The attr value is immediately set and after waitMs it's removed from dom.
+ * @example hook={remove: $hooks.delayedAttrRemove(`open`, `false`)}
  */
-
-import StateController from './state-controller';
-import StateStore from './state-store';
-
-export default {
-  /** {@link StateController} class, to be subclassed by apps */
-  StateController,
-
-  /** A simple subscribable state store */
-  StateStore,
-};
+export function delayedAttrRemove(attr, value, waitMs = 500) {
+  return function (vnode, callback) {
+    vnode.elm.setAttribute(attr, value);
+    setTimeout(callback, waitMs);
+  };
+}
 </code></pre>
         </article>
     </section>

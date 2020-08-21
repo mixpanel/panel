@@ -686,3 +686,143 @@ context(`$hooks`, function () {
     });
   });
 });
+
+describe(`Lifecycle Helpers`, function () {
+  let el;
+  let spy;
+
+  beforeEach(function () {
+    document.body.innerHTML = ``;
+    el = document.createElement(`simple-app`);
+    spy = sinon.spy();
+  });
+
+  describe(`onConnected`, function () {
+    it(`doesn't fire until connectedCallback`, async function () {
+      el.onConnected(spy);
+
+      expect(spy.callCount).to.equal(0);
+
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+      expect(spy.callCount).to.equal(1);
+    });
+
+    it(`supports additional calls enqueued in the callback`, async function () {
+      el.onConnected(() => {
+        spy();
+        el.onConnected(spy);
+      });
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+
+      expect(spy.callCount).to.equal(2);
+    });
+
+    it(`immediately fires if connectedCallback has run`, async function () {
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+
+      el.onConnected(spy);
+      expect(spy.callCount).to.equal(1);
+    });
+
+    it(`can return a function to run on disconnectedCallback`, async function () {
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+
+      el.onConnected(() => spy);
+      expect(spy.callCount).to.equal(0);
+
+      document.body.innerHTML = ``;
+      await nextAnimationFrame();
+      expect(spy.callCount).to.equal(1);
+    });
+
+    it(`function context is bound to the component`, async function () {
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+
+      el.onConnected(function () {
+        this.update({baz: 42});
+      });
+      await nextAnimationFrame();
+
+      expect(el.textContent).to.contain(`baz: 42`);
+    });
+
+    it(`runs each time the component is added the DOM`, async function () {
+      el.onConnected(spy);
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+      expect(spy.callCount).to.equal(1);
+
+      document.body.removeChild(el);
+      await nextAnimationFrame();
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+      expect(spy.callCount).to.equal(2);
+    });
+
+    it(`runs 'delayed' callback each time the component is added to the DOM`, async function () {
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+      el.onConnected(spy);
+      expect(spy.callCount).to.equal(1);
+
+      document.body.removeChild(el);
+      await nextAnimationFrame();
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+      expect(spy.callCount).to.equal(2);
+    });
+
+    it(`calls the returned function each time the component is removed from the DOM`, async function () {
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+
+      el.onConnected(() => spy);
+      expect(spy.callCount).to.equal(0);
+
+      document.body.removeChild(el);
+      await nextAnimationFrame();
+      expect(spy.callCount).to.equal(1);
+
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+      document.body.removeChild(el);
+      await nextAnimationFrame();
+
+      expect(spy.callCount).to.equal(2);
+    });
+  });
+
+  describe(`onDisconnected`, function () {
+    it(`runs on disconnectedCallback`, async function () {
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+
+      el.onDisconnected(spy);
+      expect(spy.callCount).to.equal(0);
+
+      document.body.innerHTML = ``;
+      await nextAnimationFrame();
+      expect(spy.callCount).to.equal(1);
+    });
+
+    it(`runs each time the component is removed from the DOM`, async function () {
+      el.onDisconnected(spy);
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+      document.body.removeChild(el);
+      await nextAnimationFrame();
+      expect(spy.callCount).to.equal(1);
+
+      document.body.appendChild(el);
+      await nextAnimationFrame();
+      document.body.removeChild(el);
+      await nextAnimationFrame();
+      expect(spy.callCount).to.equal(2);
+    });
+  });
+});
