@@ -11,7 +11,7 @@ export class StateStore<State> {
   constructor(options: {store?: StateStore<State>});
 
   /** A readonly version of controller's state */
-  readonly state: State;
+  get state(): State;
 
   /** Update the state by passing in a property bag */
   update(props?: Partial<State>): void;
@@ -30,10 +30,10 @@ export class StateController<State> {
   constructor(options: {store?: StateStore<State>});
 
   /** A readonly version of controller's state */
-  readonly state: State;
+  get state(): State;
 
   /** An initial default property bag for the controller's state implemented as get defaultState() */
-  readonly defaultState: State;
+  get defaultState(): State;
 
   /** Update the state by passing in a property bag */
   _update(props?: Partial<State>): void;
