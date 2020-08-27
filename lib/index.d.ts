@@ -116,6 +116,12 @@ export interface AttrSchema {
    * Can be used to auto-generate Attrs interface
    */
   interface?: string;
+
+  /**
+   * Explicitly require an attribute to be passed, useful when no default value can be inferred.
+   * Will log error when missing, and will fail rendering when used in template
+   */
+  required?: boolean;
 }
 
 export type AttrsSchema<T> = {
