@@ -6,6 +6,7 @@ import {DelayedAttrRemoveApp} from './delayed-attr-remove-app';
 import {NestedApp, NestedChild} from './nested-app';
 import {NestedKeyedChildrenApp, NestedKeyedChild1, NestedKeyedChild2} from './nested-keyed-children-app';
 import {NestedPartialStateParent, NestedPartialStateChild} from './nested-partial-state-app';
+import {RequiredAttrsSchemaApp} from './required-attrs-schema-app';
 import {ShadowDomApp} from './shadow-dom-app';
 import {SimpleApp} from './simple-app';
 
@@ -21,5 +22,6 @@ customElements.define(`nested-keyed-child1`, NestedKeyedChild1);
 customElements.define(`nested-keyed-child2`, NestedKeyedChild2);
 customElements.define(`nested-partial-state-parent`, NestedPartialStateParent);
 customElements.define(`nested-partial-state-child`, NestedPartialStateChild);
+customElements.define(`required-attrs-schema-app`, RequiredAttrsSchemaApp);
 customElements.define(`shadow-dom-app`, ShadowDomApp);
 customElements.define(`simple-app`, SimpleApp);

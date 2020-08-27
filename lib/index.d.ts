@@ -119,9 +119,13 @@ export interface AttrSchema {
 
   /**
    * Explicitly require an attribute to be passed, useful when no default value can be inferred.
-   * Will log error when missing, and will fail rendering when used in template
    */
   required?: boolean;
+
+  /**
+   * For json values, actual tsType e.g `FooBar[]` can be noted here and be used for type & documentation auto generation by other tools.
+   */
+  tsType?: string;
 }
 
 export type AttrsSchema<T> = {

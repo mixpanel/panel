@@ -7,6 +7,7 @@ import {SimpleApp} from '../fixtures/simple-app';
 import {NestedApp, NestedChild} from '../fixtures/nested-app';
 import {AttrsReflectionApp} from '../fixtures/attrs-reflection-app';
 import {BadAttrsSchemaApp} from '../fixtures/bad-attrs-schema-app';
+import {RequiredAttrsSchemaApp} from '../fixtures/required-attrs-schema-app';
 import nextAnimationFrame from './nextAnimationFrame';
 import {compactHtml} from '../utils';
 
@@ -15,6 +16,7 @@ customElements.define(`nested-app`, NestedApp);
 customElements.define(`nested-child`, NestedChild);
 customElements.define(`simple-app`, SimpleApp);
 customElements.define(`attrs-reflection-app`, AttrsReflectionApp);
+customElements.define(`required-attrs-schema-app`, RequiredAttrsSchemaApp);
 
 describe(`Server-side component renderer`, function () {
   it(`can register and create components with document.createElement`, function () {
@@ -197,5 +199,11 @@ describe(`Server-side component renderer`, function () {
     expect(() => new BadAttrsSchemaApp()).to.throw(
       `Invalid type: bool for attr: bad-attr in attrsSchema. Only ('string' | 'boolean' | 'number' | 'json') is valid.`,
     );
+  });
+
+  it(`throws error for missing required attrs`, async function () {
+    const el = document.createElement(`required-attrs-schema-app`);
+
+    expect(() => el.connectedCallback()).to.throw(`Missing required attribute 'str-attr' for ${el}`);
   });
 });
