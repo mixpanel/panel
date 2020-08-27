@@ -826,3 +826,20 @@ describe(`Lifecycle Helpers`, function () {
     });
   });
 });
+
+describe(`Required Attrs Components`, function () {
+  let el;
+
+  beforeEach(function () {
+    document.body.innerHTML = ``;
+    el = document.createElement(`required-attrs-schema-app`);
+  });
+
+  it(`renders`, async function () {
+    el.setAttribute(`str-attr`, `here`);
+    document.body.appendChild(el);
+    await nextAnimationFrame();
+
+    expect(el.innerHTML).to.equal(compactHtml(`<div>Shouldn't render with missing attribute!</div>`));
+  });
+});
