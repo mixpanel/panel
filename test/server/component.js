@@ -11,7 +11,7 @@ import {
   BadBooleanRequiredAttrsSchemaApp,
   BadDefaultRequiredAttrsSchemaApp,
   RequiredAttrsSchemaApp,
-} from '../fixtures/required-attrs-schema-app';
+} from '../fixtures/required-attrs-schema-apps';
 import nextAnimationFrame from './nextAnimationFrame';
 import {compactHtml} from '../utils';
 
