@@ -65,9 +65,9 @@ export interface PanelHooks<State> {
 
 // this type is not checked in the Component ContextRegistryT, the Component JS manually checks for these properties instead
 export interface PanelLifecycleContext {
-  // optional callback that executes each time the component is connected to the DOM
+  // optional callback that executes each time a component using this context is connected to the DOM
   bindToComponent?(component: Component<any>): void;
-  // optional callback that executes each time the component is disconnected from the DOM
+  // optional callback that executes each time a component using this context is disconnected from the DOM
   unbindFromComponent?(component: Component<any>): void;
 }
 
