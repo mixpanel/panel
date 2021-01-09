@@ -6,7 +6,7 @@ import {AppContextRegistry, Counter} from '../contexts';
 export class LightCounterApp extends Component<any, any, any, any, AppContextRegistry> {
   get config(): {
     template: any;
-    contexts: ['counter', 'darkMode'],
+    contexts: ['counter', 'darkMode'];
     defaultContexts: {
       counter: Counter;
       darkMode: boolean;
@@ -14,11 +14,10 @@ export class LightCounterApp extends Component<any, any, any, any, AppContextReg
   };
 }
 
-
 export class DarkCounterApp extends Component<any, any, any, any, AppContextRegistry> {
   get config(): {
     template: any;
-    contexts: ['counter', 'darkMode'],
+    contexts: ['counter', 'darkMode'];
     defaultContexts: {
       counter: Counter;
       darkMode: boolean;

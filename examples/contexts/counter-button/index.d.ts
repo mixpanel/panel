@@ -6,6 +6,6 @@ import {AppContextRegistry, Counter} from '../contexts';
 export class CounterButton extends Component<any, any, any, any, AppContextRegistry> {
   get config(): {
     template: any;
-    contexts: ['darkMode', 'counter'],
+    contexts: ['darkMode', 'counter'];
   };
 }

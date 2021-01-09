@@ -2,8 +2,6 @@
 // import { Component } from 'panel';
 import {Component} from '../../../lib';
 
-import {Counter} from '../contexts';
-
 import template from './index.jade';
 
 class CounterButton extends Component {
@@ -13,6 +11,6 @@ class CounterButton extends Component {
       contexts: [`darkMode`, `counter`],
     };
   }
-};
+}
 
 customElements.define(`counter-button`, CounterButton);

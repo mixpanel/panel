@@ -17,7 +17,7 @@ class LightCounterApp extends Component {
       },
     };
   }
-};
+}
 
 customElements.define(`light-counter-app`, LightCounterApp);
 
@@ -33,6 +33,6 @@ class DarkCounterApp extends Component {
       },
     };
   }
-};
+}
 
 customElements.define(`dark-counter-app`, DarkCounterApp);
