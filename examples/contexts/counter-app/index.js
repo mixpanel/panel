@@ -15,6 +15,10 @@ class LightCounterApp extends Component {
         counter: new Counter(),
         darkMode: false,
       },
+      helpers: {
+        getDarkMode: () => this.getContext(`darkMode`),
+        getCount: () => this.getContext(`counter`).getCount(),
+      },
     };
   }
 }
@@ -30,6 +34,10 @@ class DarkCounterApp extends Component {
       defaultContexts: {
         counter: new Counter(),
         darkMode: true,
+      },
+      helpers: {
+        getDarkMode: () => this.getContext(`darkMode`),
+        getCount: () => this.getContext(`counter`).getCount(),
       },
     };
   }

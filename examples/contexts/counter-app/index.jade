@@ -1,4 +1,4 @@
 .app(style={margin: `32px`})
-  div Current count for #{$component.getContext(`darkMode`) ? `Dark mode` : `Light mode`} app is: #{$component.getContext(`counter`).getCount()}
+  div Current count for #{$helpers.getDarkMode() ? `Dark mode` : `Light mode`} app is: #{$helpers.getCount()}
 
   counter-button
