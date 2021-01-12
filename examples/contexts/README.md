@@ -23,10 +23,17 @@ get config() {
 }
 ```
 
-Once you've declared the context names, you can retrieve a context object/value by calling `Component.getContext(contextName)` (or `$component.getContext(contextName)` in jade):
-```jade
--- /* index.jade */
-div Current count is #{$component.getContext(`counter`).getCount()})
+Once you've declared the context names, you can retrieve a context object/value by calling `Component.getContext(contextName)`:
+```js
+get config() {
+  return {
+    contexts: [`counter`, `darkMode`],
+    helpers: {
+      getDarkMode: () => this.getContext(`darkMode`),
+      getCount: () => this.getContext(`counter`).getCount(),
+    },
+  };
+}
 ```
 
 Any object or value can be a context, but you can optionally define callback properties that Panel recognizes and invokes during the component lifecycle:
