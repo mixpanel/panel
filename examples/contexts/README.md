@@ -14,7 +14,7 @@ get config() {
 }
 ```
 
-Components must declare the names of any contexts it intends to use in its `config` object:
+A component must declare the names of any contexts it intends to use in its `config` object:
 ```js
 get config() {
   return {
@@ -29,7 +29,7 @@ Once you've declared the context names, you can retrieve a context object/value 
 div Current count is #{$component.getContext(`counter`).getCount()})
 ```
 
-Any object or value can be a context, but you can optionally define callback properties you can define that Panel recognizes and invokes during the component lifecycle:
+Any object or value can be a context, but you can optionally define callback properties that Panel recognizes and invokes during the component lifecycle:
 ```js
 class Counter {
   constructor() {

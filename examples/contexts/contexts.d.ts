@@ -1,5 +1,5 @@
 // import from the same repo. in a different repo you'd use:
-// import { PanelLifecycleContext } from 'panel';
+// import { Component, PanelLifecycleContext } from 'panel';
 import {Component, PanelLifecycleContext} from '../../lib';
 
 export class Counter implements PanelLifecycleContext {
