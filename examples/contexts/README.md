@@ -1,6 +1,6 @@
-# Using Contexts to share configuration & state
+# Using Contexts to share configuration and state
 
-A Panel component can be configured with Contexts to share configuration & state in its DOM tree instead of manually passing them into each component as props/attrs.
+A Panel component can be configured with Contexts to share configuration and state in its DOM tree instead of manually passing them into each component as props/attrs.
 
 To configure a component to provide contexts to all components in its DOM tree (including itself), set `defaultContexts` in its `config` object:
 ```js
@@ -29,7 +29,7 @@ get config() {
   return {
     contexts: [`counter`, `darkMode`],
     helpers: {
-      getDarkMode: () => this.getContext(`darkMode`),
+      isDarkModeEnabled: () => this.getContext(`darkMode`),
       getCount: () => this.getContext(`counter`).getCount(),
     },
   };

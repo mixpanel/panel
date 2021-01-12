@@ -1,4 +1,4 @@
-- const darkMode = $helpers.getDarkMode();
+- const isDarkModeEnabled = $helpers.isDarkModeEnabled();
 - const counter = $helpers.getCounter();
 .button(
   style={
@@ -6,10 +6,10 @@
     padding: `8px 16px`,
     border: `1px solid black`,
     display: `inline-block`,
-    background: darkMode ? `black` : `white`,
-    color: darkMode ? `white` : `black`,
+    background: isDarkModeEnabled ? `black` : `white`,
+    color: isDarkModeEnabled ? `white` : `black`,
   }
   on={
     click: () => counter.increment(),
   }
-) Click to increment #{darkMode ? `Dark mode` : `Light mode`} app counter (current count is #{counter.getCount()})
+) Click to increment #{isDarkModeEnabled ? `Dark mode` : `Light mode`} app counter (current count is #{counter.getCount()})

@@ -10,7 +10,7 @@ class CounterButton extends Component {
       template,
       contexts: [`darkMode`, `counter`],
       helpers: {
-        getDarkMode: () => this.getContext(`darkMode`),
+        isDarkModeEnabled: () => this.getContext(`darkMode`),
         getCounter: () => this.getContext(`counter`),
       },
     };

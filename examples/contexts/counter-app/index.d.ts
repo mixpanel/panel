@@ -12,7 +12,7 @@ export class LightCounterApp extends Component<any, any, any, any, AppContextReg
       darkMode: boolean;
     };
     helpers: {
-      getDarkMode: () => boolean;
+      isDarkModeEnabled: () => boolean;
       getCount: () => number;
     };
   };
@@ -27,7 +27,7 @@ export class DarkCounterApp extends Component<any, any, any, any, AppContextRegi
       darkMode: boolean;
     };
     helpers: {
-      getDarkMode: () => boolean;
+      isDarkModeEnabled: () => boolean;
       getCount: () => number;
     };
   };

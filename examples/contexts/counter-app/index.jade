@@ -1,4 +1,4 @@
 .app(style={margin: `32px`})
-  div Current count for #{$helpers.getDarkMode() ? `Dark mode` : `Light mode`} app is: #{$helpers.getCount()}
+  div Current count for #{$helpers.isDarkModeEnabled() ? `Dark mode` : `Light mode`} app is: #{$helpers.getCount()}
 
   counter-button

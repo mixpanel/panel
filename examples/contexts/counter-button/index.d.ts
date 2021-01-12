@@ -8,7 +8,7 @@ export class CounterButton extends Component<any, any, any, any, AppContextRegis
     template: any;
     contexts: ['darkMode', 'counter'];
     helpers: {
-      getDarkMode: () => boolean;
+      isDarkModeEnabled: () => boolean;
       getCounter: () => Counter;
     };
   };

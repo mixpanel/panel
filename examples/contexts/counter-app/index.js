@@ -16,7 +16,7 @@ class LightCounterApp extends Component {
         darkMode: false,
       },
       helpers: {
-        getDarkMode: () => this.getContext(`darkMode`),
+        isDarkModeEnabled: () => this.getContext(`darkMode`),
         getCount: () => this.getContext(`counter`).getCount(),
       },
     };
@@ -36,7 +36,7 @@ class DarkCounterApp extends Component {
         darkMode: true,
       },
       helpers: {
-        getDarkMode: () => this.getContext(`darkMode`),
+        isDarkModeEnabled: () => this.getContext(`darkMode`),
         getCount: () => this.getContext(`counter`).getCount(),
       },
     };
