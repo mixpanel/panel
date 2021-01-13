@@ -1,4 +1,4 @@
-{
+module.exports = {
   "plugins": [
     ["babel-plugin-virtual-jade", {
       "vdom": "snabbdom",
@@ -7,5 +7,6 @@
     "syntax-async-functions",
     "transform-regenerator"
   ],
-  "presets": ["es2015"]
-}
+  "ignore": [/node_modules\/(?!snabbdom)/],
+  "presets": ["es201ss5"]
+};

@@ -23,7 +23,7 @@
     "test-browser-local": "wct --plugin local test/browser/index.html",
     "test-browser-p": "wct --plugin local --persistent test/browser/index.html",
     "test-browser-sauce": "wct --plugin sauce test/browser/index.html",
-    "test-server": "NODE_ENV=test mocha --require babel-core/register test/server",
+    "test-server": "NODE_ENV=test mocha --require mocha.config.js test/server",
     "tslint": "tslint -c tslint.json -t stylish 'lib/index.d.ts'",
     "type-check": "tsc"
   },
@@ -50,7 +50,7 @@
     "lodash.pick": "4.4.0",
     "raf": "3.2.0",
     "schema-utils": "1.0.0",
-    "snabbdom": "0.7.4",
+    "snabbdom": "2.0.0",
     "snabbdom-delayed-class": "0.1.1",
     "snabbdom-jsx-lite": "1.0.11",
     "webcomponent": "1.2.2"
@@ -74,7 +74,7 @@
     "jsdoc": "3.6.5",
     "lint-staged": "10.1.1",
     "minami": "1.1.1",
-    "mocha": "2.5.3",
+    "mocha": "8.1.3",
     "prettier": "2.0.2",
     "promisify-node": "0.4.0",
     "readline-sync": "1.4.7",

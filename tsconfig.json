@@ -15,10 +15,12 @@
     "pretty": true,
     "sourceMap": true,
     "target": "es5",
-    "typeRoots" : ["./node_modules/@types"],
-    "types": []
+    "typeRoots": ["./node_modules/@types"],
+    "types": [],
+    "baseUrl": "./",
+    "paths": {
+      "snabbdom/*": ["./node_modules/snabbdom/build/package/*"]
+    }
   },
-  "include": [
-    "./test/fixtures/*.js",
-  ],
+  "include": ["./test/fixtures/*.js"]
 }

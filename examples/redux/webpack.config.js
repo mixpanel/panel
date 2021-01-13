@@ -4,11 +4,22 @@ const path = require(`path`);
 
 const webpackConfig = {
   entry: `./index.js`,
+  resolve: {
+    alias: {
+      /**
+       * snabbdom 1.0.x use the package.json exports field to
+       * define module exports, support for this field is landing
+       * in webpack 5, until then we alias the snabbdom exports
+       * more info https://github.com/webpack/webpack/pull/10953
+       */
+      snabbdom: `snabbdom/build/package`,
+    },
+  },
   module: {
     loaders: [
       {
         test: /\.js$/,
-        exclude: /node_modules/,
+        exclude: /node_modules\/(?!snabbdom)/,
         loader: `babel`,
         query: {
           presets: [`es2015`],

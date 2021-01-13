@@ -4,7 +4,7 @@
   "description": "Panel example app with server-side rendering script",
   "main": "index.js",
   "scripts": {
-    "start": "babel-node index.js",
+    "start": "babel-node --config-file .babelrc.js index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "dev@mixpanel.com",
