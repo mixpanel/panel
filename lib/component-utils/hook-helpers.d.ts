@@ -1,4 +1,4 @@
-import {VNode} from 'snabbdom/vnode';
+import {VNode} from 'snabbdom';
 
 /**
  * A simple remove hook generator for snabbdom so we remove an element after it's finished its closing animation.
