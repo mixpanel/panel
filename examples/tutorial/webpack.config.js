@@ -31,7 +31,9 @@ const webpackConfig = {
     root: path.join(__dirname, `node_modules`),
   },
   virtualJadeLoader: {
-    vdom: `snabbdom`,
+    runtime: `var h = require("snabbdom").h;`,
+    propsWrapper: `props`,
+    rawProps: true,
   },
 };
 
