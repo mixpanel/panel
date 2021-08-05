@@ -10,7 +10,7 @@
   "author": "dev@mixpanel.com",
   "license": "MIT",
   "dependencies": {
-    "snabbdom-jsx-lite": "1.0.10",
+    "snabbdom-jsx-lite": "2.0.0",
     "@webcomponents/custom-elements": "1.0.0-rc.3"
   },
   "devDependencies": {

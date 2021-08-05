@@ -50,9 +50,9 @@
     "lodash.pick": "4.4.0",
     "raf": "3.2.0",
     "schema-utils": "1.0.0",
-    "snabbdom": "0.7.4",
+    "snabbdom": "3.0.3",
     "snabbdom-delayed-class": "0.1.1",
-    "snabbdom-jsx-lite": "1.0.11",
+    "snabbdom-jsx-lite": "2.0.0",
     "webcomponent": "1.2.2"
   },
   "devDependencies": {

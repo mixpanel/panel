@@ -10,7 +10,7 @@
   "author": "dev@mixpanel.com",
   "license": "MIT",
   "dependencies": {
-    "snabbdom": "^0.5.3",
+    "snabbdom": "3.0.3",
     "@webcomponents/custom-elements": "1.0.0-rc.3"
   },
   "devDependencies": {

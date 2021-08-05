@@ -1,10 +1,10 @@
 // Type definitions for panel
 // Project: panel
 // Definitions by: Mixpanel (https://mixpanel.com)
-import {VNode} from 'snabbdom/vnode';
+import {VNode} from 'snabbdom';
 import WebComponent from 'webcomponent';
 
-export {h} from 'snabbdom/h';
+export {h} from 'snabbdom';
 export {jsx} from 'snabbdom-jsx-lite';
 
 export class StateStore<State> {
