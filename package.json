@@ -14,7 +14,7 @@
     "build:shims": "esbuild lib/isorender/dom-shims.js --target=node10 --format=cjs --outfile=build/isorender/dom-shims.js",
     "build:panel": "esbuild lib/index.js --bundle --target=es2015 --outfile=build/index.js",
     "build:component-utils": "esbuild lib/component-utils/hook-helpers.js --bundle --target=es2015 --outfile=build/component-utils/hook-helpers.js",
-    "build:test": "esbuild  test/browser/index.js --bundle --target=es2015 '--define:process.env.NODE_DEBUG=\"\"' --define:global=window --outfile=test/browser/build/bundle.js",
+    "build-test": "esbuild  test/browser/index.js --bundle --target=es2015 '--define:process.env.NODE_DEBUG=\"\"' --define:global=window --outfile=test/browser/build/bundle.js",
     "docs": "rm -rf docs && jsdoc lib lib/component-utils lib/isorender -t node_modules/minami -R README-API.md -d docs",
     "lint": "eslint . && prettier -c \"./**/*.{ts,tsx,js}\" && npm run tslint",
     "prepublishOnly": "npm run build",
