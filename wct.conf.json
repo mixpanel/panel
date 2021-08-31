@@ -20,7 +20,7 @@
         },
         {
           "browserName": "chrome",
-          "version": "51",
+          "version": "72",
           "platform": "OS X 10.10"
         },
         {
