@@ -16,22 +16,22 @@
         {
           "browserName": "chrome",
           "version": "latest",
-          "platform": "OS X 10.12"
+          "platform": "OS X 10.15"
         },
         {
           "browserName": "chrome",
           "version": "72",
-          "platform": "OS X 10.10"
+          "platform": "OS X 10.13"
         },
         {
           "browserName": "firefox",
           "version": "latest",
-          "platform": "OS X 10.11"
+          "platform": "OS X 10.15"
         },
         {
           "browserName": "firefox",
           "version": "54",
-          "platform": "OS X 10.11"
+          "platform": "OS X 10.13"
         },
         {
           "browserName": "microsoftedge",
@@ -46,12 +46,12 @@
         {
           "browserName": "safari",
           "version": "latest",
-          "platform": "OS X 10.12"
+          "platform": "OS X 10.15"
         },
         {
           "browserName": "safari",
           "version": "12",
-          "platform": "OS X 10.11"
+          "platform": "OS X 10.13"
         }
       ]
     }
