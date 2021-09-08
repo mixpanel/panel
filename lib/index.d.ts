@@ -176,6 +176,14 @@ export class Component<
   /** Defines the state of the component, including all the properties required for rendering */
   state: StateT;
 
+  /** Defines the threshold at which 'slowRender' events will be dispatched, defaults to 20ms */
+  slowThreshold: number;
+
+  /** The ms since unix epoch that component initialization started (also see 'initializingCompletedAt') */
+  readonly initializingStartedAt: number;
+  /** The ms since unix epoch that component initialization completed (also see 'initializingStartedAt') */
+  readonly initializingCompletedAt: number;
+
   /** Defines standard component configuration */
   get config(): ConfigOptions<StateT, AppStateT, ContextRegistryT>;
 
@@ -195,7 +203,7 @@ export class Component<
    * For use inside view templates, to create a child Panel component nested under this
    * component, which will share its state object and update cycle.
    */
-  child(tagName: string, config?: object): VNode;
+  child<T = object>(tagName: string, config?: T): VNode;
 
   /**
    * Searches the component's Panel ancestors for the first component of the
