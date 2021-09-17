@@ -109,7 +109,7 @@ export interface ConfigOptions<StateT, AppStateT = unknown, ContextRegistryT = u
   useShadowDom?: boolean;
 
   /** Defines the threshold at which 'slowRender' events will be dispatched, defaults to 20ms */
-  slowThreshold: number;
+  slowThreshold?: number;
 }
 
 export interface AttrSchema {
