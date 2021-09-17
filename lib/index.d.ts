@@ -107,6 +107,9 @@ export interface ConfigOptions<StateT, AppStateT = unknown, ContextRegistryT = u
 
   /** Whether to use Shadow DOM */
   useShadowDom?: boolean;
+
+  /** Defines the threshold at which 'slowRender' events will be dispatched, defaults to 20ms */
+  slowThreshold: number;
 }
 
 export interface AttrSchema {
@@ -175,9 +178,6 @@ export class Component<
 
   /** Defines the state of the component, including all the properties required for rendering */
   state: StateT;
-
-  /** Defines the threshold at which 'slowRender' events will be dispatched, defaults to 20ms */
-  slowThreshold: number;
 
   /** The ms since unix epoch that component initialization started (also see 'initializingCompletedAt') */
   readonly initializingStartedAt: number;
