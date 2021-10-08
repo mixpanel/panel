@@ -1,9 +1,11 @@
 import '../../lib/isorender/dom-shims';
 
 import {expect} from 'chai';
+import sinon from 'sinon';
 
 import {DOMPatcher, h} from '../../lib/dom-patcher';
 import nextAnimationFrame from './nextAnimationFrame';
+import * as Perf from '../../lib/component-utils/perf';
 
 describe(`dom-patcher`, function () {
   context(`when first initialized`, function () {
@@ -135,6 +137,49 @@ describe(`dom-patcher`, function () {
       expect(domPatcher.state).to.equal(null);
       expect(domPatcher.vnode).to.equal(null);
       expect(domPatcher.el).to.equal(null);
+    });
+  });
+
+  context(`with postRenderCallback`, function () {
+    it(`is not called on initial render`, function () {
+      let called = false;
+      new DOMPatcher({foo: `bar`}, (state) => h(`div`, `Value of foo: ${state.foo}`), {
+        postRenderCallback: () => {
+          called = true;
+        },
+        updateMode: `sync`,
+      });
+      expect(called).to.eql(false);
+    });
+
+    it(`is called after update`, function () {
+      let called = false;
+      const domPatcher = new DOMPatcher({foo: `bar`}, (state) => h(`div`, `Value of foo: ${state.foo}`), {
+        postRenderCallback: () => {
+          called = true;
+        },
+        updateMode: `sync`,
+      });
+      expect(called).to.eql(false);
+      domPatcher.update({foo: `whew`});
+      expect(called).to.eql(true);
+    });
+
+    it(`is passed the elapsed time`, async function () {
+      let elapsedTime = null;
+      const domPatcher = new DOMPatcher({foo: `bar`}, (state) => h(`div`, `Value of foo: ${state.foo}`), {
+        postRenderCallback: (time) => {
+          elapsedTime = time;
+        },
+        updateMode: `async`,
+      });
+      const getNowStub = sinon.stub(Perf, `getNow`);
+      getNowStub.onCall(0).returns(5);
+      getNowStub.onCall(1).returns(25);
+
+      domPatcher.update({foo: `whew`});
+      await nextAnimationFrame();
+      expect(elapsedTime).to.eql(20);
     });
   });
 });
