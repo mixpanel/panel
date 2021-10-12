@@ -759,6 +759,7 @@ describe(`slowRendering`, function () {
       elapsedMs: 150,
       component: el.toString(),
       comparedToLast: 0.58,
+      comparedToSlowest: 0.58,
     });
   });
 
@@ -790,6 +791,7 @@ describe(`slowRendering`, function () {
       elapsedMs: 100,
       component: el.toString(),
       comparedToLast: 0.01,
+      comparedToSlowest: 0.01,
     });
 
     el.update();
