@@ -1,11 +1,14 @@
 import '../../lib/isorender/dom-shims';
 
-import {expect} from 'chai';
+import chai, {expect} from 'chai';
 import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 
 import {DOMPatcher, h} from '../../lib/dom-patcher';
 import nextAnimationFrame from './nextAnimationFrame';
 import * as Perf from '../../lib/component-utils/perf';
+
+chai.use(sinonChai);
 
 describe(`dom-patcher`, function () {
   context(`when first initialized`, function () {
@@ -140,29 +143,26 @@ describe(`dom-patcher`, function () {
     });
   });
 
-  context(`with postRenderCallback`, function () {
+  describe(`postRenderCallback`, function () {
+    afterEach(() => sinon.restore());
     it(`is not called on initial render`, function () {
-      let called = false;
+      const postRenderCallbackSpy = sinon.spy();
       new DOMPatcher({foo: `bar`}, (state) => h(`div`, `Value of foo: ${state.foo}`), {
-        postRenderCallback: () => {
-          called = true;
-        },
+        postRenderCallback: postRenderCallbackSpy,
         updateMode: `sync`,
       });
-      expect(called).to.eql(false);
+      expect(postRenderCallbackSpy).not.to.have.been.called;
     });
 
     it(`is called after update`, function () {
-      let called = false;
+      const postRenderCallbackSpy = sinon.spy();
       const domPatcher = new DOMPatcher({foo: `bar`}, (state) => h(`div`, `Value of foo: ${state.foo}`), {
-        postRenderCallback: () => {
-          called = true;
-        },
+        postRenderCallback: postRenderCallbackSpy,
         updateMode: `sync`,
       });
-      expect(called).to.eql(false);
+      expect(postRenderCallbackSpy).not.to.have.been.called;
       domPatcher.update({foo: `whew`});
-      expect(called).to.eql(true);
+      expect(postRenderCallbackSpy).to.have.been.calledOnce;
     });
 
     it(`is passed the elapsed time`, async function () {

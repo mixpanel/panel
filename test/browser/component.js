@@ -763,41 +763,41 @@ describe(`slowRendering`, function () {
     });
   });
 
-  it(`allows multiple slowRender events within 3 seconds if the render time is worse than previous`, async function () {
+  it(`allows multiple slowRender events within 3 seconds if the render time is worse than the current slowest time`, async function () {
     expect(slowRenderSpy.callCount).to.equal(0);
     const getNowStub = sinon.stub(Perf, `getNow`);
 
     getNowStub.onCall(0).returns(1); // before first
-    getNowStub.onCall(1).returns(100); // after first
-    getNowStub.onCall(2).returns(100); // get current time slow render was emitted
+    getNowStub.onCall(1).returns(101); // after first
+    getNowStub.onCall(2).returns(101); // get current time slow render was emitted
 
     getNowStub.onCall(3).returns(100); // before second render
     getNowStub.onCall(4).returns(200); // after second render
     getNowStub.onCall(5).returns(200); // compare current time to last slow render
-    getNowStub.onCall(6).returns(200); // get current time slow render was emitted
 
-    getNowStub.onCall(7).returns(2000); // before third render
-    getNowStub.returns(2099);
+    getNowStub.onCall(6).returns(2000); // before third render
+    getNowStub.returns(2101);
 
     el.update();
     await nextAnimationFrame();
     expect(slowRenderSpy.callCount).to.equal(1);
-    expect(slowRenderSpy.getCall(0).args[0].detail).to.deep.equal({elapsedMs: 99, component: el.toString()});
+    expect(slowRenderSpy.getCall(0).args[0].detail).to.deep.equal({elapsedMs: 100, component: el.toString()});
 
     el.update();
     await nextAnimationFrame();
+    // re-render happened within 3 seconds and took 100ms
+    expect(slowRenderSpy.callCount).to.equal(1);
+
+    el.update();
+    await nextAnimationFrame();
+    // re-render happened within 3 seconds and took 101ms
     expect(slowRenderSpy.callCount).to.equal(2);
     expect(slowRenderSpy.getCall(1).args[0].detail).to.deep.equal({
-      elapsedMs: 100,
+      elapsedMs: 101,
       component: el.toString(),
       comparedToLast: 0.01,
       comparedToSlowest: 0.01,
     });
-
-    el.update();
-    await nextAnimationFrame();
-    // re-render happened within 3 seconds and took 99ms
-    expect(slowRenderSpy.callCount).to.equal(2);
   });
 });
 
