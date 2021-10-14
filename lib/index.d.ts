@@ -179,16 +179,20 @@ export class Component<
   /** Defines the state of the component, including all the properties required for rendering */
   state: StateT;
 
-  readonly timings: {
+  readonly timings: Readonly<{
     /** The time in ms that the component constructor ran */
     createdAt: number;
     /** The time in ms that component initialization started (also see 'initializingCompletedAt') */
     initializingStartedAt: number;
     /** The time in ms that component initialization completed (also see 'initializingStartedAt') */
     initializingCompletedAt: number;
-    /** The time in ms that the last attributeChangedCallback ran */
+    /** The time in ms that the last #attributeChangedCallback ran */
     lastAttributeChangedAt: number;
-  };
+    /** The time in ms that the last #update ran */
+    lastUpdateAt: number;
+    /** The time in ms that the last render ran */
+    lastRenderAt: number;
+  }>;
 
   /** Defines standard component configuration */
   get config(): ConfigOptions<StateT, AppStateT, ContextRegistryT>;

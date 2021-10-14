@@ -688,6 +688,20 @@ describe(`slowRendering`, function () {
   let el;
   let slowRenderSpy;
 
+  function stubNow(timings) {
+    const getNowStub = sinon.stub(Perf, `getNow`);
+
+    timings.forEach((val, idx, all) => {
+      if (idx === all.length - 1) {
+        getNowStub.returns(val);
+      } else {
+        getNowStub.onCall(idx).returns(val);
+      }
+    });
+
+    return getNowStub;
+  }
+
   beforeEach(async function () {
     document.body.innerHTML = ``;
     el = document.createElement(`simple-app`);
@@ -703,14 +717,15 @@ describe(`slowRendering`, function () {
 
   it(`emits slowRender event`, async function () {
     expect(slowRenderSpy.callCount).to.equal(0);
-    const getNowStub = sinon.stub(Perf, `getNow`);
-    // before and after first re-render
-    getNowStub.onCall(0).returns(5);
-    getNowStub.onCall(1).returns(el.getConfig(`slowThreshold`));
-
-    // before and after second re-render
-    getNowStub.onCall(2).returns(el.getConfig(`slowThreshold`));
-    getNowStub.returns(el.getConfig(`slowThreshold`) * 2 + 1);
+    stubNow([
+      5, // update time
+      5, // before render
+      el.getConfig(`slowThreshold`), // after render
+      el.getConfig(`slowThreshold`), // postRenderCallback time
+      el.getConfig(`slowThreshold`), // update time
+      el.getConfig(`slowThreshold`), // before render
+      el.getConfig(`slowThreshold`) * 2 + 1, // after render
+    ]);
 
     // force re-render
     el.update();
@@ -729,18 +744,24 @@ describe(`slowRendering`, function () {
 
   it(`swallows multiple slowRender events that happen within 3 seconds`, async function () {
     expect(slowRenderSpy.callCount).to.equal(0);
-    const getNowStub = sinon.stub(Perf, `getNow`);
 
-    getNowStub.onCall(0).returns(5); // before first
-    getNowStub.onCall(1).returns(100); // after first
-    getNowStub.onCall(2).returns(100); // current time slow render was emitted
+    stubNow([
+      5, // updated at
+      5, // before first redner
+      100, // after first render
+      100, // postRenderCallback time
+      100, // current time slow render was emitted
 
-    getNowStub.onCall(3).returns(100); // before second render
-    getNowStub.onCall(4).returns(150); // after second render
-    getNowStub.onCall(5).returns(150); // compare current time to last slow render
+      100, // updated at
+      100, // before second render
+      150, // after second render
+      150, // postRenderCallback time
+      150, // compare current time to last slow render
 
-    getNowStub.onCall(6).returns(3000); // before third render
-    getNowStub.returns(3150);
+      3000, // updated at
+      3000, // before third render
+      3150,
+    ]);
 
     el.update();
     await nextAnimationFrame();
@@ -765,18 +786,23 @@ describe(`slowRendering`, function () {
 
   it(`allows multiple slowRender events within 3 seconds if the render time is worse than the current slowest time`, async function () {
     expect(slowRenderSpy.callCount).to.equal(0);
-    const getNowStub = sinon.stub(Perf, `getNow`);
+    stubNow([
+      1, // update at
+      1, // before first
+      101, // after first
+      101, // postRenderCallback time
+      101, // get current time slow render was emitted
 
-    getNowStub.onCall(0).returns(1); // before first
-    getNowStub.onCall(1).returns(101); // after first
-    getNowStub.onCall(2).returns(101); // get current time slow render was emitted
+      100, // update at
+      100, // before second render
+      200, // after second render
+      200, // postRenderCallback time
+      200, // compare current time to last slow render
 
-    getNowStub.onCall(3).returns(100); // before second render
-    getNowStub.onCall(4).returns(200); // after second render
-    getNowStub.onCall(5).returns(200); // compare current time to last slow render
-
-    getNowStub.onCall(6).returns(2000); // before third render
-    getNowStub.returns(2101);
+      2000, // update at
+      2000, // before third render
+      2101,
+    ]);
 
     el.update();
     await nextAnimationFrame();
