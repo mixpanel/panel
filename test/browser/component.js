@@ -4,6 +4,7 @@ import {nextAnimationFrame, sleep} from 'domsuite';
 import {BreakableApp} from '../fixtures/breakable-app';
 import {compactHtml} from '../utils';
 import {LightTheme, DarkTheme} from '../fixtures/simple-contexts';
+import * as Perf from '../../lib/component-utils/perf';
 
 describe(`Simple Component instance`, function () {
   let el;
@@ -680,6 +681,147 @@ describe(`Rendering exception`, function () {
     el.update({foo: {bar: `later success`}});
     await nextAnimationFrame();
     expect(el.textContent).to.contain(`Value of foo.bar: later success`);
+  });
+});
+
+describe(`slowRendering`, function () {
+  let el;
+  let slowRenderSpy;
+
+  function stubNow(timings) {
+    if (typeof Perf.getNow.restore === `function`) {
+      Perf.getNow.restore();
+    }
+
+    const getNowStub = sinon.stub(Perf, `getNow`);
+
+    timings.forEach((val, idx, all) => {
+      if (idx === all.length - 1) {
+        getNowStub.returns(val);
+      } else {
+        getNowStub.onCall(idx).returns(val);
+      }
+    });
+
+    return getNowStub;
+  }
+
+  beforeEach(async function () {
+    document.body.innerHTML = ``;
+    el = document.createElement(`simple-app`);
+    slowRenderSpy = sinon.spy();
+    el.addEventListener(`slowRender`, slowRenderSpy);
+    document.body.appendChild(el);
+    await nextAnimationFrame();
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it(`emits slowRender event`, async function () {
+    expect(slowRenderSpy.callCount).to.equal(0);
+    stubNow([
+      5, // update time
+      5, // before render
+      el.getConfig(`slowThreshold`), // after render
+    ]);
+
+    el.update();
+    await nextAnimationFrame();
+    expect(slowRenderSpy.callCount).to.equal(0);
+
+    stubNow([
+      el.getConfig(`slowThreshold`), // update time
+      el.getConfig(`slowThreshold`), // before render
+      el.getConfig(`slowThreshold`) * 2 + 1, // after render
+    ]);
+    // force re-render
+    el.update();
+    await nextAnimationFrame();
+    expect(slowRenderSpy.callCount).to.equal(1);
+    expect(slowRenderSpy.getCall(0).args[0].detail).to.deep.equal({
+      elapsedMs: el.getConfig(`slowThreshold`) + 1,
+      component: el.toString(),
+    });
+  });
+
+  it(`swallows multiple slowRender events that happen within 3 seconds`, async function () {
+    expect(slowRenderSpy.callCount).to.equal(0);
+
+    stubNow([
+      5, // updated at
+      5, // before first redner
+      100, // after first render
+    ]);
+    el.update();
+    await nextAnimationFrame();
+    expect(slowRenderSpy.callCount).to.equal(1);
+    expect(slowRenderSpy.getCall(0).args[0].detail).to.deep.equal({elapsedMs: 95, component: el.toString()});
+
+    stubNow([
+      100, // updated at
+      100, // before second render
+      150, // after second render
+    ]);
+    el.update();
+    await nextAnimationFrame();
+    // re-render happened within 3 seconds and took 50ms
+    expect(slowRenderSpy.callCount).to.equal(1);
+
+    stubNow([
+      3000, // updated at
+      3000, // before third render
+      3150,
+    ]);
+    el.update();
+    await nextAnimationFrame();
+    expect(slowRenderSpy.callCount).to.equal(2);
+    expect(slowRenderSpy.getCall(1).args[0].detail).to.deep.equal({
+      elapsedMs: 150,
+      component: el.toString(),
+      comparedToLast: 0.58,
+      comparedToSlowest: 0.58,
+    });
+  });
+
+  it(`allows multiple slowRender events within 3 seconds if the render time is worse than the current slowest time`, async function () {
+    expect(slowRenderSpy.callCount).to.equal(0);
+    stubNow([
+      1, // update at
+      1, // before first
+      101, // after first
+    ]);
+    el.update();
+    await nextAnimationFrame();
+    expect(slowRenderSpy.callCount).to.equal(1);
+    expect(slowRenderSpy.getCall(0).args[0].detail).to.deep.equal({elapsedMs: 100, component: el.toString()});
+
+    stubNow([
+      100, // update at
+      100, // before second render
+      200, // after second render
+    ]);
+    el.update();
+    await nextAnimationFrame();
+    // re-render happened within 3 seconds and took 100ms
+    expect(slowRenderSpy.callCount).to.equal(1);
+
+    stubNow([
+      2000, // update at
+      2000, // before third render
+      2101,
+    ]);
+    el.update();
+    await nextAnimationFrame();
+    // re-render happened within 3 seconds and took 101ms
+    expect(slowRenderSpy.callCount).to.equal(2);
+    expect(slowRenderSpy.getCall(1).args[0].detail).to.deep.equal({
+      elapsedMs: 101,
+      component: el.toString(),
+      comparedToLast: 0.01,
+      comparedToSlowest: 0.01,
+    });
   });
 });
 

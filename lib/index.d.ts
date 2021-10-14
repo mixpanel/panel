@@ -107,6 +107,9 @@ export interface ConfigOptions<StateT, AppStateT = unknown, ContextRegistryT = u
 
   /** Whether to use Shadow DOM */
   useShadowDom?: boolean;
+
+  /** Defines the threshold at which 'slowRender' events will be dispatched, defaults to 20ms */
+  slowThreshold?: number;
 }
 
 export interface AttrSchema {
@@ -176,6 +179,21 @@ export class Component<
   /** Defines the state of the component, including all the properties required for rendering */
   state: StateT;
 
+  readonly timings: Readonly<{
+    /** The time in ms that the component constructor ran */
+    createdAt: number;
+    /** The time in ms that component initialization started (also see 'initializingCompletedAt') */
+    initializingStartedAt: number;
+    /** The time in ms that component initialization completed (also see 'initializingStartedAt') */
+    initializingCompletedAt: number;
+    /** The time in ms that the last #attributeChangedCallback ran */
+    lastAttributeChangedAt: number;
+    /** The time in ms that the last #update ran */
+    lastUpdateAt: number;
+    /** The time in ms that the last render ran */
+    lastRenderAt: number;
+  }>;
+
   /** Defines standard component configuration */
   get config(): ConfigOptions<StateT, AppStateT, ContextRegistryT>;
 
@@ -195,7 +213,7 @@ export class Component<
    * For use inside view templates, to create a child Panel component nested under this
    * component, which will share its state object and update cycle.
    */
-  child(tagName: string, config?: object): VNode;
+  child<T = object>(tagName: string, config?: T): VNode;
 
   /**
    * Searches the component's Panel ancestors for the first component of the

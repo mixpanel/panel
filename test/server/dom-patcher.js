@@ -1,9 +1,14 @@
 import '../../lib/isorender/dom-shims';
 
-import {expect} from 'chai';
+import chai, {expect} from 'chai';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 
 import {DOMPatcher, h} from '../../lib/dom-patcher';
 import nextAnimationFrame from './nextAnimationFrame';
+import * as Perf from '../../lib/component-utils/perf';
+
+chai.use(sinonChai);
 
 describe(`dom-patcher`, function () {
   context(`when first initialized`, function () {
@@ -135,6 +140,46 @@ describe(`dom-patcher`, function () {
       expect(domPatcher.state).to.equal(null);
       expect(domPatcher.vnode).to.equal(null);
       expect(domPatcher.el).to.equal(null);
+    });
+  });
+
+  describe(`postRenderCallback`, function () {
+    afterEach(() => sinon.restore());
+    it(`is not called on initial render`, function () {
+      const postRenderCallbackSpy = sinon.spy();
+      new DOMPatcher({foo: `bar`}, (state) => h(`div`, `Value of foo: ${state.foo}`), {
+        postRenderCallback: postRenderCallbackSpy,
+        updateMode: `sync`,
+      });
+      expect(postRenderCallbackSpy).not.to.have.been.called;
+    });
+
+    it(`is called after update`, function () {
+      const postRenderCallbackSpy = sinon.spy();
+      const domPatcher = new DOMPatcher({foo: `bar`}, (state) => h(`div`, `Value of foo: ${state.foo}`), {
+        postRenderCallback: postRenderCallbackSpy,
+        updateMode: `sync`,
+      });
+      expect(postRenderCallbackSpy).not.to.have.been.called;
+      domPatcher.update({foo: `whew`});
+      expect(postRenderCallbackSpy).to.have.been.calledOnce;
+    });
+
+    it(`is passed the elapsed time`, async function () {
+      let elapsedTime = null;
+      const domPatcher = new DOMPatcher({foo: `bar`}, (state) => h(`div`, `Value of foo: ${state.foo}`), {
+        postRenderCallback: (time) => {
+          elapsedTime = time;
+        },
+        updateMode: `async`,
+      });
+      const getNowStub = sinon.stub(Perf, `getNow`);
+      getNowStub.onCall(0).returns(5);
+      getNowStub.onCall(1).returns(25);
+
+      domPatcher.update({foo: `whew`});
+      await nextAnimationFrame();
+      expect(elapsedTime).to.eql(20);
     });
   });
 });
