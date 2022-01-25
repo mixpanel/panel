@@ -34,7 +34,7 @@ describe.only(`Router`, function () {
   beforeEach(async function () {
     document.body.innerHTML = ``;
     window.location = `#`;
-
+    window.history.replaceState(null, null, `/`);
     this.routerApp = document.createElement(`router-app`);
     document.body.appendChild(this.routerApp);
 
