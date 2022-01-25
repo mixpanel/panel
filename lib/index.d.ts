@@ -71,6 +71,23 @@ export interface PanelLifecycleContext {
   unbindFromComponent?(component: Component<any>): void;
 }
 
+/** Object mapping string hash-route expressions to handler functions */
+export interface HashRouteDefinition {
+  [route: string]: Function | string;
+}
+
+/** Path + hash routing support */
+export interface RouteDefinition {
+  /** Root path where component lives, defaults to '/' */
+  basePath?: string;
+  paths: Array<{
+    /** String describing relative path to the basename */
+    pathName: string;
+    /** Any hash sub-paths and their handlers */
+    hashRoutes: HashRouteDefinition;
+  }>;
+}
+
 export interface ConfigOptions<StateT, AppStateT = unknown, ContextRegistryT = unknown> {
   /** Function transforming state object to virtual dom tree */
   template(scope?: StateT): VNode;
@@ -99,8 +116,8 @@ export interface ConfigOptions<StateT, AppStateT = unknown, ContextRegistryT = u
   /** Extra rendering/lifecycle callbacks */
   hooks?: PanelHooks<StateT>;
 
-  /** Object mapping string route expressions to handler functions */
-  routes?: {[route: string]: Function};
+  /** Single-page path routing and/or hash routing configuration */
+  routes?: RouteDefinition | HashRouteDefinition;
 
   /** Whether to apply updates to DOM immediately, instead of batching to one update per frame */
   updateSync?: boolean;

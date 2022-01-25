@@ -30,7 +30,7 @@ export class RouterApp extends Component {
 }
 customElements.define(`router-app`, RouterApp);
 
-describe(`Router`, function () {
+describe.only(`Router`, function () {
   beforeEach(async function () {
     document.body.innerHTML = ``;
     window.location = `#`;
