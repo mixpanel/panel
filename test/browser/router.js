@@ -30,7 +30,39 @@ export class RouterApp extends Component {
 }
 customElements.define(`router-app`, RouterApp);
 
-describe.only(`Router`, function () {
+export class PathRouterApp extends Component {
+  get config() {
+    return {
+      defaultState: {
+        text: `Hello world`,
+        additionalText: ``,
+      },
+      routes: {
+        basePath: `/foo/:id`,
+        paths: [
+          {
+            pathName: `/`,
+            hashRoutes: {
+              '': () => ({text: `Default route!`}),
+              bar: () => ({text: `Bar route!`}),
+            },
+          },
+          {
+            pathName: `/widget/:id`,
+            hashRoutes: {
+              '*anyHash': (stateUpdate, id) => Object.assign({text: `Widget ${id}`}, stateUpdate),
+            },
+          },
+        ],
+      },
+      template: (state) => h(`p`, [`${state.text}${state.additionalText}`]),
+    };
+  }
+}
+
+customElements.define(`path-router-app`, PathRouterApp);
+
+describe.only(`hash-only Router`, function () {
   beforeEach(async function () {
     document.body.innerHTML = ``;
     window.location = `#`;
@@ -199,5 +231,31 @@ describe.only(`Router`, function () {
       });
       expect(window.history.length).to.equal(historyLength);
     });
+  });
+});
+
+describe.only(`path + hash Router`, function () {
+  beforeEach(async function () {
+    document.body.innerHTML = ``;
+    window.location = `#`;
+    window.history.replaceState(null, null, `/foo/123`);
+    this.routerApp = document.createElement(`path-router-app`);
+    document.body.appendChild(this.routerApp);
+
+    await nextAnimationFrame();
+  });
+
+  it(`runs index route handler when at root`, function () {
+    expect(this.routerApp.textContent).to.equal(`Default route!`);
+  });
+
+  it(`reacts to hash route changes at root`, async function () {
+    window.location.hash = `#bar`;
+    await retryable(() => expect(this.routerApp.textContent).to.equal(`Bar route!`));
+  });
+
+  it(`passes params to route handlers`, async function () {
+    window.history.pushState(null, null, `/foo/123/widget/15`);
+    await retryable(() => expect(this.routerApp.textContent).to.equal(`Widget 15`));
   });
 });
