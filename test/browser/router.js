@@ -38,7 +38,7 @@ export class PathRouterApp extends Component {
         additionalText: ``,
       },
       routes: {
-        basePath: `/foo/:id`,
+        basePath: `/foo/:id(/)`,
         paths: [
           {
             pathName: `/`,
@@ -48,9 +48,11 @@ export class PathRouterApp extends Component {
             },
           },
           {
-            pathName: `/widget/:id`,
+            pathName: `/widget/:id(/)`,
             hashRoutes: {
-              '*anyHash': (stateUpdate, id) => Object.assign({text: `Widget ${id}`}, stateUpdate),
+              '': (stateUpdate, {path}) => Object.assign({text: `Widget ${path[0]}`}, stateUpdate),
+              'param/:param': (stateUpdate, {path, hash}) =>
+                Object.assign({text: `Widget ${path[0]} with param ${hash[0]}`}, stateUpdate),
             },
           },
         ],
@@ -62,7 +64,7 @@ export class PathRouterApp extends Component {
 
 customElements.define(`path-router-app`, PathRouterApp);
 
-describe.only(`hash-only Router`, function () {
+describe(`hash-only Router`, function () {
   beforeEach(async function () {
     document.body.innerHTML = ``;
     window.location = `#`;
@@ -234,7 +236,7 @@ describe.only(`hash-only Router`, function () {
   });
 });
 
-describe.only(`path + hash Router`, function () {
+describe(`path + hash Router`, function () {
   beforeEach(async function () {
     document.body.innerHTML = ``;
     window.location = `#`;
@@ -249,13 +251,31 @@ describe.only(`path + hash Router`, function () {
     expect(this.routerApp.textContent).to.equal(`Default route!`);
   });
 
+  it(`runs index route handler when at root with trailing slash`, async function () {
+    window.history.pushState(null, null, `/foo/123/`);
+    await nextAnimationFrame();
+    expect(this.routerApp.textContent).to.equal(`Default route!`);
+  });
+
   it(`reacts to hash route changes at root`, async function () {
     window.location.hash = `#bar`;
     await retryable(() => expect(this.routerApp.textContent).to.equal(`Bar route!`));
   });
 
-  it(`passes params to route handlers`, async function () {
+  it(`passes path params to route handlers`, async function () {
     window.history.pushState(null, null, `/foo/123/widget/15`);
     await retryable(() => expect(this.routerApp.textContent).to.equal(`Widget 15`));
   });
+
+  it(`passes path params to route handlers with trailing slash`, async function () {
+    window.history.pushState(null, null, `/foo/123/widget/15/`);
+    await retryable(() => expect(this.routerApp.textContent).to.equal(`Widget 15`));
+  });
+
+  it(`passes path and hash params to route handlers`, async function () {
+    window.history.pushState(null, null, `/foo/123/widget/15#param/foobar`);
+    await retryable(() => expect(this.routerApp.textContent).to.equal(`Widget 15 with param foobar`));
+  });
+
+  // TODO: trailing slash cases
 });
