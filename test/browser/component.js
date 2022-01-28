@@ -269,7 +269,8 @@ describe(`Simple Component instance`, function () {
       const styleTagText = Array.from(componentEl.shadowRoot.querySelectorAll(`style`))
         .map((t) => t.innerHTML)
         .join(``);
-      return adoptedCSSText + styleTagText;
+      // adoptedCSSText comes last because adoptedStyleSheets have higher CSS precedence than style tags
+      return styleTagText + adoptedCSSText;
     }
 
     beforeEach(async function () {
