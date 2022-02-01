@@ -71,20 +71,37 @@ export interface PanelLifecycleContext {
   unbindFromComponent?(component: Component<any>): void;
 }
 
+/**
+ * Handler that takes a state update and any named parameters from a matched route expression.
+ * Can optionally return a partial component state to automatically update the component.
+ * */
+export type HashRouteHandler = (stateUpdate: object, ...params: string[]) => object | null | undefined;
+
 /** Object mapping string hash-route expressions to handler functions */
 export interface HashRouteDefinition {
-  [route: string]: Function | string;
+  [route: string]: HashRouteHandler | string;
 }
+
+/**
+ * Handler that takes a state update and named parameters from a matched path and hash expression.
+ */
+export type PathRouteHandler = (
+  stateUpdate: object,
+  pathParams: string[],
+  hashParams: string[],
+) => object | null | undefined;
 
 /** Path + hash routing support */
 export interface RouteDefinition {
-  /** Root path where component lives, defaults to '/' */
+  /** Root path expression where component lives, defaults to '/' */
   basePath?: string;
   paths: Array<{
-    /** String describing relative path to the basename */
+    /** Path expression relative to the basePath */
     pathName: string;
-    /** Any hash sub-paths and their handlers */
-    hashRoutes: HashRouteDefinition;
+    /** Any hash routes and their handlers */
+    hashRoutes: {
+      [route: string]: PathRouteHandler | string;
+    };
   }>;
 }
 
