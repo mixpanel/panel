@@ -23,7 +23,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Component.html">Component</a><ul class='methods'><li data-type='method'><a href="Component.html#_syncAttrs">_syncAttrs</a></li><li data-type='method'><a href="Component.html#_updateAttr">_updateAttr</a></li><li data-type='method'><a href="Component.html#attr">attr</a></li><li data-type='method'><a href="Component.html#attrs">attrs</a></li><li data-type='method'><a href="Component.html#child">child</a></li><li data-type='method'><a href="Component.html#findPanelParentByTagName">findPanelParentByTagName</a></li><li data-type='method'><a href="Component.html#getConfig">getConfig</a></li><li data-type='method'><a href="Component.html#navigate">navigate</a></li><li data-type='method'><a href="Component.html#onConnected">onConnected</a></li><li data-type='method'><a href="Component.html#onDisconnected">onDisconnected</a></li><li data-type='method'><a href="Component.html#setConfig">setConfig</a></li><li data-type='method'><a href="Component.html#shouldUpdate">shouldUpdate</a></li><li data-type='method'><a href="Component.html#update">update</a></li><li data-type='method'><a href="Component.html#updateApp">updateApp</a></li></ul></li><li><a href="StateController.html">StateController</a></li><li><a href="StateStore.html">StateStore</a></li></ul><h3>Modules</h3><ul><li><a href="module-component-utils.html">component-utils</a></li><li><a href="module-isorender_dom-shims.html">isorender/dom-shims</a></li><li><a href="module-panel.html">panel</a></li></ul><h3>Global</h3><ul><li><a href="global.html#delayedAttrRemove">delayedAttrRemove</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Component.html">Component</a><ul class='methods'><li data-type='method'><a href="Component.html#_syncAttrs">_syncAttrs</a></li><li data-type='method'><a href="Component.html#_updateAttr">_updateAttr</a></li><li data-type='method'><a href="Component.html#attr">attr</a></li><li data-type='method'><a href="Component.html#attrs">attrs</a></li><li data-type='method'><a href="Component.html#child">child</a></li><li data-type='method'><a href="Component.html#findPanelParentByTagName">findPanelParentByTagName</a></li><li data-type='method'><a href="Component.html#getConfig">getConfig</a></li><li data-type='method'><a href="Component.html#getContext">getContext</a></li><li data-type='method'><a href="Component.html#navigate">navigate</a></li><li data-type='method'><a href="Component.html#onConnected">onConnected</a></li><li data-type='method'><a href="Component.html#onDisconnected">onDisconnected</a></li><li data-type='method'><a href="Component.html#pathNavigate">pathNavigate</a></li><li data-type='method'><a href="Component.html#setConfig">setConfig</a></li><li data-type='method'><a href="Component.html#shouldUpdate">shouldUpdate</a></li><li data-type='method'><a href="Component.html#update">update</a></li><li data-type='method'><a href="Component.html#updateApp">updateApp</a></li></ul></li><li><a href="StateController.html">StateController</a></li><li><a href="StateStore.html">StateStore</a></li></ul><h3>Modules</h3><ul><li><a href="module-component-utils.html">component-utils</a></li><li><a href="module-isorender_dom-shims.html">isorender/dom-shims</a></li><li><a href="module-panel.html">panel</a></li></ul><h3>Global</h3><ul><li><a href="global.html#delayedAttrRemove">delayedAttrRemove</a></li><li><a href="global.html#getNow">getNow</a></li></ul>
 </nav>
 
 <div id="main">
@@ -67,18 +67,65 @@ import requestAnimationFrame from 'raf';
 // is already there
 global.requestAnimationFrame = global.requestAnimationFrame || requestAnimationFrame;
 
+// run a callback for every node of the DOM (sub)tree rooted at the given root node
+function walkDomTree(root, callback) {
+  // basic breadth-first tree traversal (non-recursive)
+  const breadthQueue = [root];
+  while (breadthQueue.length > 0) {
+    const node = breadthQueue.shift();
+    callback(node);
+    for (const child of Array.from(node.childNodes || [])) {
+      breadthQueue.push(child);
+    }
+    if (node.shadowRoot) {
+      for (const child of Array.from(node.shadowRoot.childNodes || [])) {
+        breadthQueue.push(child);
+      }
+    }
+  }
+}
+
 // patch DOM insertion functions to call connectedCallback on Custom Elements
 [`appendChild`, `insertBefore`, `replaceChild`].forEach((funcName) => {
   const origFunc = Element.prototype[funcName];
-  Element.prototype[funcName] = function() {
+  Element.prototype[funcName] = function () {
     const child = origFunc.apply(this, arguments);
-    requestAnimationFrame(() => {
-      if (!child.initialized &amp;&amp; child.connectedCallback) {
-        child.connectedCallback();
-      }
-    });
+    if (this.isConnected) {
+      walkDomTree(child, function (node) {
+        if (!node.isConnected) {
+          node.isConnected = true;
+          if (node.connectedCallback) {
+            node.connectedCallback();
+          }
+        }
+      });
+    }
   };
 });
+
+// patch removeChild to call disconnectedCallback
+const origRemoveChild = Element.prototype.removeChild;
+Element.prototype.removeChild = function (child) {
+  origRemoveChild.call(this, child);
+  if (this.isConnected) {
+    walkDomTree(child, function (node) {
+      if (node.isConnected) {
+        node.isConnected = false;
+        if (node.disconnectedCallback) {
+          node.disconnectedCallback();
+        }
+      }
+    });
+  }
+  return child;
+};
+
+Node.DOCUMENT_FRAGMENT_NODE = 11;
+
+// html-element does not provide hasAttribute
+Element.prototype.hasAttribute = function (name) {
+  return this.getAttribute(name) !== null;
+};
 
 // html-element only provides Element (with a lot of the HTMLElement API baked in).
 // Use HTMLElement as our Web Components-ready extension.
@@ -86,13 +133,23 @@ class HTMLElement extends Element {
   setAttribute(name, value) {
     const oldValue = this.getAttribute(name);
     super.setAttribute(...arguments);
-    if (this.attributeChangedCallback &amp;&amp; this.__attrIsObserved(name)) {
-      this.attributeChangedCallback(name, oldValue, value);
-    }
+    this.__onAttrChanged(name, oldValue, value);
   }
 
-  hasAttribute(name) {
-    return !!this.attributes.find((attr) => attr.name === name);
+  removeAttribute(name) {
+    const oldValue = this.getAttribute(name);
+    super.removeAttribute(...arguments);
+    this.__onAttrChanged(name, oldValue, null);
+  }
+
+  attachShadow() {
+    this.shadowRoot = document.createElement(`shadow-root`);
+    this.shadowRoot.nodeType = Node.DOCUMENT_FRAGMENT_NODE;
+    this.shadowRoot.host = this;
+    if (this.isConnected) {
+      this.shadowRoot.isConnected = true;
+    }
+    return this.shadowRoot;
   }
 
   __attrIsObserved(name) {
@@ -102,8 +159,10 @@ class HTMLElement extends Element {
     return this.__observedAttrs.includes(name);
   }
 
-  attachShadow() {
-    return document.createElement(`shadow-root`);
+  __onAttrChanged(name, oldValue, newValue) {
+    if (this.attributeChangedCallback &amp;&amp; this.__attrIsObserved(name)) {
+      this.attributeChangedCallback &amp;&amp; this.attributeChangedCallback(name, oldValue, newValue);
+    }
   }
 }
 
@@ -114,7 +173,7 @@ global.HTMLElement = HTMLElement;
 const customElementsRegistry = (global._customElementsRegistry = global._customElementsRegistry || {});
 
 const originalCreateElement = Document.prototype.createElement;
-Document.prototype.createElement = function(tagName) {
+Document.prototype.createElement = function (tagName) {
   tagName = tagName.toLowerCase();
   const customElClass = customElementsRegistry[tagName];
   let el;
@@ -123,6 +182,9 @@ Document.prototype.createElement = function(tagName) {
     el.nodeName = el.tagName = tagName;
   } else {
     el = originalCreateElement(...arguments);
+  }
+  if (tagName === `body`) {
+    el.isConnected = true;
   }
   return el;
 };
@@ -153,7 +215,7 @@ global.customElements = global.customElements || {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.5</a> on Mon Aug 17 2020 14:57:30 GMT-0700 (Pacific Daylight Time) using the Minami theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.5</a> on Tue Feb 01 2022 14:32:08 GMT-0600 (Central Standard Time) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

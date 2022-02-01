@@ -74,7 +74,7 @@ export interface PanelLifecycleContext {
 /**
  * Handler that takes a state update and any named parameters from a matched route expression.
  * Can optionally return a partial component state to automatically update the component.
- * */
+ */
 export type HashRouteHandler = (stateUpdate: object, ...params: string[]) => object | null | undefined;
 
 /** Object mapping string hash-route expressions to handler functions */
