@@ -268,9 +268,18 @@ export class Component<
   ): void;
 
   /**
+   * Executes the route handler matching the given path with optional fragment, and updates
+   * the URL, as though the user has navigated explicitly to that address.
+   */
+  pathNavigate(path: string, fragment?: string, stateUpdate?: Partial<StateT>): void;
+
+  /**
    * Executes the route handler matching the given URL fragment, and updates
    * the URL, as though the user had navigated explicitly to that address.
    */
+  hashNavigate(fragment: string, stateUpdate?: Partial<StateT>): void;
+
+  /** alias for hashNavigate to maintain backward compatibility */
   navigate(fragment: string, stateUpdate?: Partial<StateT>): void;
 
   /** Run a user-defined hook with the given parameters */
