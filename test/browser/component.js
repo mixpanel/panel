@@ -258,6 +258,21 @@ describe(`Simple Component instance`, function () {
   });
 
   context(`when using shadow DOM`, function () {
+    function getComponentStylesheetText(componentEl) {
+      const adoptedCSSText = Array.from(componentEl.shadowRoot.adoptedStyleSheets || [])
+        .map((s) =>
+          Array.from(s.cssRules)
+            .map((r) => r.cssText)
+            .join(``),
+        )
+        .join(``);
+      const styleTagText = Array.from(componentEl.shadowRoot.querySelectorAll(`style`))
+        .map((t) => t.innerHTML)
+        .join(``);
+      // adoptedCSSText comes last because adoptedStyleSheets have higher CSS precedence than style tags
+      return styleTagText + adoptedCSSText;
+    }
+
     beforeEach(async function () {
       el = document.createElement(`shadow-dom-app`);
       document.body.appendChild(el);
@@ -297,24 +312,24 @@ describe(`Simple Component instance`, function () {
 
     it(`renders its template`, function () {
       expect(el.children).to.have.lengthOf(0);
-      expect(el.shadowRoot.children[1].className).to.equal(`foo`);
+      expect(el.shadowRoot.children[el.shadowRoot.children.length - 1].className).to.equal(`foo`);
     });
 
     it(`applies the styles`, function () {
-      expect(el.shadowRoot.children[0].innerHTML).to.equal(`color: blue;`);
+      expect(getComponentStylesheetText(el)).to.equal(`:host { color: blue; }`);
     });
 
     context(`when applying override styles`, function () {
       it(`appends the overriding styles to the default styles`, async function () {
-        el.setAttribute(`style-override`, `background: red;`);
+        el.setAttribute(`style-override`, `:host { background: red; }`);
         await nextAnimationFrame();
-        expect(el.shadowRoot.children[0].innerHTML).to.equal(`color: blue;background: red;`);
+        expect(getComponentStylesheetText(el)).to.equal(`:host { color: blue; }:host { background: red; }`);
       });
 
       it(`it applies the styles even if the component isn't attached to the DOM`, function () {
         el = document.createElement(`shadow-dom-app`);
-        el.setAttribute(`style-override`, `background: red;`);
-        expect(el.shadowRoot.children[0].innerHTML).to.equal(`color: blue;background: red;`);
+        el.setAttribute(`style-override`, `:host { background: red; }`);
+        expect(getComponentStylesheetText(el)).to.equal(`:host { color: blue; }:host { background: red; }`);
       });
     });
   });

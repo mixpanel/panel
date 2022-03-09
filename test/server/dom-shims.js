@@ -41,7 +41,7 @@ describe(`customElement with shadowDom`, function () {
     elem.connectedCallback();
     await nextAnimationFrame();
 
-    expect(elem.el.innerHTML).to.equal(`<style>color: blue;</style><div class="foo"><p>Hello</p></div>`);
+    expect(elem.el.innerHTML).to.equal(`<style>:host { color: blue; }</style><div class="foo"><p>Hello</p></div>`);
   });
 });
 
