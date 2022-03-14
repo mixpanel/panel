@@ -22,11 +22,13 @@ module.exports.pitch = function (request) {
         if (elem.getConfig('useShadowDom')) {
           const newStyleText = newStyle.toString();
           if (elem.el.adoptedStyleSheets) {
-            if (newStyleText) {
+            if (!elem.getConfig('css')) {
               const newStylesheet = new CSSStyleSheet();
-              newStylesheet.replaceSync(newStyleText);
               elem.el.adoptedStyleSheets = [newStylesheet, ...elem.el.adoptedStyleSheets.slice(1)];
-            } else if (elem.getConfig('css')) {
+            }
+            if (newStyleText) {
+              elem.el.adoptedStyleSheets[0].replaceSync(newStyleText);
+            } else {
               elem.el.adoptedStyleSheets = elem.el.adoptedStyleSheets.slice(1);
             }
           } else {
