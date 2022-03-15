@@ -31,7 +31,7 @@ module.exports.pitch = function (request) {
           } else {
             if (!elem.configStyleTag) {
               elem.configStyleTag = document.createElement('style');
-              elem.el.appendChild(elem.configStyleTag);
+              elem.el.prepend(elem.configStyleTag);
             }
             elem.configStyleTag.textContent = newStyleText;
           }
