@@ -194,6 +194,24 @@ export class Component<
     lastRenderAt: number;
   }>;
 
+  /** Static stylesheet if Constructible StyleSheets is supported */
+  configStyleSheet?: CSSStyleSheet;
+
+  /** style-override attribute's stylesheet if Constructible StyleSheets is supported */
+  styleOverrideStyleSheet?: CSSStyleSheet;
+
+  /** Static stylesheet if Constructible StyleSheets is supported */
+  configStyleTag?: Element;
+
+  /** style-override attribute's stylesheet if Constructible StyleSheets is not supported */
+  styleOverrideTag?: Element;
+
+  /** Gets the cached static stylesheet for this component class */
+  getCachedStyleSheet(): CSSStyleSheet | undefined;
+
+  /** Sets the cached static stylesheet for this component class */
+  setCachedStyleSheet(styleSheet: CSSStyleSheet): void;
+
   /** Defines standard component configuration */
   get config(): ConfigOptions<StateT, AppStateT, ContextRegistryT>;
 

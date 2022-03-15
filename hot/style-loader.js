@@ -22,17 +22,18 @@ module.exports.pitch = function (request) {
         if (elem.getConfig('useShadowDom')) {
           const newStyleText = newStyle.toString();
           if (elem.el.adoptedStyleSheets) {
-            if (!elem.getConfig('css')) {
-              const newStylesheet = new CSSStyleSheet();
-              elem.el.adoptedStyleSheets = [newStylesheet, ...elem.el.adoptedStyleSheets.slice(1)];
+            if (!elem.configStyleSheet) {
+              elem.configStyleSheet = new CSSStyleSheet();
+              elem.el.adoptedStyleSheets = [elem.configStyleSheet, ...this.el.adoptedStyleSheets.slice(1)];
             }
-            if (newStyleText) {
-              elem.el.adoptedStyleSheets[0].replaceSync(newStyleText);
-            } else {
-              elem.el.adoptedStyleSheets = elem.el.adoptedStyleSheets.slice(1);
-            }
+            elem.configStyleSheet.replaceSync(newStyleText);
+            elem.setCachedStyleSheet(elem.configStyleSheet);
           } else {
-            elem.el.querySelector('style').textContent = newStyleText;
+            if (!elem.configStyleTag) {
+              elem.configStyleTag = document.createElement('style');
+              elem.el.appendChild(elem.configStyleTag);
+            }
+            elem.configStyleTag.textContent = newStyleText;
           }
           return true;
         }
