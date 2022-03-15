@@ -200,10 +200,10 @@ export class Component<
   /** style-override attribute's stylesheet if Constructible StyleSheets is supported */
   styleOverrideStyleSheet?: CSSStyleSheet;
 
-  /** Static stylesheet if Constructible StyleSheets is supported */
+  /** Static style tag if Constructible StyleSheets is not supported */
   staticStyleTag?: Element;
 
-  /** style-override attribute's stylesheet if Constructible StyleSheets is not supported */
+  /** style-override attribute's style tag if Constructible StyleSheets is not supported */
   styleOverrideTag?: Element;
 
   /** Applies the static stylesheet for this component class */
