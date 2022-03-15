@@ -195,22 +195,19 @@ export class Component<
   }>;
 
   /** Static stylesheet if Constructible StyleSheets is supported */
-  configStyleSheet?: CSSStyleSheet;
+  staticStyleSheet?: CSSStyleSheet;
 
   /** style-override attribute's stylesheet if Constructible StyleSheets is supported */
   styleOverrideStyleSheet?: CSSStyleSheet;
 
   /** Static stylesheet if Constructible StyleSheets is supported */
-  configStyleTag?: Element;
+  staticStyleTag?: Element;
 
   /** style-override attribute's stylesheet if Constructible StyleSheets is not supported */
   styleOverrideTag?: Element;
 
-  /** Gets the cached static stylesheet for this component class */
-  getCachedStyleSheet(): CSSStyleSheet | undefined;
-
-  /** Sets the cached static stylesheet for this component class */
-  setCachedStyleSheet(styleSheet: CSSStyleSheet): void;
+  /** Applies the static stylesheet for this component class */
+  applyStaticStyle(styleSheetText: null | string, ignoreCache: boolean): void;
 
   /** Defines standard component configuration */
   get config(): ConfigOptions<StateT, AppStateT, ContextRegistryT>;

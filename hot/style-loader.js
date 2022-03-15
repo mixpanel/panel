@@ -20,21 +20,7 @@ module.exports.pitch = function (request) {
       const updatePanelElems = require('panel/hot/update-panel-elems');
       updatePanelElems('${elemName}', elem => {
         if (elem.getConfig('useShadowDom')) {
-          const newStyleText = newStyle.toString();
-          if (elem.el.adoptedStyleSheets) {
-            if (!elem.configStyleSheet) {
-              elem.configStyleSheet = new CSSStyleSheet();
-              elem.el.adoptedStyleSheets = [elem.configStyleSheet, ...this.el.adoptedStyleSheets.slice(1)];
-            }
-            elem.configStyleSheet.replaceSync(newStyleText);
-            elem.setCachedStyleSheet(elem.configStyleSheet);
-          } else {
-            if (!elem.configStyleTag) {
-              elem.configStyleTag = document.createElement('style');
-              elem.el.prepend(elem.configStyleTag);
-            }
-            elem.configStyleTag.textContent = newStyleText;
-          }
+          elem.applyStaticStyle(newStyle.toString(), /* ignoreCache */ true);
           return true;
         }
       });
