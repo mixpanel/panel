@@ -207,7 +207,7 @@ export class Component<
   styleOverrideTag?: Element;
 
   /** Applies the static stylesheet for this component class */
-  applyStaticStyle(styleSheetText: null | string, options: {ignoreCache: boolean}): void;
+  applyStaticStyle(styleSheetText: null | string, options?: {ignoreCache: boolean}): void;
 
   /** Defines standard component configuration */
   get config(): ConfigOptions<StateT, AppStateT, ContextRegistryT>;
