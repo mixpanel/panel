@@ -20,7 +20,7 @@ module.exports.pitch = function (request) {
       const updatePanelElems = require('panel/hot/update-panel-elems');
       updatePanelElems('${elemName}', elem => {
         if (elem.getConfig('useShadowDom')) {
-          elem.applyStaticStyle(newStyle.toString(), /* ignoreCache */ true);
+          elem.applyStaticStyle(newStyle.toString(), {ignoreCache: true});
           return true;
         }
       });
