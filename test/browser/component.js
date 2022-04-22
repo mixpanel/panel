@@ -4,7 +4,7 @@ import {nextAnimationFrame, sleep} from 'domsuite';
 import {BreakableApp} from '../fixtures/breakable-app';
 import {compactHtml} from '../utils';
 import {LightTheme, DarkTheme} from '../fixtures/simple-contexts';
-import * as Perf from '../../lib/component-utils/perf';
+import {Perf} from '../../lib/component-utils/perf';
 
 describe(`Simple Component instance`, function () {
   let el;
