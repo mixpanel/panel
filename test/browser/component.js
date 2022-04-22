@@ -699,7 +699,7 @@ describe(`Rendering exception`, function () {
   });
 });
 
-describe.skip(`slowRendering`, function () {
+describe(`slowRendering`, function () {
   let el;
   let slowRenderSpy;
 
