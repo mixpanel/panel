@@ -38,7 +38,7 @@ describe(`Router`, function () {
     this.routerApp = document.createElement(`router-app`);
     document.body.appendChild(this.routerApp);
 
-    await nextAnimationFrame();
+    return nextAnimationFrame();
   });
 
   it(`is not initialized when component has no routes defined`, function () {
