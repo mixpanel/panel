@@ -1160,11 +1160,8 @@ context(`Component with contexts`, function () {
       // modern browsers with native Custom Elements support will emit a global error event
       const errors = [];
       window.onerror = (message, source, lineno, colno, error) => {
-        errors.push(message);
-        if (error) {
-          error.preventDefault();
-        }
-        return false;
+        errors.push(error.message);
+        return true;
       };
 
       try {
