@@ -30,43 +30,43 @@ if (SAUCE_LAB) {
   browsers = [
     sauceLabsLauncher({
       browserName: `chrome`,
-      version: `latest`,
-      platform: `OS X 10.15`,
+      browserVersion: `latest`,
+      platformName: `OS X 10.15`,
     }),
     sauceLabsLauncher({
       browserName: `chrome`,
-      version: `72`,
-      platform: `OS X 10.13`,
+      browserVersion: `75`,
+      platformName: `OS X 10.13`,
     }),
     sauceLabsLauncher({
       browserName: `firefox`,
-      version: `latest`,
-      platform: `OS X 10.15`,
+      browserVersion: `latest`,
+      platformName: `OS X 10.15`,
     }),
     sauceLabsLauncher({
       browserName: `firefox`,
-      version: `54`,
-      platform: `OS X 10.13`,
+      browserVersion: `55`,
+      platformName: `OS X 10.13`,
     }),
     sauceLabsLauncher({
       browserName: `microsoftedge`,
-      version: `latest`,
-      platform: `Windows 10`,
+      browserVersion: `latest`,
+      platformName: `Windows 10`,
     }),
     sauceLabsLauncher({
       browserName: `microsoftedge`,
-      version: `14`,
-      platform: `Windows 10`,
+      browserVersion: `75`,
+      platformName: `Windows 10`,
     }),
     sauceLabsLauncher({
       browserName: `safari`,
-      version: `latest`,
-      platform: `OS X 10.15`,
+      browserVersion: `latest`,
+      platformName: `OS X 10.15`,
     }),
     sauceLabsLauncher({
       browserName: `safari`,
-      version: `12`,
-      platform: `OS X 10.13`,
+      browserVersion: `12`,
+      platformName: `OS X 10.13`,
     }),
   ];
 }
