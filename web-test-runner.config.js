@@ -46,7 +46,7 @@ if (SAUCE_LAB) {
     }),
     sauceLabsLauncher({
       browserName: `firefox`,
-      browserVersion: `72`,
+      browserVersion: `74`,
       platformName: `macOS 10.13`,
     }),
     sauceLabsLauncher({
