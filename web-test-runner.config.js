@@ -33,10 +33,11 @@ if (SAUCE_LAB) {
       browserVersion: `latest`,
       platformName: `macOS 10.15`,
     }),
+    // using legacy protocol
     sauceLabsLauncher({
       browserName: `chrome`,
-      browserVersion: `75`,
-      platformName: `macOS 10.13`,
+      version: `72`,
+      platform: `macOS 10.13`,
     }),
     sauceLabsLauncher({
       browserName: `firefox`,
@@ -45,7 +46,7 @@ if (SAUCE_LAB) {
     }),
     sauceLabsLauncher({
       browserName: `firefox`,
-      browserVersion: `55`,
+      browserVersion: `72`,
       platformName: `macOS 10.13`,
     }),
     sauceLabsLauncher({
@@ -73,7 +74,7 @@ if (SAUCE_LAB) {
 
 module.exports = {
   nodeResolve: true,
-
+  staticLogging: true,
   testFramework: {
     config: {
       ui: `bdd`,
