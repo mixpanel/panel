@@ -1159,8 +1159,11 @@ context(`Component with contexts`, function () {
     it(`fails to connect when a context declared in config does not have a default context by itself or from any context ancestor`, async function () {
       // modern browsers with native Custom Elements support will emit a global error event
       const errors = [];
-      window.onerror = (errorEvent) => {
-        errors.push(errorEvent);
+      window.onerror = (message, source, lineno, colno, error) => {
+        errors.push(message);
+        if (error) {
+          error.preventDefault();
+        }
         return false;
       };
 
