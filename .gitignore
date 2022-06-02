@@ -8,3 +8,4 @@ yarn.lock
 /.vscode
 /isorender
 /coverage
+.nyc_output

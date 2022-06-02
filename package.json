@@ -22,7 +22,7 @@
     "test": "npm run build-test && npm run test-server && npm run test-browser-local",
     "test-browser-local": "SAUCE_LAB=0 wtr --coverage",
     "test-browser-sauce": "SAUCE_LAB=1 wtr --coverage",
-    "test-server": "NODE_ENV=test mocha --require @babel/register --require regenerator-runtime/runtime test/server",
+    "test-server": "NODE_ENV=test nyc mocha --require @babel/register --require regenerator-runtime/runtime test/server",
     "tslint": "tslint -c tslint.json -t stylish 'lib/index.d.ts'",
     "type-check": "tsc"
   },
@@ -81,6 +81,7 @@
     "lint-staged": "10.1.1",
     "minami": "1.1.1",
     "mocha": "9.2.2",
+    "nyc": "15.1.0",
     "prettier": "2.0.2",
     "promisify-node": "0.4.0",
     "readline-sync": "1.4.7",

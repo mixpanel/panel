@@ -88,6 +88,10 @@ module.exports = {
         // TODO: update domsuite lib to be esm compatible (and remove platform)
         `**/node_modules/domsuite/**/*`,
         `**/node_modules/platform/**/*`,
+        `**/node_modules/snabbdom-delayed-class/**/*`,
+        `**/node_modules/snabbdom-jsx-lite/**/*`,
+        `**/node_modules/webcomponent/**/*`,
+        `**/node_modules/cuid/**/*`,
       ],
     }),
   ],
