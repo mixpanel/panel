@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import {expect} from 'chai';
+import {expect} from '@esm-bundle/chai';
 import {nextAnimationFrame, sleep} from 'domsuite';
 import {BreakableApp} from '../fixtures/breakable-app';
 import {compactHtml} from '../utils';

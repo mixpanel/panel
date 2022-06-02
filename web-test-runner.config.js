@@ -3,6 +3,10 @@ const {playwrightLauncher} = require(`@web/test-runner-playwright`);
 const {createSauceLabsLauncher} = require(`@web/test-runner-saucelabs`);
 const {chromeLauncher} = require(`@web/test-runner-chrome`);
 const SAUCE_LAB = parseInt(process.env.SAUCE_LAB, 10) === 1;
+const {esbuildPlugin} = require(`@web/dev-server-esbuild`);
+const rollupCommonjs = require(`@rollup/plugin-commonjs`);
+const {fromRollup} = require(`@web/dev-server-rollup`);
+const commonjs = fromRollup(rollupCommonjs);
 
 let browsers = [chromeLauncher(), playwrightLauncher({product: `firefox`})];
 
@@ -75,12 +79,24 @@ if (SAUCE_LAB) {
 module.exports = {
   nodeResolve: true,
   staticLogging: true,
+  plugins: [
+    esbuildPlugin({target: `auto`}),
+    commonjs({
+      include: [
+        `**/node_modules/core-js/**/*`,
+        `**/node_modules/sinon-chai/**/*`,
+        // TODO: update domsuite lib to be esm compatible (and remove platform)
+        `**/node_modules/domsuite/**/*`,
+        `**/node_modules/platform/**/*`,
+      ],
+    }),
+  ],
   testFramework: {
     config: {
       ui: `bdd`,
       timeout: `2000`,
     },
   },
-  files: `test/browser/build/bundle.js`,
+  files: `test/browser/index.js`,
   browsers,
 };

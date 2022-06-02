@@ -1,4 +1,4 @@
-import chai from 'chai';
+import chai from '@esm-bundle/chai';
 import sinonChai from 'sinon-chai';
 
 chai.use(sinonChai);

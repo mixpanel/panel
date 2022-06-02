@@ -1,4 +1,4 @@
-import {expect} from 'chai';
+import {expect} from '@esm-bundle/chai';
 import {nextAnimationFrame, retryable} from 'domsuite';
 
 import {Component, h} from '../../lib';
