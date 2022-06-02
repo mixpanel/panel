@@ -77,7 +77,9 @@ if (SAUCE_LAB) {
 }
 
 module.exports = {
-  nodeResolve: true,
+  nodeResolve: {
+    mainFields: [`module`, `main`, `browser`],
+  },
   staticLogging: true,
   plugins: [
     esbuildPlugin({target: `auto`}),
@@ -89,7 +91,6 @@ module.exports = {
         `**/node_modules/domsuite/**/*`,
         `**/node_modules/platform/**/*`,
         `**/node_modules/snabbdom-delayed-class/**/*`,
-        `**/node_modules/snabbdom-jsx-lite/**/*`,
         `**/node_modules/webcomponent/**/*`,
         `**/node_modules/cuid/**/*`,
       ],
