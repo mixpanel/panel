@@ -20,7 +20,7 @@
     "eslint:fix": "eslint --fix .",
     "publish-devtools": "node scripts/publish-devtools.js",
     "test": "npm run build-test && npm run test-server && npm run test-browser-local",
-    "test-browser-local": "SAUCE_LAB=0 wtr",
+    "test-browser-local": "SAUCE_LAB=0 wtr --coverage",
     "test-browser-sauce": "SAUCE_LAB=1 wtr",
     "test-server": "NODE_ENV=test mocha --require @babel/register --require regenerator-runtime/runtime test/server",
     "tslint": "tslint -c tslint.json -t stylish 'lib/index.d.ts'",
