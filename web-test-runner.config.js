@@ -32,20 +32,21 @@ if (SAUCE_LAB) {
     sauceLabsCapabilities,
   );
   browsers = [
-    sauceLabsLauncher({
-      browserName: `chrome`,
-      browserVersion: `latest`,
-      platformName: `macOS 10.15`,
-    }),
+    // sauceLabsLauncher({
+    //   browserName: `chrome`,
+    //   browserVersion: `latest`,
+    //   platformName: `macOS 10.15`,
+    // }),
     // using legacy protocol
-    sauceLabsLauncher({
-      browserName: `chrome`,
-      version: `72`,
-      platform: `macOS 10.13`,
-    }),
+    // sauceLabsLauncher({
+    //   browserName: `chrome`,
+    //   version: `72`,
+    //   platform: `macOS 10.13`,
+    // }),
     sauceLabsLauncher({
       browserName: `firefox`,
-      browserVersion: `latest`,
+      // TODO ff 101 has a weird behavior with stylesheet
+      browserVersion: `100`,
       platformName: `macOS 10.15`,
     }),
     sauceLabsLauncher({
