@@ -150,6 +150,14 @@ describe(`Router`, function () {
       await nextAnimationFrame();
       expect(this.routerApp.textContent).to.equal(`Number: 42`);
     });
+
+    it(`does not update url if dontUpdateUrl is passed`, async function () {
+      expect(window.location.hash).to.equal(``);
+      this.routerApp.router.navigate(`numeric/42`, {}, {dontUpdateUrl: true});
+      await retryable(() => expect(this.routerApp.textContent).to.equal(`Number: 42`));
+      expect(this.routerApp.textContent).to.equal(`Number: 42`);
+      expect(window.location.hash).to.equal(``);
+    });
   });
 
   describe(`replaceHash()`, function () {
