@@ -321,15 +321,15 @@ describe(`Simple Component instance`, function () {
 
     context(`when applying override styles`, function () {
       it(`appends the overriding styles to the default styles`, async function () {
-        el.setAttribute(`style-override`, `:host { background: red; }`);
+        el.setAttribute(`style-override`, `:host { background-color: red; }`);
         await nextAnimationFrame();
-        expect(getComponentStylesheetText(el)).to.equal(`:host { color: blue; }:host { background: red; }`);
+        expect(getComponentStylesheetText(el)).to.equal(`:host { color: blue; }:host { background-color: red; }`);
       });
 
       it(`it applies the styles even if the component isn't attached to the DOM`, function () {
         el = document.createElement(`shadow-dom-app`);
-        el.setAttribute(`style-override`, `:host { background: red; }`);
-        expect(getComponentStylesheetText(el)).to.equal(`:host { color: blue; }:host { background: red; }`);
+        el.setAttribute(`style-override`, `:host { background-color: red; }`);
+        expect(getComponentStylesheetText(el)).to.equal(`:host { color: blue; }:host { background-color: red; }`);
       });
     });
   });
