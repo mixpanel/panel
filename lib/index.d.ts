@@ -148,6 +148,12 @@ export interface AnyAttrs {
   [attr: string]: any;
 }
 
+export interface NavigateOptions {
+  // Passing this flag to navigate() will cause the matching router handler to execute, but won't update the url
+  // with the passed fragment.
+  dontUpdateUrl?: boolean;
+}
+
 export class Component<
   StateT,
   AttrsT = AnyAttrs,
@@ -240,7 +246,7 @@ export class Component<
    * Executes the route handler matching the given URL fragment, and updates
    * the URL, as though the user had navigated explicitly to that address.
    */
-  navigate(fragment: string, stateUpdate?: Partial<StateT>): void;
+  navigate(fragment: string, stateUpdate?: Partial<StateT>, navigateOptions?: NavigateOptions): void;
 
   /** Run a user-defined hook with the given parameters */
   runHook: (
