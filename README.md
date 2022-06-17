@@ -1,4 +1,4 @@
-# panel
+# panel 1
 
 ![Build Status](https://github.com/mixpanel/panel/actions/workflows/tests.yml/badge.svg)
 [![NPM version](https://img.shields.io/npm/v/panel.svg)](https://www.npmjs.com/package/panel)
