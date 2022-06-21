@@ -71,7 +71,7 @@ export interface PanelLifecycleContext {
   unbindFromComponent?(component: Component<any>): void;
 }
 
-export interface ConfigOptions<StateT, AppStateT = unknown, ContextRegistryT = unknown> {
+export interface ConfigOptions<StateT, AppStateT = unknown, ContextRegistryT = unknown, HelpersT extends PanelHelpers = unknown> {
   /** Function transforming state object to virtual dom tree */
   template(scope?: StateT): VNode;
 
@@ -94,7 +94,7 @@ export interface ConfigOptions<StateT, AppStateT = unknown, ContextRegistryT = u
   appState?: AppStateT;
 
   /** Properties and functions injected automatically into template state object */
-  helpers?: PanelHelpers;
+  helpers?: HelpersT;
 
   /** Extra rendering/lifecycle callbacks */
   hooks?: PanelHooks<StateT>;
@@ -153,7 +153,8 @@ export class Component<
   AttrsT = AnyAttrs,
   AppStateT = unknown,
   AppT = unknown,
-  ContextRegistryT = unknown
+  ContextRegistryT = unknown,
+  HelpersT extends PanelHelpers = unknown
 > extends WebComponent {
   /** The first Panel Component ancestor in the DOM tree; null if this component is the root */
   $panelParent: Component<unknown>;
@@ -198,7 +199,7 @@ export class Component<
   applyStaticStyle(styleSheetText: null | string, options?: {ignoreCache: boolean}): void;
 
   /** Defines standard component configuration */
-  get config(): ConfigOptions<StateT, AppStateT, ContextRegistryT>;
+  get config(): ConfigOptions<StateT, AppStateT, ContextRegistryT, HelpersT>;
 
   /**
    * Template helper functions defined in config object, and exposed to template code as $helpers.
