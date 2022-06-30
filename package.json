@@ -48,7 +48,6 @@
     "html-element": "2.3.0",
     "loader-utils": "1.1.0",
     "lodash.pick": "4.4.0",
-    "raf": "3.2.0",
     "schema-utils": "1.0.0",
     "snabbdom": "3.0.3",
     "snabbdom-delayed-class": "0.1.1",
