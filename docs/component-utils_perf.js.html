@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>isorender/dom-shims - Documentation</title>
+    <title>component-utils/perf.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -28,146 +28,29 @@
 
 <div id="main">
     
-    <h1 class="page-title">isorender/dom-shims</h1>
+    <h1 class="page-title">component-utils/perf.js</h1>
     
 
     
 
 
 
-
-<section>
-
-<header>
     
-        
-            
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class="description">Node.js polyfill for rendering Panel components without a browser.
-Makes the following objects globally available:
-Comment, document, Document, Element, HTMLElement, Node, requestAnimationFrame, Text.
-Most of the available DOM API functionality is provided by
-<a href="https://github.com/1N50MN14/html-element">html-element</a>, with some patches for
-the Web Components API.</div>
-        
-
-        
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="isorender_dom-shims.js.html">isorender/dom-shims.js</a>, <a href="isorender_dom-shims.js.html#line2">line 2</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Example</h5>
-    
-        <p class="code-caption">Rendering app HTML to stdout</p>
-    
-    <pre class="prettyprint"><code>import 'panel/isorender/dom-shims';
-import { Component } from 'panel';
-customElements.define('my-widget', class extends Component {
-  // app definition
-});
-const myWidget = document.createElement('my-widget');
-document.body.appendChild(myWidget);
-requestAnimationFrame(() => console.log(myWidget.outerHTML));</code></pre>
-
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Attempt to use a high resolution timestamp when in the browswer environment, but fallback to Date.now
+ * When the performance API is not available.
+ */
+export function getNow() {
+  if (typeof performance !== `undefined`) {
+    return performance.now();
+  }
+  return Date.now();
+}
+</code></pre>
+        </article>
+    </section>
 
 
 

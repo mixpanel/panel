@@ -23,7 +23,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Component.html">Component</a><ul class='methods'><li data-type='method'><a href="Component.html#_syncAttrs">_syncAttrs</a></li><li data-type='method'><a href="Component.html#_updateAttr">_updateAttr</a></li><li data-type='method'><a href="Component.html#attr">attr</a></li><li data-type='method'><a href="Component.html#attrs">attrs</a></li><li data-type='method'><a href="Component.html#child">child</a></li><li data-type='method'><a href="Component.html#findPanelParentByTagName">findPanelParentByTagName</a></li><li data-type='method'><a href="Component.html#getConfig">getConfig</a></li><li data-type='method'><a href="Component.html#navigate">navigate</a></li><li data-type='method'><a href="Component.html#onConnected">onConnected</a></li><li data-type='method'><a href="Component.html#onDisconnected">onDisconnected</a></li><li data-type='method'><a href="Component.html#setConfig">setConfig</a></li><li data-type='method'><a href="Component.html#shouldUpdate">shouldUpdate</a></li><li data-type='method'><a href="Component.html#update">update</a></li><li data-type='method'><a href="Component.html#updateApp">updateApp</a></li></ul></li><li><a href="StateController.html">StateController</a></li><li><a href="StateStore.html">StateStore</a></li></ul><h3>Modules</h3><ul><li><a href="module-component-utils.html">component-utils</a></li><li><a href="module-isorender_dom-shims.html">isorender/dom-shims</a></li><li><a href="module-panel.html">panel</a></li></ul><h3>Global</h3><ul><li><a href="global.html#delayedAttrRemove">delayedAttrRemove</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Component.html">Component</a><ul class='methods'><li data-type='method'><a href="Component.html#_syncAttrs">_syncAttrs</a></li><li data-type='method'><a href="Component.html#_updateAttr">_updateAttr</a></li><li data-type='method'><a href="Component.html#attr">attr</a></li><li data-type='method'><a href="Component.html#attrs">attrs</a></li><li data-type='method'><a href="Component.html#child">child</a></li><li data-type='method'><a href="Component.html#findPanelParentByTagName">findPanelParentByTagName</a></li><li data-type='method'><a href="Component.html#getConfig">getConfig</a></li><li data-type='method'><a href="Component.html#getContext">getContext</a></li><li data-type='method'><a href="Component.html#navigate">navigate</a></li><li data-type='method'><a href="Component.html#onConnected">onConnected</a></li><li data-type='method'><a href="Component.html#onDisconnected">onDisconnected</a></li><li data-type='method'><a href="Component.html#setConfig">setConfig</a></li><li data-type='method'><a href="Component.html#shouldUpdate">shouldUpdate</a></li><li data-type='method'><a href="Component.html#update">update</a></li><li data-type='method'><a href="Component.html#updateApp">updateApp</a></li></ul></li><li><a href="StateController.html">StateController</a></li><li><a href="StateStore.html">StateStore</a></li></ul><h3>Modules</h3><ul><li><a href="module-component-utils.html">component-utils</a></li><li><a href="module-isorender_dom-shims.html">isorender/dom-shims</a></li><li><a href="module-panel.html">panel</a></li></ul><h3>Global</h3><ul><li><a href="global.html#delayedAttrRemove">delayedAttrRemove</a></li><li><a href="global.html#getNow">getNow</a></li></ul>
 </nav>
 
 <div id="main">
@@ -44,6 +44,7 @@ import WebComponent from 'webcomponent';
 import {EMPTY_DIV, DOMPatcher, h} from './dom-patcher';
 import Router from './router';
 import * as hookHelpers from './component-utils/hook-helpers';
+import {getNow} from './component-utils/perf';
 
 const DOCUMENT_FRAGMENT_NODE = 11;
 const ATTR_TYPE_DEFAULTS = {
@@ -52,6 +53,7 @@ const ATTR_TYPE_DEFAULTS = {
   number: 0,
   json: null,
 };
+const stylesheetCache = new Map(); // key is the component constructor, value is a CSSStyleSheet instance
 
 /**
  * Definition of a Panel component/app, implemented as an HTML custom element.
@@ -283,6 +285,8 @@ class Component extends WebComponent {
    * myWidget.update({name: 'Bob'});
    */
   update(stateUpdate = {}) {
+    this.timings.lastUpdateAt = getNow();
+
     const stateUpdateResult = typeof stateUpdate === `function` ? stateUpdate(this.state) : stateUpdate;
     return this._updateStore(stateUpdateResult, {
       store: `state`,
@@ -306,6 +310,9 @@ class Component extends WebComponent {
 
   constructor() {
     super();
+    this.timings = {
+      createdAt: getNow(),
+    };
 
     this.panelID = cuid();
 
@@ -319,6 +326,8 @@ class Component extends WebComponent {
       {},
       {
         css: ``,
+        defaultContexts: {},
+        contexts: [],
         helpers: {},
         routes: {},
         template: () => {
@@ -326,9 +335,12 @@ class Component extends WebComponent {
         },
         updateSync: false,
         useShadowDom: false,
+        slowThreshold: 20,
       },
       this.config,
     );
+
+    this._contexts = new Set(this.getConfig(`contexts`));
 
     // initialize shared state store, either in `appState` or default to `state`
     // appState and isStateShared of child components will be overwritten by parent/root
@@ -345,14 +357,47 @@ class Component extends WebComponent {
 
     if (this.getConfig(`useShadowDom`)) {
       this.el = this.attachShadow({mode: `open`});
-      this.styleTag = document.createElement(`style`);
-      this.styleTag.innerHTML = this.getConfig(`css`);
-      this.el.appendChild(this.styleTag);
+      this.applyStaticStyle(this.getConfig(`css`));
     } else if (this.getConfig(`css`)) {
       throw Error(`"useShadowDom" config option must be set in order to use "css" config.`);
     } else {
       this.el = this;
     }
+
+    this.postRenderCallback = (elapsedMs) => {
+      this.timings.lastRenderAt = getNow();
+      if (elapsedMs > this.getConfig(`slowThreshold`)) {
+        const shouldBroadcast =
+          !this.lastSlowRender || // SHOULD because we've never slow rendered
+          this.lastSlowRender.time - getNow() > 3000 || // SHOULD because last time was more than three seconds ago
+          elapsedMs > (this.slowestRenderMs || 0); // SHOULD because this time is slower
+
+        if (shouldBroadcast) {
+          const comparedToLast = this.lastSlowRender
+            ? {
+                // bit of a hack to get the number to only 2 digits of precision
+                comparedToLast: +((elapsedMs - this.lastSlowRender.elapsedMs) / this.lastSlowRender.elapsedMs).toFixed(
+                  2,
+                ),
+                comparedToSlowest: +((elapsedMs - this.slowestRenderMs) / this.slowestRenderMs).toFixed(2),
+              }
+            : undefined;
+
+          this.lastSlowRender = {
+            time: getNow(),
+            elapsedMs,
+          };
+          this.slowestRenderMs = Math.max(this.slowestRenderMs || 0, elapsedMs);
+          this.dispatchEvent(
+            new CustomEvent(`slowRender`, {
+              detail: Object.assign(comparedToLast || {}, {elapsedMs, component: this.toString()}),
+              bubbles: true,
+              composed: true,
+            }),
+          );
+        }
+      }
+    };
   }
 
   connectedCallback() {
@@ -366,6 +411,16 @@ class Component extends WebComponent {
       return;
     }
     this.initializing = true;
+    this.timings.initializingStartedAt = getNow();
+
+    for (const attrsSchemaKey of Object.keys(this._attrsSchema)) {
+      if (
+        !Object.prototype.hasOwnProperty.call(this._attrs, attrsSchemaKey) &amp;&amp;
+        this._attrsSchema[attrsSchemaKey].required
+      ) {
+        throw new Error(`${this}: is missing required attr '${attrsSchemaKey}'`);
+      }
+    }
 
     this.$panelChildren = new Set();
 
@@ -412,8 +467,17 @@ class Component extends WebComponent {
       this.navigate(window.location.hash);
     }
 
+    for (const contextName of this.getConfig(`contexts`)) {
+      const context = this.getContext(contextName);
+      // Context classes can implement an optional `bindToComponent` callback that executes each time the component is connected to the DOM
+      if (context.bindToComponent) {
+        context.bindToComponent(this);
+      }
+    }
+
     this.domPatcher = new DOMPatcher(this.state, this._render.bind(this), {
       updateMode: this.getConfig(`updateSync`) ? `sync` : `async`,
+      postRenderCallback: this.postRenderCallback,
     });
     this.el.appendChild(this.domPatcher.el);
 
@@ -428,6 +492,17 @@ class Component extends WebComponent {
 
     this.initialized = true;
     this.initializing = false;
+    this.timings.initializingCompletedAt = getNow();
+    this.dispatchEvent(
+      new CustomEvent(`componentInitialized`, {
+        detail: {
+          elapsedMs: this.timings.initializingCompletedAt - this.timings.initializingStartedAt,
+          component: this.toString(),
+        },
+        bubbles: true,
+        composed: true,
+      }),
+    );
   }
 
   disconnectedCallback() {
@@ -445,6 +520,14 @@ class Component extends WebComponent {
     }
 
     this._disconnectedQueue = this._disconnectedQueue.filter((fn) => !fn.removeAfterExec);
+
+    for (const contextName of this.getConfig(`contexts`)) {
+      const context = this.getContext(contextName);
+      // Context classes can implement an optional `unbindFromComponent` callback that executes each time the component is disconnected from the DOM
+      if (context.unbindFromComponent) {
+        context.unbindFromComponent(this);
+      }
+    }
 
     if (this.router) {
       this.router.unregisterListeners();
@@ -501,10 +584,11 @@ class Component extends WebComponent {
   }
 
   attributeChangedCallback(attr, oldVal, newVal) {
+    this.timings.lastAttributeChangedAt = getNow();
     this._updateAttr(attr);
 
     if (attr === `style-override`) {
-      this._applyStyles(newVal);
+      this._applyStyleOverride(newVal);
     }
 
     if (this.initialized) {
@@ -512,9 +596,49 @@ class Component extends WebComponent {
     }
   }
 
-  _applyStyles(styleOverride) {
+  applyStaticStyle(styleSheetText, {ignoreCache = false} = {}) {
+    if (styleSheetText) {
+      if (this.el.adoptedStyleSheets) {
+        // Attempt to cache the styles using Constructible StyleSheets if the feature is supported.
+        // Note: this technique avoids the Flash of Unstyled Content that alternative approaches like &lt;link> tags will encounter
+        const componentKey = this.constructor;
+        let cachedStyleSheet = stylesheetCache.get(componentKey);
+        if (!cachedStyleSheet) {
+          cachedStyleSheet = new CSSStyleSheet();
+          cachedStyleSheet.replaceSync(styleSheetText);
+          stylesheetCache.set(componentKey, cachedStyleSheet);
+        } else if (ignoreCache) {
+          cachedStyleSheet.replaceSync(styleSheetText);
+        }
+        if (!this.staticStyleSheet) {
+          this.staticStyleSheet = cachedStyleSheet;
+          this.el.adoptedStyleSheets = [this.staticStyleSheet, ...this.el.adoptedStyleSheets.slice(1)];
+        }
+      } else {
+        if (!this.staticStyleTag) {
+          this.staticStyleTag = document.createElement(`style`);
+          this.el.insertBefore(this.staticStyleTag, this.el.childNodes[0] || null);
+        }
+        this.staticStyleTag.innerHTML = styleSheetText;
+      }
+    }
+  }
+
+  _applyStyleOverride(styleOverride) {
     if (this.getConfig(`useShadowDom`)) {
-      this.styleTag.innerHTML = this.getConfig(`css`) + (styleOverride || ``);
+      if (this.el.adoptedStyleSheets) {
+        if (!this.styleOverrideStyleSheet) {
+          this.styleOverrideStyleSheet = new CSSStyleSheet();
+          this.el.adoptedStyleSheets = this.el.adoptedStyleSheets.concat(this.styleOverrideStyleSheet);
+        }
+        this.styleOverrideStyleSheet.replaceSync(styleOverride || ``);
+      } else {
+        if (!this.styleOverrideTag) {
+          this.styleOverrideTag = document.createElement(`style`);
+          this.el.appendChild(this.styleOverrideTag);
+        }
+        this.styleOverrideTag.innerHTML = styleOverride || ``;
+      }
     }
   }
 
@@ -619,9 +743,14 @@ class Component extends WebComponent {
         );
       }
 
+      if (attrSchema.default &amp;&amp; attrSchema.required) {
+        throw new Error(`${this}: attr '${attr}' cannot have both required and default`);
+      }
+
       const attrSchemaObj = {
         type: attrType,
         default: attrSchema.hasOwnProperty(`default`) ? attrSchema.default : ATTR_TYPE_DEFAULTS[attrType],
+        required: attrSchema.hasOwnProperty(`required`) ? attrSchema.required : false,
       };
 
       // convert enum to a set for perf
@@ -656,11 +785,20 @@ class Component extends WebComponent {
       const attrType = attrSchema.type;
       let attrValue = null;
 
+      if (attrSchema.deprecatedMsg) {
+        console.warn(`${this}: attr '${attr}' is deprecated. ${attrSchema.deprecatedMsg}`);
+      }
+
       if (!this.hasAttribute(attr)) {
-        if (attrType === `boolean` &amp;&amp; attrSchema.default) {
-          console.warn(
-            `${this}: attr '${attr}' is defaulted to true. Default-true boolean attributes are deprecated and will be removed in a future release`,
+        if (attrType === `boolean` &amp;&amp; (attrSchema.default || attrSchema.required)) {
+          throw new Error(
+            `${this}: boolean attr '${attr}' cannot have required or default, since its value is derived from whether dom element has the attribute, not its value`,
           );
+        }
+
+        if (attrSchema.required) {
+          // Early return because a required attribute has no explicit value
+          return;
         }
         attrValue = attrSchema.default;
       } else if (attrType === `string`) {
@@ -684,10 +822,6 @@ class Component extends WebComponent {
       }
 
       this._attrs[attr] = attrValue;
-
-      if (attrSchema.deprecatedMsg) {
-        console.warn(`${this}: attr '${attr}' is deprecated. ${attrSchema.deprecatedMsg}`);
-      }
     }
   }
 
@@ -770,6 +904,72 @@ class Component extends WebComponent {
       }
     }
   }
+
+  _findNearestContextAncestor() {
+    if (!this.isConnected) {
+      throw new Error(`Cannot determine context before component is connected to the DOM`);
+    }
+
+    let node = this.parentNode;
+    while (node) {
+      if (node._getAvailableContexts) {
+        return node;
+      }
+      if (node.nodeType === DOCUMENT_FRAGMENT_NODE) {
+        // handle shadow-root
+        node = node.host;
+      } else {
+        node = node.parentNode;
+      }
+    }
+    return null;
+  }
+
+  _findAndMergeContextsFromAncestors() {
+    const contextAncestor = this._findNearestContextAncestor();
+    const defaultContexts = Object.assign({}, this.getConfig(`defaultContexts`));
+
+    if (contextAncestor) {
+      // ancestor contexts must override locally defined defaults
+      return Object.assign(defaultContexts, contextAncestor._getAvailableContexts());
+    }
+
+    return defaultContexts;
+  }
+
+  _getAvailableContexts() {
+    if (!this._cachedContexts) {
+      this._cachedContexts = this._findAndMergeContextsFromAncestors();
+    }
+    return this._cachedContexts;
+  }
+
+  /**
+   * Returns the default context of the highest (ie. closest to the document root) ancestor component
+   * that has configured a default context for the context name. If no ancestor context is found, it will
+   * return the component's own default context.
+   *
+   * @param {string} contextName - name of context
+   * @returns {object} context object
+   */
+  getContext(contextName) {
+    if (!contextName) {
+      throw new Error(`@contextName is null or empty`);
+    }
+
+    if (!this._contexts.has(contextName)) {
+      throw new Error(`@contextName must be declared in the "contexts" config array`);
+    }
+
+    const availableContexts = this._getAvailableContexts();
+    if (!(contextName in availableContexts)) {
+      throw new Error(
+        `A "${contextName}" context is not available. Check that this component or a DOM ancestor has provided this context in its "defaultContexts" Panel config.`,
+      );
+    }
+
+    return availableContexts[contextName];
+  }
 }
 
 export default Component;
@@ -785,7 +985,7 @@ export default Component;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.5</a> on Mon Aug 17 2020 14:57:30 GMT-0700 (Pacific Daylight Time) using the Minami theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.5</a> on Thu Jun 30 2022 10:24:50 GMT-0700 (Pacific Daylight Time) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
