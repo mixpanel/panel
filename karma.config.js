@@ -21,7 +21,7 @@ const sauceLaunchers = {
     base: `SauceLabs`,
     browserName: `chrome`,
     browserVersion: `72`,
-    platformName: `macOS 10`,
+    platformName: `maxOS 10.13`,
     'sauce:options': {
       extendedDebugging: true,
     },
@@ -39,7 +39,7 @@ const sauceLaunchers = {
     base: `SauceLabs`,
     browserName: `firefox`,
     browserVersion: `74`,
-    platformName: `macOS 10`,
+    platformName: `maxOS 10.13`,
     'sauce:options': {
       extendedDebugging: true,
     },
@@ -54,7 +54,7 @@ const sauceLaunchers = {
     base: `SauceLabs`,
     browserName: `safari`,
     browserVersion: `12`,
-    platformName: `macOS 10`,
+    platformName: `maxOS 10.13`,
   },
   sl_edge_latest: {
     base: `SauceLabs`,
