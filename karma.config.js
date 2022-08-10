@@ -80,7 +80,7 @@ module.exports = function (config) {
       '**/*.js': [`sourcemap`],
     },
     basePath: path.resolve(__dirname, `test/browser/build`),
-    retryLimit: -1,
+    retryLimit: 2,
     files: [`bundle.js`],
     client: {
       clientDisplayNone: true,
@@ -104,10 +104,6 @@ module.exports = function (config) {
     browsers: SAUCE_LAB ? sauceBrowsers : [`ChromeHeadless`, `Firefox`],
     reporters: SAUCE_LAB ? [`spec`, `saucelabs`] : [`spec`],
     singleRun: true,
-    captureTimeout: 210000,
-    browserDisconnectTolerance: 3,
-    browserDisconnectTimeout: 210000,
-    browserNoActivityTimeout: 210000,
     customLaunchers: {
       ...sauceLaunchers,
       ChromeHeadless: {
