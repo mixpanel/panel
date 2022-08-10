@@ -23,7 +23,7 @@ describe(`panel-params`, () => {
       compactHtml(`
       <div>
         <div id="str"></div>
-        <div id="num"></div>
+        <div id="num">0</div>
         <div id="bool"></div>
         <div id="obj">{}</div>
         <div id="arr">[]</div>
