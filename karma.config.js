@@ -72,7 +72,6 @@ const sauceLaunchers = {
 
 const sauceBrowsers = Object.keys(sauceLaunchers);
 
-console.log(path.resolve(__dirname, `test/browser/build/bundle.js`));
 // shared config for all unit tests
 module.exports = function (config) {
   config.set({
