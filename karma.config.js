@@ -20,7 +20,7 @@ const sauceLaunchers = {
   sl_chrome_old: {
     base: `SauceLabs`,
     browserName: `chrome`,
-    browserVersion: `75`,
+    browserVersion: `76`,
     platformName: `macOS 10.13`,
     'sauce:options': {
       extendedDebugging: true,
