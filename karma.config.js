@@ -98,7 +98,7 @@ module.exports = function (config) {
       require(`karma-spec-reporter`),
       require(`karma-chrome-launcher`),
       require(`karma-firefox-launcher`),
-      require(`karma-saucelabs-launcher`),
+      require(`karma-sauce-launcher`),
       require(`karma-sourcemap-loader`),
     ],
     browsers: SAUCE_LAB ? sauceBrowsers : [`ChromeHeadless`, `Firefox`],
