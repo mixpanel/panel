@@ -45,8 +45,7 @@ if (SAUCE_LAB) {
     }),
     sauceLabsLauncher({
       browserName: `firefox`,
-      // TODO ff 101 has a weird behavior with stylesheet
-      browserVersion: `100`,
+      browserVersion: `latest`,
       platformName: `macOS 10.15`,
     }),
     sauceLabsLauncher({
@@ -86,11 +85,7 @@ module.exports = {
     esbuildPlugin({target: `auto`}),
     commonjs({
       include: [
-        `**/node_modules/core-js/**/*`,
         `**/node_modules/sinon-chai/**/*`,
-        // TODO: update domsuite lib to be esm compatible (and remove platform)
-        `**/node_modules/domsuite/**/*`,
-        `**/node_modules/platform/**/*`,
         `**/node_modules/snabbdom-delayed-class/**/*`,
         `**/node_modules/webcomponent/**/*`,
         `**/node_modules/cuid/**/*`,
