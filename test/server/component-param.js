@@ -23,7 +23,7 @@ describe(`panel-params`, () => {
       compactHtml(`
       <div>
         <div id="str"></div>
-        <div id="num">0</div>
+        <div id="num"></div>
         <div id="bool"></div>
         <div id="obj">{}</div>
         <div id="arr">[]</div>
@@ -57,7 +57,7 @@ describe(`panel-params`, () => {
     );
   });
 
-  it.only(`hooks will be run`, async () => {
+  it(`hooks will be run`, async () => {
     const el = new ParamParentApp();
     el.connectedCallback();
     document.body.appendChild(el);
