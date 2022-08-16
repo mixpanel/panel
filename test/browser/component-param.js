@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import {expect} from 'chai';
 import {ParamParentApp, ParamChild} from '../fixtures/params-app';
-import nextAnimationFrame from 'domsuite';
+import {nextAnimationFrame} from 'domsuite';
 import {compactHtml} from '../utils';
 
 customElements.define(`param-child`, ParamChild);
