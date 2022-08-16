@@ -76,4 +76,20 @@ describe(`panel-params`, () => {
     expect(child.getConfig(`hooks`).preUpdate.firstCall.args[1].bool).to.equal(true);
     sinon.restore();
   });
+
+  it(`hooks run with current param values`, async () => {
+    const el = new ParamParentApp();
+    el.connectedCallback();
+    document.body.appendChild(el);
+    const child = el.childNodes[0];
+    await nextAnimationFrame();
+    child._config.hooks = {
+      preUpdate(stateUpdate, paramsUpdate) {
+        expect(this.params.str).to.equal(``);
+        expect(paramsUpdate.str).to.equal(`abc`);
+      },
+    };
+    el.update({str: `abc`, num: 5, bool: true});
+    await nextAnimationFrame();
+  });
 });
