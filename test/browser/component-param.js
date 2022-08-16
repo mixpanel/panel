@@ -17,6 +17,7 @@ describe(`panel-params`, () => {
     el.connectedCallback();
     document.body.appendChild(el);
     await nextAnimationFrame();
+    await nextAnimationFrame();
     expect(el.childNodes[0].innerHTML).to.equal(
       compactHtml(`
       <div>
