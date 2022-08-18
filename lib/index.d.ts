@@ -191,7 +191,7 @@ export class Component<
   static get attrsSchema(): {[attr: string]: string | AttrSchema};
 
   /** New panel params */
-  param: ParamT;
+  param: Readonly<ParamT>;
 
   /** A reference to the top-level component */
   app: AppT;
