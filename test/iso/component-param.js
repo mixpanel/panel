@@ -83,7 +83,7 @@ describe(`panel-params`, () => {
     await nextAnimationFrame();
     child._config.hooks = {
       preUpdate(stateUpdate, paramsUpdate) {
-        expect(this.params.str).to.equal(``);
+        expect(child.params.str).to.equal(``);
         expect(paramsUpdate.str).to.equal(`abc`);
       },
     };
