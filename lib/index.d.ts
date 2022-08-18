@@ -71,9 +71,11 @@ export interface PanelLifecycleContext {
   unbindFromComponent?(component: Component<any>): void;
 }
 
-export interface ConfigOptions<StateT, AppStateT = unknown, ContextRegistryT = unknown> {
+export interface ConfigOptions<StateT, AppStateT = unknown, ContextRegistryT = unknown, ParamT = unknown> {
   /** Function transforming state object to virtual dom tree */
   template(scope?: StateT): VNode;
+
+  params: {[param in keyof ParamT]: InferType<ParamT[param]> | ParamType<ParamT[param]>};
 
   /** Component-specific Shadow DOM stylesheet */
   css?: string;
@@ -148,12 +150,36 @@ export interface AnyAttrs {
   [attr: string]: any;
 }
 
+type InferType<T> = T extends string
+  ? StringConstructor
+  : T extends number
+  ? NumberConstructor
+  : T extends boolean
+  ? BooleanConstructor
+  : T extends unknown[]
+  ? ArrayConstructor
+  : T extends Map<unknown, unknown>
+  ? MapConstructor
+  : T extends Set<unknown>
+  ? SetConstructor
+  : T extends (...args: any[]) => any
+  ? FunctionConstructor
+  : ObjectConstructor;
+
+interface ParamType<T> {
+  type: InferType<T>;
+  default?: T;
+  required?: boolean;
+  shouldUpdate?: (pre: T, cur: T) => boolean;
+}
+
 export class Component<
   StateT,
   AttrsT = AnyAttrs,
   AppStateT = unknown,
   AppT = unknown,
-  ContextRegistryT = unknown
+  ContextRegistryT = unknown,
+  ParamT extends Record<string, any> = unknown
 > extends WebComponent {
   /** The first Panel Component ancestor in the DOM tree; null if this component is the root */
   $panelParent: Component<unknown>;
@@ -163,6 +189,9 @@ export class Component<
    * Panel auto parses attribute changes into this.attrs object and $attrs template helper
    */
   static get attrsSchema(): {[attr: string]: string | AttrSchema};
+
+  /** New panel params */
+  param: ParamT;
 
   /** A reference to the top-level component */
   app: AppT;
@@ -198,7 +227,7 @@ export class Component<
   applyStaticStyle(styleSheetText: null | string, options?: {ignoreCache: boolean}): void;
 
   /** Defines standard component configuration */
-  get config(): ConfigOptions<StateT, AppStateT, ContextRegistryT>;
+  get config(): ConfigOptions<StateT, AppStateT, ContextRegistryT, ParamT>;
 
   /**
    * Template helper functions defined in config object, and exposed to template code as $helpers.
@@ -228,10 +257,10 @@ export class Component<
    * Fetches a value from the component's configuration map (a combination of
    * values supplied in the config() getter and defaults applied automatically).
    */
-  getConfig<K extends keyof ConfigOptions<StateT, AppStateT, ContextRegistryT>>(key: K): this['config'][K];
+  getConfig<K extends keyof ConfigOptions<StateT, AppStateT, ContextRegistryT, ParamT>>(key: K): this['config'][K];
 
   /** Sets a value in the component's configuration map after element initialization */
-  setConfig<K extends keyof ConfigOptions<StateT, AppStateT, ContextRegistryT>>(
+  setConfig<K extends keyof ConfigOptions<StateT, AppStateT, ContextRegistryT, ParamT>>(
     key: K,
     val: ConfigOptions<StateT, AppStateT, ContextRegistryT>[K],
   ): void;
@@ -295,3 +324,15 @@ export class Component<
    */
   getContext<ContextKey extends keyof ContextRegistryT>(contextName: ContextKey): ContextRegistryT[ContextKey];
 }
+
+/**
+ * Panel component that only accepts 3 generic types
+ */
+export class Panel<ParamT = unknown, StateT = unknown, ContextRegistryT = unknown> extends Component<
+  StateT,
+  unknown,
+  unknown,
+  unknown,
+  ContextRegistryT,
+  ParamT
+> {}

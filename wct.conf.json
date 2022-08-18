@@ -8,7 +8,7 @@
   "plugins": {
     "local": {
       "disabled": true,
-      "browsers": ["firefox"]
+      "browsers": ["chrome", "firefox"]
     },
     "sauce": {
       "disabled": true,

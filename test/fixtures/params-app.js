@@ -32,32 +32,29 @@ export class ParamParentApp extends Component {
 const shouldUpdate = (newVal, oldVal) => newVal !== oldVal;
 
 export class ParamChild extends Component {
-  static get paramTypes() {
-    return {
-      obj: {
-        type: Object,
-        shouldUpdate,
-      },
-      str: String,
-      bool: Boolean,
-      num: Number,
-      arr: {
-        type: Array,
-        shouldUpdate,
-      },
-      map: {
-        type: Map,
-        shouldUpdate,
-      },
-      set: {
-        type: Set,
-        shouldUpdate,
-      },
-    };
-  }
-
   get config() {
     return {
+      params: {
+        obj: {
+          type: Object,
+          shouldUpdate,
+        },
+        str: String,
+        bool: Boolean,
+        num: Number,
+        arr: {
+          type: Array,
+          shouldUpdate,
+        },
+        map: {
+          type: Map,
+          shouldUpdate,
+        },
+        set: {
+          type: Set,
+          shouldUpdate,
+        },
+      },
       template: () =>
         jsx(`div`, {}, [
           jsx(`div`, {sel: `#str`}, this.params.str),
