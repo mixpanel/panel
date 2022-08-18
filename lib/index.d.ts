@@ -75,7 +75,7 @@ export interface ConfigOptions<StateT, AppStateT = unknown, ContextRegistryT = u
   /** Function transforming state object to virtual dom tree */
   template(scope?: StateT): VNode;
 
-  params: {[param in keyof ParamT]: InferType<ParamT[param]> | ParamType<ParamT[param]>};
+  params?: {[param in keyof ParamT]: InferType<ParamT[param]> | ParamType<ParamT[param]>};
 
   /** Component-specific Shadow DOM stylesheet */
   css?: string;
