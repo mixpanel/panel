@@ -1,10 +1,11 @@
 import sinon from 'sinon';
 import {expect} from 'chai';
-import {ParamParentApp, ParamChild} from '../fixtures/params-app';
+import {ParamParentApp, ParamChild, ParamDefaultAndRequired} from '../fixtures/params-app';
 import {nextAnimationFrame, compactHtml} from '../utils';
 
 customElements.define(`param-child`, ParamChild);
 customElements.define(`param-parent-app`, ParamParentApp);
+customElements.define(`param-required-and-default-app`, ParamDefaultAndRequired);
 
 describe(`panel-params`, () => {
   beforeEach(() => {
@@ -53,6 +54,39 @@ describe(`panel-params`, () => {
       </div>
     `),
     );
+  });
+
+  it(`respect defaultParams`, async () => {
+    const el = new ParamParentApp();
+    el.connectedCallback();
+    document.body.appendChild(el);
+    await nextAnimationFrame();
+    expect(el.childNodes[0].params.defaultString).to.equal(`defaultString`);
+    expect(el.childNodes[0].params.noDefaultString).to.equal(undefined);
+  });
+
+  it(`respects required field`, () => {
+    const el = new ParamParentApp();
+    el.setConfig(`updateSync`, true);
+    el.connectedCallback();
+    document.body.appendChild(el);
+    try {
+      el.update({requiredString: undefined});
+    } catch (e) {
+      expect(e).to.be.instanceOf(Error);
+      expect(e.message).to.equal(`param 'requiredString' in ParamChild is required, undefined passed in`);
+    }
+  });
+
+  it(`respects required field`, () => {
+    try {
+      new ParamDefaultAndRequired();
+    } catch (e) {
+      expect(e).to.be.instanceOf(Error);
+      expect(e.message).to.equal(
+        `param 'requiredString' in ParamDefaultAndRequired cannot have both required and default`,
+      );
+    }
   });
 
   it(`hooks will be run`, async () => {

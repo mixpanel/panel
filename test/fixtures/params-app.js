@@ -1,6 +1,6 @@
-import {Component, jsx} from '../../lib';
+import {Panel, jsx} from '../../lib';
 
-export class ParamParentApp extends Component {
+export class ParamParentApp extends Panel {
   get config() {
     return {
       defaultState: {
@@ -11,6 +11,7 @@ export class ParamParentApp extends Component {
         arr: [],
         map: new Map(),
         set: new Set(),
+        requiredString: `requiredString`,
       },
 
       template: () =>
@@ -23,6 +24,7 @@ export class ParamParentApp extends Component {
             arr: this.state.arr,
             map: this.state.map,
             set: this.state.set,
+            requiredString: this.state.requiredString,
           },
         }),
     };
@@ -31,9 +33,12 @@ export class ParamParentApp extends Component {
 
 const shouldUpdate = (newVal, oldVal) => newVal !== oldVal;
 
-export class ParamChild extends Component {
+export class ParamChild extends Panel {
   get config() {
     return {
+      defaultParams: {
+        defaultString: `defaultString`,
+      },
       params: {
         obj: {
           type: Object,
@@ -54,6 +59,12 @@ export class ParamChild extends Component {
           type: Set,
           shouldUpdate,
         },
+        defaultString: String,
+        noDefaultString: String,
+        requiredString: {
+          type: String,
+          required: true,
+        },
       },
       template: () =>
         jsx(`div`, {}, [
@@ -65,6 +76,23 @@ export class ParamChild extends Component {
           jsx(`div`, {sel: `#map`}, JSON.stringify(this.params.map)),
           jsx(`div`, {sel: `#set`}, JSON.stringify(this.params.set)),
         ]),
+    };
+  }
+}
+
+export class ParamDefaultAndRequired extends Panel {
+  get config() {
+    return {
+      defaultParams: {
+        requiredString: `requiredString`,
+      },
+      params: {
+        requiredString: {
+          type: String,
+          required: true,
+        },
+      },
+      template: () => jsx(`div`),
     };
   }
 }
