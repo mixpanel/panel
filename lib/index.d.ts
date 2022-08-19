@@ -80,6 +80,9 @@ export interface ConfigOptions<StateT, AppStateT = unknown, ContextRegistryT = u
   /** Component-specific Shadow DOM stylesheet */
   css?: string;
 
+  /** object to provide default value for params */
+  defaultParams?: ParamT;
+
   /** An initial default value for the component's state property */
   defaultState?: StateT;
 
