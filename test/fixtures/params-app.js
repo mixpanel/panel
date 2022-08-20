@@ -80,7 +80,7 @@ export class ParamChild extends Panel {
   }
 }
 
-export class ParamDefaultAndRequired extends Panel {
+export class DefaultAndRequiredParam extends Panel {
   get config() {
     return {
       defaultParams: {
@@ -90,6 +90,54 @@ export class ParamDefaultAndRequired extends Panel {
         requiredString: {
           type: String,
           required: true,
+        },
+      },
+      template: () => jsx(`div`),
+    };
+  }
+}
+
+export class NonPrimitiveTypeParamClass extends Panel {
+  get config() {
+    return {
+      params: {
+        A: NonPrimitiveTypeParamClass,
+      },
+      template: () => jsx(`div`),
+    };
+  }
+}
+
+export class NonPrimitiveTypeParamString extends Panel {
+  get config() {
+    return {
+      params: {
+        A: `json`,
+      },
+      template: () => jsx(`div`),
+    };
+  }
+}
+
+export class ExtraParamPassInChild extends Panel {
+  get config() {
+    return {
+      template: () =>
+        jsx(`param-child`, {
+          params: {
+            extra: `abc`,
+          },
+        }),
+    };
+  }
+}
+
+export class ObjectLikeParamWithoutShouldUpdate extends Panel {
+  get config() {
+    return {
+      params: {
+        O: {
+          type: Object,
         },
       },
       template: () => jsx(`div`),

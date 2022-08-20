@@ -1,11 +1,23 @@
 import sinon from 'sinon';
 import {expect} from 'chai';
-import {ParamParentApp, ParamChild, ParamDefaultAndRequired} from '../fixtures/params-app';
+import {
+  DefaultAndRequiredParam,
+  ExtraParamPassInChild,
+  ObjectLikeParamWithoutShouldUpdate,
+  ParamChild,
+  ParamParentApp,
+  NonPrimitiveTypeParamClass,
+  NonPrimitiveTypeParamString,
+} from '../fixtures/params-app';
 import {nextAnimationFrame, compactHtml} from '../utils';
 
 customElements.define(`param-child`, ParamChild);
 customElements.define(`param-parent-app`, ParamParentApp);
-customElements.define(`param-required-and-default-app`, ParamDefaultAndRequired);
+customElements.define(`param-required-and-default-app`, DefaultAndRequiredParam);
+customElements.define(`extra-param-pass-in-child`, ExtraParamPassInChild);
+customElements.define(`object-like-param-without-should-update`, ObjectLikeParamWithoutShouldUpdate);
+customElements.define(`non-primitive-type-param-class`, NonPrimitiveTypeParamClass);
+customElements.define(`non-primitive-type-param-string`, NonPrimitiveTypeParamString);
 
 describe(`panel-params`, () => {
   beforeEach(() => {
@@ -70,23 +82,44 @@ describe(`panel-params`, () => {
     el.setConfig(`updateSync`, true);
     el.connectedCallback();
     document.body.appendChild(el);
-    try {
-      el.update({requiredString: undefined});
-    } catch (e) {
-      expect(e).to.be.instanceOf(Error);
-      expect(e.message).to.equal(`param 'requiredString' in ParamChild is required, undefined passed in`);
-    }
+    expect(() => el.update({requiredString: undefined})).to.throw(
+      Error,
+      `param 'requiredString' in ParamChild is required, undefined passed in`,
+    );
   });
 
   it(`respects required field`, () => {
-    try {
-      new ParamDefaultAndRequired();
-    } catch (e) {
-      expect(e).to.be.instanceOf(Error);
-      expect(e.message).to.equal(
-        `param 'requiredString' in ParamDefaultAndRequired cannot have both required and default`,
-      );
-    }
+    expect(() => new DefaultAndRequiredParam()).to.throw(
+      Error,
+      `param 'requiredString' in DefaultAndRequiredParam cannot have both required and default`,
+    );
+  });
+
+  it(`throws error if non primitive used in param schema(class)`, () => {
+    expect(() => new NonPrimitiveTypeParamClass()).to.throw(
+      Error,
+      `Invalid type: NonPrimitiveTypeParamClass for param: A in paramSchema. Only ('Array' | 'String' | 'Boolean' | 'Number' | 'Object' | 'Function' | 'Map' | 'Set') is valid.`,
+    );
+  });
+
+  it(`throws error if non primitive used in param schema(string)`, () => {
+    expect(() => new NonPrimitiveTypeParamString()).to.throw(
+      Error,
+      `Invalid type: json for param: A in paramSchema. Only ('Array' | 'String' | 'Boolean' | 'Number' | 'Object' | 'Function' | 'Map' | 'Set') is valid.`,
+    );
+  });
+
+  it(`throws error if unkown param pass in child`, () => {
+    const el = new ExtraParamPassInChild();
+    el.setConfig(`updateSync`, true);
+    expect(() => el.connectedCallback()).to.throw(Error, `extra param 'extra' on ParamChild is not defined in schema`);
+  });
+
+  it(`throws error if should update not specified for object like param`, () => {
+    expect(() => new ObjectLikeParamWithoutShouldUpdate()).to.throw(
+      Error,
+      `Object like params 'O' on ObjectLikeParamWithoutShouldUpdate must have 'shouldUpdate' function passed in`,
+    );
   });
 
   it(`hooks will be run`, async () => {
