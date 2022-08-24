@@ -269,6 +269,13 @@ export class Component<
   ): void;
 
   /**
+   * set the params for the this component
+   * triggers a component update
+   * if any of the param's `shouldUpdate` callback returns true
+   */
+  setParams(params: Partial<ParamT>);
+
+  /**
    * Executes the route handler matching the given URL fragment, and updates
    * the URL, as though the user had navigated explicitly to that address.
    */
