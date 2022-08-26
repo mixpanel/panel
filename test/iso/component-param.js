@@ -73,7 +73,6 @@ describe(`panel-params`, () => {
     el.connectedCallback();
     document.body.appendChild(el);
     await nextAnimationFrame();
-    await nextAnimationFrame();
     expect(el.innerHTML).to.equal(
       compactHtml(`
       <div>{"id":1,"info":"info"}</div>
