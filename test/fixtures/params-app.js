@@ -131,16 +131,3 @@ export class ExtraParamPassInChild extends Panel {
     };
   }
 }
-
-export class ObjectLikeParamWithoutShouldUpdate extends Panel {
-  get config() {
-    return {
-      params: {
-        O: {
-          type: Object,
-        },
-      },
-      template: () => jsx(`div`),
-    };
-  }
-}

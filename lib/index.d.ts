@@ -273,7 +273,20 @@ export class Component<
    * triggers a component update
    * if any of the param's `shouldUpdate` callback returns true
    */
-  setParams(params: Partial<ParamT>);
+  setParams(params: Partial<ParamT>): void;
+
+  /**
+   * Same API as react's `shouldComponentUpdate` usage
+   * if child component implements this method, parent implmentation wil be discarded
+   * @example
+   * shouldComponentUpdate(params, state) {
+   *   if (params.bookmark.id !== this.params.bookmark.id) {
+   *     return false;
+   *   }
+   *   return shallowCompare(this, params, state);
+   * }
+   */
+  shouldComponentUpdate(params: ParamT, state: StateT): boolean;
 
   /**
    * Executes the route handler matching the given URL fragment, and updates

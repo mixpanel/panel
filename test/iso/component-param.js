@@ -3,7 +3,6 @@ import {expect} from 'chai';
 import {
   DefaultAndRequiredParam,
   ExtraParamPassInChild,
-  ObjectLikeParamWithoutShouldUpdate,
   ParamChild,
   ParamParentApp,
   NonPrimitiveTypeParamClass,
@@ -15,7 +14,6 @@ customElements.define(`param-child`, ParamChild);
 customElements.define(`param-parent-app`, ParamParentApp);
 customElements.define(`param-required-and-default-app`, DefaultAndRequiredParam);
 customElements.define(`extra-param-pass-in-child`, ExtraParamPassInChild);
-customElements.define(`object-like-param-without-should-update`, ObjectLikeParamWithoutShouldUpdate);
 customElements.define(`non-primitive-type-param-class`, NonPrimitiveTypeParamClass);
 customElements.define(`non-primitive-type-param-string`, NonPrimitiveTypeParamString);
 
@@ -113,13 +111,6 @@ describe(`panel-params`, () => {
     const el = new ExtraParamPassInChild();
     el.setConfig(`updateSync`, true);
     expect(() => el.connectedCallback()).to.throw(Error, `extra param 'extra' on ParamChild is not defined in schema`);
-  });
-
-  it(`throws error if should update not specified for object like param`, () => {
-    expect(() => new ObjectLikeParamWithoutShouldUpdate()).to.throw(
-      Error,
-      `Object like params 'O' on ObjectLikeParamWithoutShouldUpdate must have 'shouldUpdate' function passed in`,
-    );
   });
 
   it(`hooks will be run`, async () => {
