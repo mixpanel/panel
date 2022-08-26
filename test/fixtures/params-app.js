@@ -1,4 +1,4 @@
-import {Panel, jsx} from '../../lib';
+import {Panel, jsx, shallowCompare} from '../../lib';
 
 export class ParamParentApp extends Panel {
   get config() {
@@ -31,8 +31,6 @@ export class ParamParentApp extends Panel {
   }
 }
 
-const shouldUpdate = (newVal, oldVal) => newVal !== oldVal;
-
 export class ParamChild extends Panel {
   get config() {
     return {
@@ -42,22 +40,18 @@ export class ParamChild extends Panel {
       params: {
         obj: {
           type: Object,
-          shouldUpdate,
         },
         str: String,
         bool: Boolean,
         num: Number,
         arr: {
           type: Array,
-          shouldUpdate,
         },
         map: {
           type: Map,
-          shouldUpdate,
         },
         set: {
           type: Set,
-          shouldUpdate,
         },
         defaultString: String,
         noDefaultString: String,
@@ -129,5 +123,26 @@ export class ExtraParamPassInChild extends Panel {
           },
         }),
     };
+  }
+}
+
+export class ShouldComponentUpdateParamsApp extends Panel {
+  get config() {
+    return {
+      params: {
+        bookmark: Object,
+      },
+      defaultParams: {
+        bookmark: {id: 1, info: `info`},
+      },
+      template: () => jsx(`div`, {}, JSON.stringify(this.params.bookmark)),
+    };
+  }
+
+  shouldComponentUpdate(params, state) {
+    if (params.bookmark.id === this.params.bookmark.id) {
+      return false;
+    }
+    return shallowCompare(this, params, state);
   }
 }

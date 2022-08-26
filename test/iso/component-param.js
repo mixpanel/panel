@@ -7,6 +7,7 @@ import {
   ParamParentApp,
   NonPrimitiveTypeParamClass,
   NonPrimitiveTypeParamString,
+  ShouldComponentUpdateParamsApp,
 } from '../fixtures/params-app';
 import {nextAnimationFrame, compactHtml} from '../utils';
 
@@ -16,6 +17,7 @@ customElements.define(`param-required-and-default-app`, DefaultAndRequiredParam)
 customElements.define(`extra-param-pass-in-child`, ExtraParamPassInChild);
 customElements.define(`non-primitive-type-param-class`, NonPrimitiveTypeParamClass);
 customElements.define(`non-primitive-type-param-string`, NonPrimitiveTypeParamString);
+customElements.define(`should-component-update-params-app`, ShouldComponentUpdateParamsApp);
 
 describe(`panel-params`, () => {
   beforeEach(() => {
@@ -66,7 +68,34 @@ describe(`panel-params`, () => {
     );
   });
 
-  it(`respect defaultParams`, async () => {
+  it(`respects shouldComponentUpdate`, async () => {
+    const el = new ShouldComponentUpdateParamsApp();
+    el.connectedCallback();
+    document.body.appendChild(el);
+    await nextAnimationFrame();
+    await nextAnimationFrame();
+    expect(el.innerHTML).to.equal(
+      compactHtml(`
+      <div>{"id":1,"info":"info"}</div>
+    `),
+    );
+    el.setParams({bookmark: {id: 1, info: `updated`}});
+    await nextAnimationFrame();
+    expect(el.innerHTML).to.equal(
+      compactHtml(`
+      <div>{"id":1,"info":"info"}</div>
+    `),
+    );
+    el.setParams({bookmark: {id: 2, info: `updated`}});
+    await nextAnimationFrame();
+    expect(el.innerHTML).to.equal(
+      compactHtml(`
+      <div>{"id":2,"info":"updated"}</div>
+    `),
+    );
+  });
+
+  it(`respects defaultParams`, async () => {
     const el = new ParamParentApp();
     el.connectedCallback();
     document.body.appendChild(el);
