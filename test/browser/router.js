@@ -1,7 +1,50 @@
+import sinon from 'sinon';
+
 import {expect} from 'chai';
 import {nextAnimationFrame, retryable} from 'domsuite';
 
 import {Component, h} from '../../lib';
+
+/**
+ * Basic window wrapper to support an unlimited history.length (chromium browsers cap at 50).
+ */
+class WindowWrapper {
+  constructor() {
+    let length = 0;
+    this.location = new (class {
+      get pathname() {
+        return window.location.pathname;
+      }
+
+      get hash() {
+        return window.location.hash;
+      }
+    })();
+
+    this.history = new (class {
+      pushState() {
+        length++;
+        window.history.pushState(...arguments);
+      }
+
+      replaceState() {
+        window.history.replaceState(...arguments);
+      }
+
+      get length() {
+        return length;
+      }
+    })();
+  }
+
+  addEventListener() {
+    window.addEventListener(...arguments);
+  }
+
+  removeEventListener() {
+    window.removeEventListener(...arguments);
+  }
+}
 
 export class RouterApp extends Component {
   get config() {
@@ -30,15 +73,85 @@ export class RouterApp extends Component {
 }
 customElements.define(`router-app`, RouterApp);
 
-describe(`Router`, function () {
+export class PathRouterApp extends Component {
+  get config() {
+    return {
+      defaultState: {
+        text: `Hello world`,
+        additionalText: ``,
+      },
+      routes: {
+        basePath: `/foo/:id(/)`,
+        paths: [
+          {
+            pathName: `/`,
+            hashRoutes: {
+              '': () => ({text: `Default route!`}),
+              bar: () => ({text: `Bar route!`}),
+            },
+          },
+          {
+            pathName: `/widget/:id(/)`,
+            hashRoutes: {
+              '': (stateUpdate, [id]) => Object.assign({text: `Widget ${id}`}, stateUpdate),
+              'param/:param': (stateUpdate, [id], [param]) =>
+                Object.assign({text: `Widget ${id} with param ${param}`}, stateUpdate),
+              'optional/:required(/:optional)': (stateUpdate, [id], [required, optional]) => ({
+                text: optional
+                  ? `ID: ${id}, two params: ${required} and ${optional}`
+                  : `ID: ${id}, one param: ${required}`,
+              }),
+            },
+          },
+          {
+            pathName: `/widget/:id/*restOfPath`,
+            hashRoutes: {
+              '': (stateUpdate, [id, restOfPath]) => Object.assign({text: `Widget ${id} ${restOfPath}`}),
+            },
+          },
+          {
+            pathName: `/optional/:required(/:optional)`,
+            hashRoutes: {
+              '': (stateUpdate, [required, optional]) => ({
+                text: optional ? `Two params: ${required} and ${optional}` : `One param: ${required}`,
+              }),
+              ':required(/:optional)': (stateUpdate, [requiredPath, optionalPath], [requiredHash, optionalHash]) => ({
+                text: `From path: ${requiredPath}${
+                  optionalPath ? `, ${optionalPath}` : ``
+                }. From hash: ${requiredHash}${optionalHash ? `, ${optionalHash}` : ``}.`,
+              }),
+            },
+          },
+          {
+            pathName: `/numeric/:num`,
+            hashRoutes: {
+              '': (stateUpdate, [num]) => (isNaN(num) ? false : {text: `Number: ${num}`}),
+            },
+          },
+        ],
+      },
+      template: (state) => h(`p`, [`${state.text}${state.additionalText}`]),
+    };
+  }
+}
+
+customElements.define(`path-router-app`, PathRouterApp);
+
+describe(`hash-only Router`, function () {
   beforeEach(async function () {
     document.body.innerHTML = ``;
     window.location = `#`;
-
+    window.history.replaceState(null, null, `/`);
     this.routerApp = document.createElement(`router-app`);
+    this.windowWrapper = new WindowWrapper();
+    this.routerApp.window = this.windowWrapper;
     document.body.appendChild(this.routerApp);
 
     await nextAnimationFrame();
+  });
+
+  afterEach(function () {
+    sinon.restore();
   });
 
   it(`is not initialized when component has no routes defined`, function () {
@@ -115,22 +228,22 @@ describe(`Router`, function () {
     });
 
     it(`does not update the URL if hash is the same`, function () {
-      const historyLength = window.history.length;
+      const historyLength = this.windowWrapper.history.length;
 
       this.routerApp.router.navigate(`foo`);
-      expect(window.history.length).to.equal(historyLength + 1);
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 1);
       this.routerApp.router.navigate(`foo`);
-      expect(window.history.length).to.equal(historyLength + 1);
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 1);
 
       // ensure window.location.hash is properly URI-decoded for comparison,
       // otherwise `widget/bar baz` !== `widget/bar%20baz` may be compared
       // resulting in possible circular redirect loop
       this.routerApp.router.navigate(`widget/bar baz`);
-      expect(window.history.length).to.equal(historyLength + 2);
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 2);
       this.routerApp.router.navigate(`widget/bar baz`);
-      expect(window.history.length).to.equal(historyLength + 2);
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 2);
       this.routerApp.router.navigate(`widget/bar%20baz`);
-      expect(window.history.length).to.equal(historyLength + 2);
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 2);
     });
 
     it(`supports passing state updates to the route handler`, async function () {
@@ -152,52 +265,235 @@ describe(`Router`, function () {
     });
   });
 
-  describe(`replaceHash()`, function () {
+  describe(`replaceLocation()`, function () {
     it(`updates the URL`, function () {
       expect(window.location.hash).not.to.equal(`#foo`);
-      this.routerApp.router.replaceHash(`foo`);
+      this.routerApp.router.replaceLocation({fragment: `foo`});
       expect(window.location.hash).to.equal(`#foo`);
     });
 
     it(`does not update the URL if hash is the same`, function () {
-      const historyLength = window.history.length;
+      const historyLength = this.windowWrapper.history.length;
 
-      this.routerApp.router.replaceHash(`foo`);
-      expect(window.history.length).to.equal(historyLength + 1);
-      this.routerApp.router.replaceHash(`foo`);
-      expect(window.history.length).to.equal(historyLength + 1);
+      this.routerApp.router.replaceLocation({fragment: `foo`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 1);
+      this.routerApp.router.replaceLocation({fragment: `foo`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 1);
 
       // ensure window.location.hash is properly URI-decoded for comparison,
       // otherwise `widget/bar baz` !== `widget/bar%20baz` may be compared
       // resulting in possible circular redirect loop
-      this.routerApp.router.replaceHash(`widget/bar baz`);
-      expect(window.history.length).to.equal(historyLength + 2);
-      this.routerApp.router.replaceHash(`widget/bar baz`);
-      expect(window.history.length).to.equal(historyLength + 2);
-      this.routerApp.router.replaceHash(`widget/bar%20baz`);
-      expect(window.history.length).to.equal(historyLength + 2);
+      this.routerApp.router.replaceLocation({fragment: `widget/bar baz`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 2);
+      this.routerApp.router.replaceLocation({fragment: `widget/bar baz`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 2);
+      this.routerApp.router.replaceLocation({fragment: `widget/bar%20baz`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 2);
     });
 
     it(`uses pushState by default and adds a history entry`, function () {
-      const historyLength = window.history.length;
+      const historyLength = this.windowWrapper.history.length;
 
-      this.routerApp.router.replaceHash(`foo`);
-      expect(window.history.length).to.equal(historyLength + 1);
-      this.routerApp.router.replaceHash(`widget/bar baz`);
-      expect(window.history.length).to.equal(historyLength + 2);
+      this.routerApp.router.replaceLocation({fragment: `foo`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 1);
+      this.routerApp.router.replaceLocation({fragment: `widget/bar baz`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 2);
     });
 
     it(`can use replaceState to avoid adding a history entry`, function () {
-      const historyLength = window.history.length;
+      const historyLength = this.windowWrapper.history.length;
 
-      this.routerApp.router.replaceHash(`foo`, {
-        historyMethod: `replaceState`,
+      this.routerApp.router.replaceLocation({fragment: `foo`, historyMethod: `replaceState`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength);
+      this.routerApp.router.replaceLocation({fragment: `widget/bar baz`, historyMethod: `replaceState`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength);
+    });
+  });
+});
+
+describe(`path + hash Router`, function () {
+  beforeEach(async function () {
+    document.body.innerHTML = ``;
+    window.location = `#`;
+    window.history.replaceState(null, null, `/foo/123`);
+    this.routerApp = document.createElement(`path-router-app`);
+    this.windowWrapper = new WindowWrapper();
+    this.routerApp.window = this.windowWrapper;
+    document.body.appendChild(this.routerApp);
+
+    await nextAnimationFrame();
+  });
+
+  it(`runs index route handler when at root`, function () {
+    expect(this.routerApp.textContent).to.equal(`Default route!`);
+  });
+
+  it(`runs index route handler when at root with trailing slash`, async function () {
+    this.windowWrapper.history.pushState(null, null, `/foo/123/`);
+    await nextAnimationFrame();
+    expect(this.routerApp.textContent).to.equal(`Default route!`);
+  });
+
+  it(`reacts to hash route changes at root`, async function () {
+    window.location.hash = `#bar`;
+    await retryable(() => expect(this.routerApp.textContent).to.equal(`Bar route!`));
+  });
+
+  it(`passes path params to route handlers`, async function () {
+    this.windowWrapper.history.pushState(null, null, `/foo/123/widget/15`);
+    await retryable(() => expect(this.routerApp.textContent).to.equal(`Widget 15`));
+  });
+
+  it(`passes path params to route handlers with trailing slash`, async function () {
+    this.windowWrapper.history.pushState(null, null, `/foo/123/widget/15/`);
+    await retryable(() => expect(this.routerApp.textContent).to.equal(`Widget 15`));
+  });
+
+  it(`passes path and hash params to route handlers`, async function () {
+    this.windowWrapper.history.pushState(null, null, `/foo/123/widget/15#param/foobar`);
+    await retryable(() => expect(this.routerApp.textContent).to.equal(`Widget 15 with param foobar`));
+  });
+
+  it(`supports splat params`, async function () {
+    this.windowWrapper.history.pushState(null, null, `/foo/123/widget/15/project/10/view/app`);
+    await retryable(() => expect(this.routerApp.textContent).to.equal(`Widget 15 project/10/view/app`));
+  });
+
+  it(`supports optional path params`, async function () {
+    this.windowWrapper.history.pushState(null, null, `/foo/123/optional/wombat`);
+    await retryable(() => expect(this.routerApp.textContent).to.equal(`One param: wombat`));
+
+    this.windowWrapper.history.pushState(null, null, `/foo/123/optional/wombat/32`);
+    await retryable(() => expect(this.routerApp.textContent).to.equal(`Two params: wombat and 32`));
+  });
+
+  it(`supports path params with optional hash params`, async function () {
+    this.windowWrapper.history.pushState(null, null, `/foo/123/widget/21#optional/wombat`);
+    await retryable(() => expect(this.routerApp.textContent).to.equal(`ID: 21, one param: wombat`));
+
+    this.windowWrapper.history.pushState(null, null, `/foo/123/widget/21#optional/wombat/32`);
+    await retryable(() => expect(this.routerApp.textContent).to.equal(`ID: 21, two params: wombat and 32`));
+  });
+
+  it(`supports optional path params with optional hash params`, async function () {
+    this.windowWrapper.history.pushState(null, null, `/foo/123/optional/wombat#bar`);
+    await retryable(() => expect(this.routerApp.textContent).to.equal(`From path: wombat. From hash: bar.`));
+
+    this.windowWrapper.history.pushState(null, null, `/foo/123/optional/wombat/32#bar`);
+    await retryable(() => expect(this.routerApp.textContent).to.equal(`From path: wombat, 32. From hash: bar.`));
+
+    this.windowWrapper.history.pushState(null, null, `/foo/123/optional/wombat#bar/21`);
+    await retryable(() => expect(this.routerApp.textContent).to.equal(`From path: wombat. From hash: bar, 21.`));
+
+    this.windowWrapper.history.pushState(null, null, `/foo/123/optional/wombat/32#bar/21`);
+    await retryable(() => expect(this.routerApp.textContent).to.equal(`From path: wombat, 32. From hash: bar, 21.`));
+  });
+
+  describe(`pathNavigate()`, function () {
+    it(`switches to the manually specified route`, async function () {
+      this.routerApp.router.pathNavigate(`/widget/30`);
+      await retryable(() => expect(this.routerApp.textContent).to.equal(`Widget 30`));
+    });
+
+    it(`updates the URL`, function () {
+      expect(window.location.pathname).not.to.equal(`/foo/123/widget/30`);
+      this.routerApp.router.pathNavigate(`/widget/30`);
+      expect(window.location.pathname).to.equal(`/foo/123/widget/30`);
+    });
+
+    it(`does not update the URL if hash is the same`, function () {
+      const historyLength = this.windowWrapper.history.length;
+
+      this.routerApp.router.pathNavigate(`/widget/30`);
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 1);
+      this.routerApp.router.pathNavigate(`/widget/30`);
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 1);
+
+      // ensure window.location.hash is properly URI-decoded for comparison,
+      // otherwise `widget/bar baz` !== `widget/bar%20baz` may be compared
+      // resulting in possible circular redirect loop
+      this.routerApp.router.pathNavigate(`/widget/bar baz`);
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 2);
+      this.routerApp.router.pathNavigate(`/widget/bar baz`);
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 2);
+      this.routerApp.router.pathNavigate(`/widget/bar%20baz`);
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 2);
+    });
+
+    it(`supports passing state updates to the route handler`, async function () {
+      this.routerApp.router.pathNavigate(`/widget/5`, ``, {
+        additionalText: ` and more!`,
       });
-      expect(window.history.length).to.equal(historyLength);
-      this.routerApp.router.replaceHash(`widget/bar baz`, {
-        historyMethod: `replaceState`,
-      });
-      expect(window.history.length).to.equal(historyLength);
+      await retryable(() => expect(this.routerApp.textContent).to.equal(`Widget 5 and more!`));
+    });
+
+    it(`supports passing in fragments`, async function () {
+      this.routerApp.router.pathNavigate(`/widget/5`, `param/foo`);
+      await retryable(() => expect(this.routerApp.textContent).to.equal(`Widget 5 with param foo`));
+    });
+
+    it(`does not apply updates when the route handler returns a falsey result`, async function () {
+      this.routerApp.router.pathNavigate(`/numeric/42`);
+      await retryable(() => expect(this.routerApp.textContent).to.equal(`Number: 42`));
+
+      this.routerApp.router.pathNavigate(`/numeric/notanumber`);
+      await nextAnimationFrame();
+      await nextAnimationFrame();
+      await nextAnimationFrame();
+      expect(this.routerApp.textContent).to.equal(`Number: 42`);
+    });
+  });
+
+  describe(`replaceLocation()`, function () {
+    it(`updates the URL`, function () {
+      expect(window.location.pathname).not.to.equal(`/foo/123/widget/30`);
+      this.routerApp.router.replaceLocation({path: `/widget/30`});
+      expect(window.location.pathname).to.equal(`/foo/123/widget/30`);
+    });
+
+    it(`does not update the URL if path is the same`, function () {
+      const historyLength = this.windowWrapper.history.length;
+
+      this.routerApp.router.replaceLocation({path: `/widget/30`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 1);
+      this.routerApp.router.replaceLocation({path: `/widget/30`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 1);
+
+      this.routerApp.router.replaceLocation({path: `/widget/bar baz`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 2);
+      this.routerApp.router.replaceLocation({path: `/widget/bar baz`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 2);
+      this.routerApp.router.replaceLocation({path: `/widget/bar%20baz`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 2);
+    });
+
+    it(`uses pushState by default and adds a history entry`, function () {
+      const historyLength = this.windowWrapper.history.length;
+
+      this.routerApp.router.replaceLocation({path: `/widget/15`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 1);
+      this.routerApp.router.replaceLocation({path: `/widget/bar baz`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 2);
+    });
+
+    it(`adds a history entry when updating hash fragment`, async function () {
+      const historyLength = this.windowWrapper.history.length;
+
+      this.routerApp.router.replaceLocation({path: `/widget/15`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 1);
+      this.routerApp.router.replaceLocation({path: `/widget/bar baz`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 2);
+      this.routerApp.router.replaceLocation({path: `/widget/bar baz`, fragment: `param/foobar`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength + 3);
+    });
+
+    it(`can use replaceState to avoid adding a history entry`, async function () {
+      const historyLength = this.windowWrapper.history.length;
+
+      this.routerApp.router.replaceLocation({path: `/`, historyMethod: `replaceState`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength);
+      this.routerApp.router.replaceLocation({path: `/widget/bar baz`, historyMethod: `replaceState`});
+      expect(this.windowWrapper.history.length).to.equal(historyLength);
     });
   });
 });

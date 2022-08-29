@@ -71,6 +71,40 @@ export interface PanelLifecycleContext {
   unbindFromComponent?(component: Component<any>): void;
 }
 
+/**
+ * Handler that takes a state update and any named parameters from a matched route expression.
+ * Can optionally return a partial component state to automatically update the component.
+ */
+export type HashRouteHandler = (stateUpdate: object, ...params: string[]) => object | null | undefined;
+
+/** Object mapping string hash-route expressions to handler functions */
+export interface HashRouteDefinition {
+  [route: string]: HashRouteHandler | string;
+}
+
+/**
+ * Handler that takes a state update and named parameters from a matched path and hash expression.
+ */
+export type PathRouteHandler = (
+  stateUpdate: object,
+  pathParams: string[],
+  hashParams: string[],
+) => object | null | undefined;
+
+/** Path + hash routing support */
+export interface RouteDefinition {
+  /** Root path expression where component lives, defaults to '/' */
+  basePath?: string;
+  paths: Array<{
+    /** Path expression relative to the basePath */
+    pathName: string;
+    /** Any hash routes and their handlers */
+    hashRoutes: {
+      [route: string]: PathRouteHandler | string;
+    };
+  }>;
+}
+
 export interface ConfigOptions<StateT, AppStateT = unknown, ContextRegistryT = unknown> {
   /** Function transforming state object to virtual dom tree */
   template(scope?: StateT): VNode;
@@ -99,8 +133,8 @@ export interface ConfigOptions<StateT, AppStateT = unknown, ContextRegistryT = u
   /** Extra rendering/lifecycle callbacks */
   hooks?: PanelHooks<StateT>;
 
-  /** Object mapping string route expressions to handler functions */
-  routes?: {[route: string]: Function};
+  /** Single-page path routing and/or hash routing configuration */
+  routes?: RouteDefinition | HashRouteDefinition;
 
   /** Whether to apply updates to DOM immediately, instead of batching to one update per frame */
   updateSync?: boolean;
@@ -237,9 +271,18 @@ export class Component<
   ): void;
 
   /**
+   * Executes the route handler matching the given path with optional fragment, and updates
+   * the URL, as though the user has navigated explicitly to that address.
+   */
+  pathNavigate(path: string, fragment?: string, stateUpdate?: Partial<StateT>): void;
+
+  /**
    * Executes the route handler matching the given URL fragment, and updates
    * the URL, as though the user had navigated explicitly to that address.
    */
+  hashNavigate(fragment: string, stateUpdate?: Partial<StateT>): void;
+
+  /** alias for hashNavigate to maintain backward compatibility */
   navigate(fragment: string, stateUpdate?: Partial<StateT>): void;
 
   /** Run a user-defined hook with the given parameters */

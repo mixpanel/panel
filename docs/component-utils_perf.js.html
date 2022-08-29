@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>component-utils/index.js - Documentation</title>
+    <title>component-utils/perf.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -28,7 +28,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">component-utils/index.js</h1>
+    <h1 class="page-title">component-utils/perf.js</h1>
     
 
     
@@ -39,27 +39,15 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * Optional component wrappers and utilities for state management;
- * exported in the main {@link panel} module for convenience.
- * @module component-utils
- * @example
- * // direct top-level import
- * import {ProxyComponent, StateController} from 'panel';
- * // module import
- * import {ComponentUtils} from 'panel';
- * const {ProxyComponent, StateController} = ComponentUtils;
+ * Attempt to use a high resolution timestamp when in the browswer environment, but fallback to Date.now
+ * When the performance API is not available.
  */
-
-import StateController from './state-controller';
-import StateStore from './state-store';
-
-export default {
-  /** {@link StateController} class, to be subclassed by apps */
-  StateController,
-
-  /** A simple subscribable state store */
-  StateStore,
-};
+export function getNow() {
+  if (typeof performance !== `undefined`) {
+    return performance.now();
+  }
+  return Date.now();
+}
 </code></pre>
         </article>
     </section>
