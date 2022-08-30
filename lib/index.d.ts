@@ -173,7 +173,6 @@ interface ParamType<T> {
   type: InferType<T>;
   default?: T;
   required?: boolean;
-  shouldUpdate?: (pre: T, cur: T) => boolean;
 }
 
 export class Component<
