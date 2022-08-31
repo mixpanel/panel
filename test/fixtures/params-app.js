@@ -1,4 +1,4 @@
-import {Panel, jsx, shallowCompare} from '../../lib';
+import {Panel, jsx, shallowEqual} from '../../lib';
 
 export class ParamParentApp extends Panel {
   get config() {
@@ -139,10 +139,10 @@ export class ShouldComponentUpdateParamsApp extends Panel {
     };
   }
 
-  shouldComponentUpdate(params, state) {
-    if (params.bookmark.id === this.params.bookmark.id) {
+  shouldComponentUpdate(params) {
+    if (params && params.bookmark.id === this.params.bookmark.id) {
       return false;
     }
-    return shallowCompare(this, params, state);
+    return !shallowEqual(this.params, params);
   }
 }

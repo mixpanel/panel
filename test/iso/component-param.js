@@ -153,7 +153,7 @@ describe(`panel-params`, () => {
     await nextAnimationFrame();
     expect(child.getConfig(`hooks`).preUpdate.callCount).to.equal(1);
     // no state for the child
-    expect(child.getConfig(`hooks`).preUpdate.firstCall.args[0]).to.deep.equal({});
+    expect(child.getConfig(`hooks`).preUpdate.firstCall.args[0]).to.equal(null);
     // preUpdate hook
     expect(child.getConfig(`hooks`).preUpdate.firstCall.args[1].str).to.equal(`abc`);
     expect(child.getConfig(`hooks`).preUpdate.firstCall.args[1].num).to.equal(5);
