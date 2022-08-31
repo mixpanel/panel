@@ -176,188 +176,186 @@ interface ParamType<T> {
 }
 
 export class Component<
-         StateT,
-         AttrsT = AnyAttrs,
-         AppStateT = unknown,
-         AppT = unknown,
-         ContextRegistryT = unknown,
-         ParamT extends Record<string, any> = unknown
-       > extends WebComponent {
-         /** The first Panel Component ancestor in the DOM tree; null if this component is the root */
-         $panelParent: Component<unknown>;
+  StateT,
+  AttrsT = AnyAttrs,
+  AppStateT = unknown,
+  AppT = unknown,
+  ContextRegistryT = unknown,
+  ParamT extends Record<string, any> = unknown
+> extends WebComponent {
+  /** The first Panel Component ancestor in the DOM tree; null if this component is the root */
+  $panelParent: Component<unknown>;
 
-         /**
-          * Attributes schema that defines the component's html attributes and their types
-          * Panel auto parses attribute changes into this.attrs object and $attrs template helper
-          */
-         static get attrsSchema(): {[attr: string]: string | AttrSchema};
+  /**
+   * Attributes schema that defines the component's html attributes and their types
+   * Panel auto parses attribute changes into this.attrs object and $attrs template helper
+   */
+  static get attrsSchema(): {[attr: string]: string | AttrSchema};
 
-         /** New panel params */
-         params: Readonly<ParamT>;
+  /** New panel params */
+  params: Readonly<ParamT>;
 
-         /** A reference to the top-level component */
-         app: AppT;
+  /** A reference to the top-level component */
+  app: AppT;
 
-         /** State object to share with nested descendant components */
-         appState: AppStateT;
+  /** State object to share with nested descendant components */
+  appState: AppStateT;
 
-         /** Refers to the outer-most element in the template file for shadow DOM components. Otherwise, el refers to the component itself. */
-         el: HTMLElement;
+  /** Refers to the outer-most element in the template file for shadow DOM components. Otherwise, el refers to the component itself. */
+  el: HTMLElement;
 
-         /** A flag that represents whether the component is currently connected and initialized */
-         initialized: boolean;
+  /** A flag that represents whether the component is currently connected and initialized */
+  initialized: boolean;
 
-         /** Defines the state of the component, including all the properties required for rendering */
-         state: StateT;
+  /** Defines the state of the component, including all the properties required for rendering */
+  state: StateT;
 
-         readonly timings: Readonly<{
-           /** The time in ms that the component constructor ran */
-           createdAt: number;
-           /** The time in ms that component initialization started (also see 'initializingCompletedAt') */
-           initializingStartedAt: number;
-           /** The time in ms that component initialization completed (also see 'initializingStartedAt') */
-           initializingCompletedAt: number;
-           /** The time in ms that the last #attributeChangedCallback ran */
-           lastAttributeChangedAt: number;
-           /** The time in ms that the last #update ran */
-           lastUpdateAt: number;
-           /** The time in ms that the last render ran */
-           lastRenderAt: number;
-         }>;
+  readonly timings: Readonly<{
+    /** The time in ms that the component constructor ran */
+    createdAt: number;
+    /** The time in ms that component initialization started (also see 'initializingCompletedAt') */
+    initializingStartedAt: number;
+    /** The time in ms that component initialization completed (also see 'initializingStartedAt') */
+    initializingCompletedAt: number;
+    /** The time in ms that the last #attributeChangedCallback ran */
+    lastAttributeChangedAt: number;
+    /** The time in ms that the last #update ran */
+    lastUpdateAt: number;
+    /** The time in ms that the last render ran */
+    lastRenderAt: number;
+  }>;
 
-         /** Applies the static stylesheet for this component class */
-         applyStaticStyle(styleSheetText: null | string, options?: {ignoreCache: boolean}): void;
+  /** Applies the static stylesheet for this component class */
+  applyStaticStyle(styleSheetText: null | string, options?: {ignoreCache: boolean}): void;
 
-         /** Defines standard component configuration */
-         get config(): ConfigOptions<StateT, AppStateT, ContextRegistryT, ParamT>;
+  /** Defines standard component configuration */
+  get config(): ConfigOptions<StateT, AppStateT, ContextRegistryT, ParamT>;
 
-         /**
-          * Template helper functions defined in config object, and exposed to template code as $helpers.
-          * This getter uses the component's internal config cache.
-          */
-         get helpers(): this['config']['helpers'];
+  /**
+   * Template helper functions defined in config object, and exposed to template code as $helpers.
+   * This getter uses the component's internal config cache.
+   */
+  get helpers(): this['config']['helpers'];
 
-         /** Gets the attribute value. Throws an error if attr not defined in attrsSchema */
-         attr<A extends keyof AttrsT>(attr: A): AttrsT[A];
+  /** Gets the attribute value. Throws an error if attr not defined in attrsSchema */
+  attr<A extends keyof AttrsT>(attr: A): AttrsT[A];
 
-         /** Attributes parsed from component's html attributes using attrsSchema */
-         attrs(): AttrsT;
+  /** Attributes parsed from component's html attributes using attrsSchema */
+  attrs(): AttrsT;
 
-         /**
-          * For use inside view templates, to create a child Panel component nested under this
-          * component, which will share its state object and update cycle.
-          */
-         child<T = object>(tagName: string, config?: T): VNode;
+  /**
+   * For use inside view templates, to create a child Panel component nested under this
+   * component, which will share its state object and update cycle.
+   */
+  child<T = object>(tagName: string, config?: T): VNode;
 
-         /**
-          * Searches the component's Panel ancestors for the first component of the
-          * given type (HTML tag name).
-          */
-         findPanelParentByTagName(tagName: string): Component<any>;
+  /**
+   * Searches the component's Panel ancestors for the first component of the
+   * given type (HTML tag name).
+   */
+  findPanelParentByTagName(tagName: string): Component<any>;
 
-         /**
-          * Fetches a value from the component's configuration map (a combination of
-          * values supplied in the config() getter and defaults applied automatically).
-          */
-         getConfig<K extends keyof ConfigOptions<StateT, AppStateT, ContextRegistryT, ParamT>>(
-           key: K,
-         ): this['config'][K];
+  /**
+   * Fetches a value from the component's configuration map (a combination of
+   * values supplied in the config() getter and defaults applied automatically).
+   */
+  getConfig<K extends keyof ConfigOptions<StateT, AppStateT, ContextRegistryT, ParamT>>(key: K): this['config'][K];
 
-         /** Sets a value in the component's configuration map after element initialization */
-         setConfig<K extends keyof ConfigOptions<StateT, AppStateT, ContextRegistryT, ParamT>>(
-           key: K,
-           val: ConfigOptions<StateT, AppStateT, ContextRegistryT>[K],
-         ): void;
+  /** Sets a value in the component's configuration map after element initialization */
+  setConfig<K extends keyof ConfigOptions<StateT, AppStateT, ContextRegistryT, ParamT>>(
+    key: K,
+    val: ConfigOptions<StateT, AppStateT, ContextRegistryT>[K],
+  ): void;
 
-         /**
-          * set the params for the this component
-          * triggers a component update
-          * if shouldComponentUpdate callback returns true
-          */
-         setParams(params: Partial<ParamT>): void;
+  /**
+   * set the params for the this component
+   * triggers a component update
+   * if shouldComponentUpdate callback returns true
+   */
+  setParams(params: Partial<ParamT>): void;
 
-         /**
-          * Same API as react's `shouldComponentUpdate` usage
-          * if child component implements this method, parent implmentation wil be discarded
-          * only difference is the `params` or `state` could sometimes be null indicating that
-          * the update is not related to `params` or `state`
-          *
-          * To be overridden by subclasses, defining conditional logic for whether
-          * a component should rerender its template given the state and params to be applied.
-          * In most cases this method can be left untouched, but can provide improved
-          * performance when dealing with very many DOM elements.
-          *
-          * @example
-          * shouldComponentUpdate(params, state) {
-          *   if (params.bookmark.id !== this.params.bookmark.id) {
-          *     return false;
-          *   }
-          *   return !shallowEqual(params, this.params);
-          * }
-          */
-         shouldComponentUpdate(params: ParamT, state: StateT): boolean;
+  /**
+   * Same API as react's `shouldComponentUpdate` usage
+   * if child component implements this method, parent implmentation wil be discarded
+   * only difference is the `params` or `state` could sometimes be null indicating that
+   * the update is not related to `params` or `state`
+   *
+   * To be overridden by subclasses, defining conditional logic for whether
+   * a component should rerender its template given the state and params to be applied.
+   * In most cases this method can be left untouched, but can provide improved
+   * performance when dealing with very many DOM elements.
+   *
+   * @example
+   * shouldComponentUpdate(params, state) {
+   *   if (params.bookmark.id !== this.params.bookmark.id) {
+   *     return false;
+   *   }
+   *   return !shallowEqual(params, this.params);
+   * }
+   */
+  shouldComponentUpdate(params: ParamT, state: StateT): boolean;
 
-         /**
-          * To be overridden by subclasses, defining conditional logic for whether
-          * a component should rerender its template given the state and params to be applied.
-          * In most cases this method can be left untouched, but can provide improved
-          * performance when dealing with very many DOM elements.
-          *
-          * @deprecated use `shouldComponentUpdate` instead
-          */
-         shouldUpdate(state: StateT): boolean;
+  /**
+   * To be overridden by subclasses, defining conditional logic for whether
+   * a component should rerender its template given the state and params to be applied.
+   * In most cases this method can be left untouched, but can provide improved
+   * performance when dealing with very many DOM elements.
+   *
+   * @deprecated use `shouldComponentUpdate` instead
+   */
+  shouldUpdate(state: StateT): boolean;
 
-         /**
-          * Executes the route handler matching the given URL fragment, and updates
-          * the URL, as though the user had navigated explicitly to that address.
-          */
-         navigate(fragment: string, stateUpdate?: Partial<StateT>): void;
+  /**
+   * Executes the route handler matching the given URL fragment, and updates
+   * the URL, as though the user had navigated explicitly to that address.
+   */
+  navigate(fragment: string, stateUpdate?: Partial<StateT>): void;
 
-         /** Run a user-defined hook with the given parameters */
-         runHook: (
-           hookName: keyof ConfigOptions<StateT, AppStateT, ContextRegistryT>['hooks'],
-           options: {cascade: boolean; exclude: Component<any, any>},
-           params: any,
-         ) => void;
+  /** Run a user-defined hook with the given parameters */
+  runHook: (
+    hookName: keyof ConfigOptions<StateT, AppStateT, ContextRegistryT>['hooks'],
+    options: {cascade: boolean; exclude: Component<any, any>},
+    params: any,
+  ) => void;
 
-         /**
-          * Applies a state update specifically to app state shared across components.
-          * In apps which don't specify `appState` in the root component config, all
-          * state is shared across all parent and child components and the standard
-          * update() method should be used instead.
-          */
-         updateApp(stateUpdate?: Partial<AppStateT>): void;
+  /**
+   * Applies a state update specifically to app state shared across components.
+   * In apps which don't specify `appState` in the root component config, all
+   * state is shared across all parent and child components and the standard
+   * update() method should be used instead.
+   */
+  updateApp(stateUpdate?: Partial<AppStateT>): void;
 
-         /**
-          * Applies a state update, triggering a re-render check of the component as
-          * well as any other components sharing the same state. This is the primary
-          * means of updating the DOM in a Panel application.
-          */
-         update(stateUpdate?: Partial<StateT> | ((state: StateT) => Partial<StateT>)): void;
+  /**
+   * Applies a state update, triggering a re-render check of the component as
+   * well as any other components sharing the same state. This is the primary
+   * means of updating the DOM in a Panel application.
+   */
+  update(stateUpdate?: Partial<StateT> | ((state: StateT) => Partial<StateT>)): void;
 
-         /**
-          * Helper function which will queue a function to be run once the component has been
-          * initialized and added to the DOM. If the component has already had its connectedCallback
-          * run, the function will run immediately.
-          *
-          * It can optionally return a function to be enqueued to be run just before the component is
-          * removed from the DOM. This occurs during the disconnectedCallback lifecycle.
-          */
-         onConnected(callback: () => void | (() => void)): void;
+  /**
+   * Helper function which will queue a function to be run once the component has been
+   * initialized and added to the DOM. If the component has already had its connectedCallback
+   * run, the function will run immediately.
+   *
+   * It can optionally return a function to be enqueued to be run just before the component is
+   * removed from the DOM. This occurs during the disconnectedCallback lifecycle.
+   */
+  onConnected(callback: () => void | (() => void)): void;
 
-         /**
-          * Helper function which will queue a function to be run just before the component is
-          * removed from the DOM. This occurs during the disconnectedCallback lifecycle.
-          */
-         onDisconnected(callback: () => void): void;
+  /**
+   * Helper function which will queue a function to be run just before the component is
+   * removed from the DOM. This occurs during the disconnectedCallback lifecycle.
+   */
+  onDisconnected(callback: () => void): void;
 
-         /**
-          * Returns the default context of the highest (ie. closest to the document root) ancestor component
-          * that has configured a default context for the context name,
-          * or it will return the component's own default context if no ancestor context was found.
-          */
-         getContext<ContextKey extends keyof ContextRegistryT>(contextName: ContextKey): ContextRegistryT[ContextKey];
-       }
+  /**
+   * Returns the default context of the highest (ie. closest to the document root) ancestor component
+   * that has configured a default context for the context name,
+   * or it will return the component's own default context if no ancestor context was found.
+   */
+  getContext<ContextKey extends keyof ContextRegistryT>(contextName: ContextKey): ContextRegistryT[ContextKey];
+}
 
 /**
  * Panel component that only accepts 3 generic types
