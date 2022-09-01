@@ -107,7 +107,7 @@ describe(`Panel Params`, function () {
     expect(el.childNodes[0].params.noDefaultString).to.equal(undefined);
   });
 
-  it(`required param must be presented on component delclarition`, function () {
+  it(`required param must be presented on component declaration`, function () {
     const el = new RequiredParam();
     el.setConfig(`updateSync`, true);
     expect(() => el.connectedCallback()).to.throw(
