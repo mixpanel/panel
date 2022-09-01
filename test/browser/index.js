@@ -8,6 +8,6 @@ import '../fixtures'; // import fixtures
 // import tests
 import './component';
 import './router';
-import './component-param';
+import './param-component';
 
 chai.config.truncateThreshold = 0; // nicer deep equal errors

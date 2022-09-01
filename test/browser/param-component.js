@@ -1,0 +1,1 @@
+import '../iso/param-component';

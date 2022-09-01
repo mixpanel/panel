@@ -1,6 +1,6 @@
-import {Panel, jsx, shallowEqual} from '../../lib';
+import {ParamComponent, jsx, shallowEqual} from '../../lib';
 
-export class ParamParentApp extends Panel {
+export class ParamParentApp extends ParamComponent {
   get config() {
     return {
       defaultState: {
@@ -31,7 +31,7 @@ export class ParamParentApp extends Panel {
   }
 }
 
-export class ParamChild extends Panel {
+export class ParamChild extends ParamComponent {
   get config() {
     return {
       defaultParams: {
@@ -74,24 +74,18 @@ export class ParamChild extends Panel {
   }
 }
 
-export class DefaultAndRequiredParam extends Panel {
+export class RequiredParam extends ParamComponent {
   get config() {
     return {
-      defaultParams: {
-        requiredString: `requiredString`,
-      },
-      params: {
-        requiredString: {
-          type: String,
-          required: true,
-        },
-      },
-      template: () => jsx(`div`),
+      template: () =>
+        jsx(`param-child`, {
+          params: {},
+        }),
     };
   }
 }
 
-export class NonPrimitiveTypeParamClass extends Panel {
+export class NonPrimitiveTypeParamClass extends ParamChild {
   get config() {
     return {
       params: {
@@ -102,7 +96,7 @@ export class NonPrimitiveTypeParamClass extends Panel {
   }
 }
 
-export class NonPrimitiveTypeParamString extends Panel {
+export class NonPrimitiveTypeParamString extends ParamComponent {
   get config() {
     return {
       params: {
@@ -113,7 +107,7 @@ export class NonPrimitiveTypeParamString extends Panel {
   }
 }
 
-export class ExtraParamPassInChild extends Panel {
+export class ExtraParamPassInChild extends ParamComponent {
   get config() {
     return {
       template: () =>
@@ -126,7 +120,7 @@ export class ExtraParamPassInChild extends Panel {
   }
 }
 
-export class ShouldComponentUpdateParamsApp extends Panel {
+export class ShouldComponentUpdateParamsApp extends ParamComponent {
   get config() {
     return {
       params: {

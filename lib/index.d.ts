@@ -171,7 +171,6 @@ type InferType<T> = T extends string
 
 interface ParamType<T> {
   type: InferType<T>;
-  default?: T;
   required?: boolean;
 }
 
@@ -287,13 +286,17 @@ export class Component<
    *
    * @example
    * shouldComponentUpdate(params, state) {
-   *   if (params.bookmark.id !== this.params.bookmark.id) {
+   *   // don't need to rerender if result set ID hasn't changed
+   *   if (state && state.largeResultSetID === this._cachedResultID) {
+   *      return false
+   *   }
+   *   if (params && params.bookmark.id === this.params.bookmark.id) {
    *     return false;
    *   }
    *   return !shallowEqual(params, this.params);
    * }
    */
-  shouldComponentUpdate(params: ParamT, state: StateT): boolean;
+  shouldComponentUpdate(params: ParamT | null, state: StateT | null): boolean;
 
   /**
    * To be overridden by subclasses, defining conditional logic for whether
@@ -301,7 +304,7 @@ export class Component<
    * In most cases this method can be left untouched, but can provide improved
    * performance when dealing with very many DOM elements.
    *
-   * @deprecated use `shouldComponentUpdate` instead
+   * @deprecated use shouldComponentUpdate instead
    */
   shouldUpdate(state: StateT): boolean;
 
@@ -360,7 +363,7 @@ export class Component<
 /**
  * Panel component that only accepts 3 generic types
  */
-export class Panel<ParamT = unknown, StateT = unknown, ContextRegistryT = unknown> extends Component<
+export class ParamComponent<ParamT = unknown, StateT = unknown, ContextRegistryT = unknown> extends Component<
   StateT,
   unknown,
   unknown,
