@@ -4,7 +4,7 @@ const path = require(`path`);
 
 process.env.CHROME_BIN = require(`puppeteer`).executablePath();
 process.env.FIREFOX_BIN = require(`playwright`).firefox.executablePath();
-const SAUCE_LAB = parseInt(process.env.SAUCE_LAB, 10) === 1;
+const SAUCE = parseInt(process.env.SAUCE, 10) >= 1;
 
 // Check out https://saucelabs.com/platforms for all browser/platform combos
 const sauceLaunchers = {
@@ -20,7 +20,7 @@ const sauceLaunchers = {
   sl_chrome_old: {
     base: `SauceLabs`,
     browserName: `chrome`,
-    browserVersion: `76`,
+    browserVersion: `90`,
     platformName: `macOS 10.13`,
     'sauce:options': {
       extendedDebugging: true,
@@ -38,7 +38,7 @@ const sauceLaunchers = {
   sl_firefox_old: {
     base: `SauceLabs`,
     browserName: `firefox`,
-    browserVersion: `74`,
+    browserVersion: `91`,
     platformName: `macOS 10.13`,
     'sauce:options': {
       extendedDebugging: true,
@@ -53,7 +53,7 @@ const sauceLaunchers = {
   sl_safari_old: {
     base: `SauceLabs`,
     browserName: `safari`,
-    browserVersion: `12`,
+    browserVersion: `13`,
     platformName: `macOS 10.13`,
   },
   sl_edge_latest: {
@@ -65,7 +65,7 @@ const sauceLaunchers = {
   sl_edge_old: {
     base: `SauceLabs`,
     browserName: `MicrosoftEdge`,
-    browserVersion: `79`,
+    browserVersion: `90`,
     platformName: `Windows 10`,
   },
 };
@@ -101,8 +101,8 @@ module.exports = function (config) {
       require(`karma-sauce-launcher`),
       require(`karma-sourcemap-loader`),
     ],
-    browsers: SAUCE_LAB ? sauceBrowsers : [`ChromeHeadless`, `Firefox`],
-    reporters: SAUCE_LAB ? [`spec`, `saucelabs`] : [`spec`],
+    browsers: SAUCE ? sauceBrowsers : [`ChromeHeadless`, `Firefox`],
+    reporters: SAUCE ? [`spec`, `saucelabs`] : [`spec`],
     singleRun: true,
     customLaunchers: {
       ...sauceLaunchers,
