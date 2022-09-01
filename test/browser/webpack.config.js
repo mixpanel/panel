@@ -1,7 +1,10 @@
 /* eslint-env node */
 const path = require(`path`);
+const webpack = require(`webpack`);
 
 const webpackConfig = {
+  mode: `development`,
+  devtool: `source-map`,
   entry: path.join(__dirname, `index.js`),
   output: {
     path: path.join(__dirname, `build`),
@@ -9,27 +12,25 @@ const webpackConfig = {
     pathinfo: true,
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: `babel`,
-        query: {
-          plugins: [`syntax-async-functions`, `transform-regenerator`],
-          presets: [`es2015`],
-        },
-      },
-      {
-        test: /\.js$/,
-        include: /domsuite/,
-        loader: `babel`,
-        query: {
-          plugins: [`syntax-async-functions`, `transform-regenerator`],
-          presets: [`es2015`],
+        use: {
+          loader: `babel-loader`,
         },
       },
     ],
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      process: {
+        env: {
+          NODE_ENV: JSON.stringify(`test`),
+        },
+      },
+    }),
+  ],
   watch: process.env.WATCH,
 };
 

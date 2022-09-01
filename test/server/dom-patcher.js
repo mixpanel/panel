@@ -6,7 +6,7 @@ import sinonChai from 'sinon-chai';
 
 import {DOMPatcher, h} from '../../lib/dom-patcher';
 import nextAnimationFrame from './nextAnimationFrame';
-import * as Perf from '../../lib/component-utils/perf';
+import {Perf} from '../../lib/component-utils/perf';
 
 chai.use(sinonChai);
 

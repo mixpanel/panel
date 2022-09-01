@@ -7,3 +7,5 @@ npm-debug.log
 yarn.lock
 /.vscode
 /isorender
+/coverage
+.nyc_output

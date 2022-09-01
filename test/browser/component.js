@@ -4,7 +4,7 @@ import {nextAnimationFrame, sleep} from 'domsuite';
 import {BreakableApp} from '../fixtures/breakable-app';
 import {compactHtml} from '../utils';
 import {LightTheme, DarkTheme} from '../fixtures/simple-contexts';
-import * as Perf from '../../lib/component-utils/perf';
+import {Perf} from '../../lib/component-utils/perf';
 
 describe(`Simple Component instance`, function () {
   let el;
@@ -1159,8 +1159,8 @@ context(`Component with contexts`, function () {
     it(`fails to connect when a context declared in config does not have a default context by itself or from any context ancestor`, async function () {
       // modern browsers with native Custom Elements support will emit a global error event
       const errors = [];
-      window.uncaughtErrorFilter = (errorEvent) => {
-        errors.push(errorEvent.message);
+      window.onerror = (message, source, lineno, colno, error) => {
+        errors.push(error.message);
         return true;
       };
 
@@ -1172,11 +1172,10 @@ context(`Component with contexts`, function () {
         errors.push(err.message);
       }
       await nextAnimationFrame();
-
       expect(errors).to.have.lengthOf(1);
       expect(errors[0]).to.contain(`A "theme" context is not available`);
 
-      delete window.uncaughtErrorFilter;
+      delete window.onerror;
     });
 
     it(`executes bindToComponent callback when connected`, async function () {
