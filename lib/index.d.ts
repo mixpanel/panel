@@ -3,6 +3,7 @@
 // Definitions by: Mixpanel (https://mixpanel.com)
 import {VNode} from 'snabbdom';
 import WebComponent from 'webcomponent';
+import {JsxVNode, JsxVNodeProps} from 'snabbdom-jsx-lite';
 
 export {h} from 'snabbdom';
 export {jsx} from 'snabbdom-jsx-lite';
@@ -371,3 +372,21 @@ export class ParamComponent<ParamT = unknown, StateT = unknown, ContextRegistryT
   ContextRegistryT,
   ParamT
 > {}
+
+
+
+// define jsx IntrinsicElement inside namespace jsx to play well with react
+declare global {
+  /**
+   * opt-in jsx intrinsic global interfaces
+   * see: https://www.typescriptlang.org/docs/handbook/jsx.html#type-checking
+   */
+  namespace jsx {
+    namespace JSX {
+      type Element = JsxVNode;
+      interface IntrinsicElements {
+        [elemName: string]: JsxVNodeProps;
+      }
+    }
+  }
+}
