@@ -373,8 +373,6 @@ export class ParamComponent<ParamT = unknown, StateT = unknown, ContextRegistryT
   ParamT
 > {}
 
-
-
 // define jsx IntrinsicElement inside namespace jsx to play well with react
 declare global {
   /**
