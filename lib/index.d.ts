@@ -3,10 +3,11 @@
 // Definitions by: Mixpanel (https://mixpanel.com)
 import {VNode} from 'snabbdom';
 import WebComponent from 'webcomponent';
-import {JsxVNode, JsxVNodeProps} from 'snabbdom-jsx-lite';
 
 export {h} from 'snabbdom';
 export {jsx} from 'snabbdom-jsx-lite';
+
+import {JsxVNode, JsxVNodeProps} from 'snabbdom-jsx-lite';
 
 export class StateStore<State> {
   constructor(options: {store?: StateStore<State>});
