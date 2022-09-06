@@ -83,7 +83,7 @@ export interface ConfigOptions<StateT, AppStateT = unknown, ContextRegistryT = u
   css?: string;
 
   /** object to provide default value for params */
-  defaultParams?: ParamT;
+  defaultParams?: Partial<ParamT>;
 
   /** An initial default value for the component's state property */
   defaultState?: StateT;
