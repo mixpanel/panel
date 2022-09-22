@@ -138,7 +138,6 @@ describe(`Panel Params`, function () {
 
   it(`run hooks`, async function () {
     const el = new ParamParentApp();
-    el.connectedCallback();
     document.body.appendChild(el);
     const child = el.childNodes[0];
     await nextAnimationFrame();
@@ -157,7 +156,6 @@ describe(`Panel Params`, function () {
 
   it(`runs hooks with current param values`, async function () {
     const el = new ParamParentApp();
-    el.connectedCallback();
     document.body.appendChild(el);
     const child = el.childNodes[0];
     await nextAnimationFrame();
