@@ -36,6 +36,8 @@ export class ParamChild extends ParamComponent {
     return {
       defaultParams: {
         defaultString: `defaultString`,
+        defaultEmptyString: ``,
+        defaultBool: false,
       },
       params: {
         obj: {
@@ -55,6 +57,8 @@ export class ParamChild extends ParamComponent {
         },
         defaultString: String,
         noDefaultString: String,
+        defaultEmptyString: String,
+        defaultBool: Boolean,
         requiredString: {
           type: String,
           required: true,
@@ -64,7 +68,7 @@ export class ParamChild extends ParamComponent {
         jsx(`div`, {}, [
           jsx(`div`, {sel: `#str`}, this.params.str),
           jsx(`div`, {sel: `#num`}, this.params.num),
-          jsx(`div`, {sel: `#bool`}, this.params.bool),
+          jsx(`div`, {sel: `#bool`}, JSON.stringify(this.params.bool)),
           jsx(`div`, {sel: `#obj`}, JSON.stringify(this.params.obj)),
           jsx(`div`, {sel: `#arr`}, JSON.stringify(this.params.arr)),
           jsx(`div`, {sel: `#map`}, JSON.stringify(this.params.map)),

@@ -39,7 +39,7 @@ describe(`Panel Params`, function () {
       <div>
         <div id="str"></div>
         <div id="num">0</div>
-        <div id="bool"></div>
+        <div id="bool">false</div>
         <div id="obj">{}</div>
         <div id="arr">[]</div>
         <div id="map">{}</div>
@@ -105,6 +105,8 @@ describe(`Panel Params`, function () {
     await nextAnimationFrame();
     expect(el.childNodes[0].params.defaultString).to.equal(`defaultString`);
     expect(el.childNodes[0].params.noDefaultString).to.equal(undefined);
+    expect(el.childNodes[0].params.defaultEmptyString).to.equal(``);
+    expect(el.childNodes[0].params.defaultBool).to.equal(false);
   });
 
   it(`required param must be presented on component declaration`, function () {
