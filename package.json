@@ -42,6 +42,9 @@
     "url": "https://github.com/mixpanel/panel/issues"
   },
   "homepage": "https://github.com/mixpanel/panel",
+  "overrides": {
+    "webdriverio": "7.19.5"
+  },
   "dependencies": {
     "cuid": "2.1.6",
     "html-element": "2.3.0",
