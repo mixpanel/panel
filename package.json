@@ -48,7 +48,7 @@
   "dependencies": {
     "cuid": "2.1.6",
     "html-element": "2.3.0",
-    "loader-utils": "1.1.0",
+    "loader-utils": "3.2.1",
     "lodash-es": "4.17.21",
     "lodash.pick": "4.4.0",
     "raf": "3.2.0",
