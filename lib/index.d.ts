@@ -55,12 +55,12 @@ export interface PanelHelpers {
   [helper: string]: any;
 }
 
-export interface PanelHooks<State> {
+export interface PanelHooks<State, Params> {
   /** Function called before an update is applied */
-  preUpdate?: (stateUpdate: Partial<State>) => void;
+  preUpdate?: (stateUpdate: Partial<State>, params?: Partial<Params>) => void;
 
   /** Function called after an update is applied */
-  postUpdate?: (stateUpdate: Partial<State>) => void;
+  postUpdate?: (stateUpdate: Partial<State>, params?: Partial<Params>) => void;
 
   [hookName: string]: (params: any) => void;
 }
@@ -104,7 +104,7 @@ export interface ConfigOptions<StateT, AppStateT = unknown, ContextRegistryT = u
   helpers?: PanelHelpers;
 
   /** Extra rendering/lifecycle callbacks */
-  hooks?: PanelHooks<StateT>;
+  hooks?: PanelHooks<StateT, ParamT>;
 
   /** Object mapping string route expressions to handler functions */
   routes?: {[route: string]: Function};
