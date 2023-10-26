@@ -202,16 +202,17 @@ describe(`Server-side component renderer`, function () {
   });
 
   it(`throws error for invalid value in an enum attr`, function () {
-    const el = new AttrsReflectionApp();
+    const el = document.createElement(`attrs-reflection-app`);
+    el.connectedCallback();
 
     expect(() => el.setAttribute(`str-attr`, `boo!`)).to.throw(
-      `Invalid value: 'boo!' for attr: str-attr. Only ('hello' | 'world' | '💩🤒🤢☠️ -> 👻🎉💐🎊😱😍') is valid.`,
+      `Invalid value: 'boo!' for attr: str-attr in element attrs-reflection-app. Only ('hello' | 'world' | '💩🤒🤢☠️ -> 👻🎉💐🎊😱😍') is valid.`,
     );
   });
 
   it(`throws error if there is a malformed attrsSchema type`, function () {
     expect(() => new BadAttrsSchemaApp()).to.throw(
-      `Invalid type: bool for attr: bad-attr in attrsSchema. Only ('string' | 'boolean' | 'number' | 'json') is valid.`,
+      `Invalid type: bool for attr: bad-attr in BadAttrsSchemaApp attrsSchema. Only ('string' | 'boolean' | 'number' | 'json') is valid.`,
     );
   });
 
