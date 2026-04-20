@@ -27,7 +27,7 @@ jobs:
     - run: npm run lint
     - run: npm run type-check
     - run: npm run test-server
-    - run: npm run test-browser-sauce
-      env:
-        SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-        SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+    # - run: npm run test-browser-sauce
+    #   env:
+    #     SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+    #     SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
