@@ -75,7 +75,7 @@ export interface PanelLifecycleContext {
 
 export interface ConfigOptions<StateT, AppStateT = unknown, ContextRegistryT = unknown, ParamT = unknown> {
   /** Function transforming state object to virtual dom tree */
-  template(scope?: StateT): VNode;
+  template(scope?: StateT): VNode | null;
 
   params?: {[param in keyof ParamT]: InferType<ParamT[param]> | ParamType<ParamT[param]>};
 
