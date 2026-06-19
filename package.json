@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "@babel/cli": "7.17.6",
-    "@babel/core": "7.17.9",
+    "@babel/core": "7.29.6",
     "@babel/preset-env": "7.16.11",
     "@babel/register": "7.17.7",
     "@webcomponents/custom-elements": "1.0.6",
